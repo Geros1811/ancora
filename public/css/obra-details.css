@@ -1,0 +1,177 @@
+/* Estilos generales */
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* Contenedor principal */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Título principal */
+.dashboard-container h1 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Información de la obra */
+.obra-info p {
+    font-size: 16px;
+    margin: 5px 0;
+    line-height: 1.5;
+}
+
+.obra-info strong {
+    color: #2c3e50;
+}
+
+/* Tablas */
+.obra-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+.obra-table th, .obra-table td {
+    border: 1px solid #ddd;
+    text-align: center;
+    padding: 10px;
+}
+
+.obra-table th {
+    background-color: #2c3e50;
+    color: white;
+    font-weight: bold;
+}
+
+.obra-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.obra-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Subtítulos */
+.dashboard-container h2 {
+    font-size: 24px;
+    color: #2c3e50;
+    margin-top: 30px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
+}
+
+/* Botón flotante */
+.floating-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #2c3e50;
+    color: white;
+    font-size: 20px;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.floating-btn:hover {
+    background-color: #34495e;
+}
+
+/* Botón de logout */
+.logout-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.logout-container button {
+    background-color: #e74c3c;
+    color: white;
+    font-size: 16px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.logout-container button:hover {
+    background-color: #c0392b;
+}
+
+.obra-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.obra-table th, .obra-table td {
+    border: 1px solid #ddd;
+    text-align: center;
+    padding: 8px;
+}
+
+.obra-table th {
+    background-color: #007bff;
+    color: white;
+}
+
+.hidden-section {
+    display: none;
+}
+
+.toggle-button {
+    cursor: pointer;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.editable {
+    border: none;
+    background-color: transparent;
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.editable:focus {
+    outline: none;
+    background-color: #f1f1f1;
+}
+
+.lock-icon {
+    cursor: pointer;
+    font-size: 20px;
+    padding: 5px;
+}
+
+.lock-icon:hover {
+    color: #666;
+}
+
+.lock-icon {
+    cursor: pointer;
+    font-size: 1.2em;
+}
+
+tr {
+    transition: background-color 0.3s ease; /* Suaviza el cambio de color */
+}

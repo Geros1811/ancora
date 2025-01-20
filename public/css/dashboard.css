@@ -1,0 +1,166 @@
+/* Estilos generales para el cuerpo de la página */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #879baa;  /* Gris azulado de fondo */
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+/* Contenedor para el Dashboard */
+.dashboard-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 800px;
+    margin: 30px auto;
+    border: 2px solid #3a4c72;  /* Azul oscuro para el borde */
+}
+
+/* Contenedor para la bienvenida */
+.welcome-container {
+    margin-top: 50px;  /* Separar de la parte superior */
+    margin-bottom: 30px;
+}
+
+.welcome-container h1 {
+    font-size: 28px;
+    color: #3a4c72;  /* Azul oscuro */
+    margin: 0;
+}
+
+/* Contenedor para la lista de obras */
+.obras-container {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+/* Título de las obras */
+.obras-container h2 {
+    font-size: 24px;
+    color: #3a4c72;
+    margin-bottom: 15px;
+}
+
+/* Estilos para la lista de obras */
+.obras-list {
+    margin-top: 20px;
+}
+
+.obras-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.obras-list li {
+    background-color: #f4f4f4;
+    margin: 15px 0;
+    padding: 15px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;  /* Alinea el nombre y el presupuesto en extremos */
+    align-items: center;
+}
+
+.obras-list li strong {
+    font-size: 18px;
+    color: #3a4c72;  /* Azul oscuro */
+}
+
+.obras-list li span {
+    font-size: 16px;
+    color: #007bff;  /* Azul para el presupuesto */
+}
+
+/* Estilo para el formulario de logout */
+.logout-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+/* Estilo para el botón de logout */
+.logout-container button {
+    padding: 12px;
+    background-color: #3a4c72;  /* Azul oscuro */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.logout-container button:hover {
+    background-color: #2a3b5c;  /* Azul más oscuro */
+}
+
+/* Estilo del botón flotante */
+.floating-btn {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    padding: 15px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    font-size: 24px;
+    border: none;
+    cursor: pointer;
+}
+
+.floating-btn:hover {
+    background-color: #0056b3;  /* Azul más oscuro */
+}
+
+/* Estilo del formulario de crear obra */
+form label {
+    display: block;
+    margin-bottom: 5px;
+    color: #3a4c72;
+    font-weight: bold;
+}
+
+form input, form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+form button {
+    width: 100%;
+    padding: 12px;
+    background-color: #3a4c72;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #2a3b5c;
+}
+
+/* Botón de Logout */
+.logout-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #3a4c72;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background-color: #2a3b5c;
+}
