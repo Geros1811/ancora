@@ -1,28 +1,3 @@
-function toggleSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    section.classList.toggle('hidden-section');
-}
-
-function addRow(tbodyId) {
-    const tbody = document.getElementById(tbodyId);
-    const newRow = tbody.insertRow();
-    newRow.innerHTML = `
-        <td><input type="text" class="editable"></td>
-        <td><input type="date" class="editable"></td>
-        <td><input type="number" value="0" class="editable" oninput="updateAcumulado()" onblur="formatCurrency(this)"></td>
-        <td><input type="text" value="$0.00" class="editable" disabled></td>
-        <td><span onclick="toggleLock(this)" class="lock-icon" style="color: green;">🔓</span></td>
-    `;
-}
-
-function updateAcumulado() {
-    // Lógica para actualizar el acumulado
-}
-
-function formatCurrency(input) {
-    // Lógica para formatear el valor como moneda
-}
-
 function toggleLock(lockIcon) {
     const row = lockIcon.closest("tr"); // Fila correspondiente al candado
     const inputs = row.querySelectorAll("input"); // Todos los campos de entrada dentro de la fila
@@ -66,8 +41,5 @@ function toggleLock(lockIcon) {
             alert("Hubo un problema al validar la contraseña.");
         });
     }
-}
-
-function guardarCambios() {
-    // Lógica para guardar los cambios
+    
 }
