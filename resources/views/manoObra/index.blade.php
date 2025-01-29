@@ -81,6 +81,7 @@
                         </tbody>
                     </table>
                     <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow(this)">Añadir Fila</button>
+                    <button type="button" class="btn btn-warning" style="margin-top: 10px;" onclick="crearTablaDestajos()">Destajos</button>
                     <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar</button>
                 </form>
             </div>
@@ -139,6 +140,7 @@
                     </tbody>
                 </table>
                 <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow(this)">Añadir Fila</button>
+                <button type="button" class="btn btn-warning" style="margin-top: 10px;" onclick="crearTablaDestajos()">Destajos</button>
                 <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar</button>
             </form>
         `;
@@ -199,6 +201,75 @@
         });
     }
 
+    function crearTablaDestajos() {
+        const container = document.getElementById('tablas-detalles-container');
+        const newTable = document.createElement('div');
+        newTable.classList.add('table-container');
+        newTable.style.marginTop = '40px';
+        newTable.innerHTML = `
+            <h2 class="table-title" style="font-size: 20px; color: #34495e; margin-bottom: 10px;">Detalles de Destajos</h2>
+            <form action="{{ route('manoObra.store', ['obraId' => $obraId]) }}" method="POST">
+                @csrf
+                <table class="obra-table" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                    <thead>
+                        <tr>
+                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Frente</th>
+                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Fecha</th>
+                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">No. Pago</th>
+                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Cantidad</th>
+                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Observaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="detalle-destajo-body">
+                        <!-- Filas dinámicas -->
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRowDestajos(this)">Añadir Fila</button>
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar</button>
+            </form>
+        `;
+        container.appendChild(newTable);
+    }
+
+    function addRowDestajos(button) {
+        const tableBody = button.closest('form').querySelector('.detalle-destajo-body');
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                <select name="frente[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" onchange="toggleEditableOption(this)">
+                    <option value="Plomeria">Plomeria</option>
+                    <option value="Electricidad">Electricidad</option>
+                    <option value="Colocador de Pisos">Colocador de Pisos</option>
+                    <option value="Pintor">Pintor</option>
+                    <option value="Herreria">Herreria</option>
+                    <option value="Carpintero">Carpintero</option>
+                    <option value="Aluminio">Aluminio</option>
+                    <option value="Aire Acondicionado">Aire Acondicionado</option>
+                    <option value="Tabla Roca">Tabla Roca</option>
+                    <option value="Otros">Otros</option>
+                </select>
+                <input type="text" name="frente_otro[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%; display: none;" placeholder="Especificar">
+            </td>
+            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="date" name="fecha[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;"></td>
+            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" step="0.01" name="monto_aprobado[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="0" readonly></td>
+            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="text" name="no_pago[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="0" readonly></td>
+            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" name="cantidad[]" class="form-control cantidad" style="border: none; background: transparent; text-align: center; width: 100%;" value="0" readonly></td>
+
+        `;
+        tableBody.appendChild(newRow);
+    }
+
+    function toggleEditableOption(select) {
+        const input = select.nextElementSibling;
+        if (select.value === 'Otros') {
+            input.style.display = 'block';
+            input.readOnly = false;
+        } else {
+            input.style.display = 'none';
+            input.value = '';
+            input.readOnly = true;
+        }
+    }
 
 </script>
 @endsection

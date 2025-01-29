@@ -38,6 +38,7 @@
             #grafica-container {
                 text-align: center;
                 margin-top: 50px;
+                position: relative;
             }
             #grafica {
                 max-width: 500px;
@@ -45,6 +46,29 @@
                 width: 100%;
                 height: auto;
                 margin: 0 auto;
+                cursor: pointer; /* Añadir cursor de puntero */
+            }
+            #fullscreen-icon {
+                position: absolute;
+                bottom: -30px;
+                right: 50%;
+                transform: translateX(50%);
+                cursor: pointer;
+                font-size: 24px;
+            }
+            .fullscreen #grafica {
+                width: 100%;
+                height: 100%;
+                object-fit: contain; /* Ajustar la gráfica sin estirarla */
+            }
+            .fullscreen #grafica-container {
+                width: 100vw;
+                height: 100vh;
+            }
+            .fullscreen #fullscreen-icon {
+                bottom: 10px;
+                right: 10px;
+                transform: none;
             }
         </style>
 
@@ -317,11 +341,36 @@
         
                 let graficaContainer = document.createElement('div');
                 graficaContainer.id = 'grafica-container';
-                graficaContainer.innerHTML = '<canvas id="grafica"></canvas>';
+                graficaContainer.innerHTML = '<canvas id="grafica"></canvas><div id="fullscreen-icon" onclick="toggleFullscreen()">🔍</div>';
                 document.body.appendChild(graficaContainer);
         
                 let ctx = document.getElementById('grafica').getContext('2d');
                 new Chart(ctx, config);
+            }
+
+            function toggleFullscreen() {
+                let graficaContainer = document.getElementById('grafica-container');
+                let grafica = document.getElementById('grafica');
+                let fullscreenIcon = document.getElementById('fullscreen-icon');
+                if (!document.fullscreenElement) {
+                    graficaContainer.requestFullscreen().catch(err => {
+                        alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                    });
+                    graficaContainer.classList.add('fullscreen');
+                    grafica.style.width = '100%';
+                    grafica.style.height = '100%';
+                    grafica.style.maxWidth = 'none';
+                    grafica.style.maxHeight = 'none';
+                    fullscreenIcon.innerHTML = '❌'; // Cambiar icono a "cerrar"
+                } else {
+                    document.exitFullscreen();
+                    graficaContainer.classList.remove('fullscreen');
+                    grafica.style.width = '';
+                    grafica.style.height = '';
+                    grafica.style.maxWidth = '500px';
+                    grafica.style.maxHeight = '500px';
+                    fullscreenIcon.innerHTML = '🔍'; // Cambiar icono a "fullscreen"
+                }
             }
         </script>
 @endsection
