@@ -16,76 +16,63 @@
             <tr>
                 <td>1</td>
                 <td>MONTO DE OBRA</td>
-                <td>$00.00</td>
+                <td>${{ number_format($obra->presupuesto, 2) }}</td>
             </tr>
             <tr>
                 <td>2</td>
                 <td>PAGOS CLIENTE</td>
-                <td>$00.00</td>
+                <td>$<span id="total-pagos-cliente">{{ number_format($totalPagosCliente, 2) }}</span></td>
             </tr>
             <tr>
                 <td>3</td>
                 <td>FALTA POR PAGAR</td>
-                <td>$00.00</td>
+                <td>$<span id="falta-por-pagar">{{ number_format($obra->presupuesto - $totalPagosCliente, 2) }}</span></td>
             </tr>
             <tr>
                 <td>4</td>
                 <td>EFECTIVO EN CAJA</td>
-                <td>$00.00</td>
+                <td>$<span id="efectivo-en-caja">{{ number_format($totalPagosCliente - ($costosDirectos->sum('costo') + $costosIndirectos->sum('costo')), 2) }}</span></td>
             </tr>
         </tbody>
     </table>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        updateTotalPagosCliente();
-    });
+    // ...existing code...
 
-    function updateTotalPagosCliente() {
+    function updateAcumulado() {
+        let rows = document.getElementById("calendario-pagos-body").rows;
         let total = 0;
-        document.querySelectorAll("#calendario-pagos-body input[type='number']").forEach(input => {
-            total += parseFloat(input.value) || 0;
-        });
-        document.getElementById("total-pagos-cliente").textContent = total.toFixed(2);
+
+        for (let i = 0; i < rows.length; i++) {
+            let paymentCell = rows[i].cells[2].getElementsByTagName("input")[0]; // Pago
+            let acumuladoCell = rows[i].cells[3].getElementsByTagName("input")[0]; // Acumulado
+
+            // Convertir el valor de pago a número (sin formato)
+            let paymentValue = parseFloat(paymentCell.value.replace(/,/g, "")) || 0;
+
+            // Sumar al acumulado total
+            total += paymentValue;
+
+            // Actualizar el acumulado formateado (sin permitir edición)
+            acumuladoCell.value = formatCurrencyValue(total);
+        }
+
+        // Actualizar el total formateado en el título
+        document.getElementById("total-pago").textContent = formatCurrencyValue(total) + " MXN";
+        document.getElementById("total-pagos-cliente").textContent = formatCurrencyValue(total); // Actualizar en la tabla de resumen
+
+        // Actualizar el valor de "FALTA POR PAGAR" en la tabla de resumen
+        let presupuesto = parseFloat("{{ $obra->presupuesto }}");
+        let faltaPorPagar = presupuesto - total;
+        document.getElementById("falta-por-pagar").textContent = formatCurrencyValue(faltaPorPagar);
+
+        // Actualizar el valor de "EFECTIVO EN CAJA" en la tabla de resumen
+        let costosDirectos = parseFloat("{{ $costosDirectos->sum('costo') }}");
+        let costosIndirectos = parseFloat("{{ $costosIndirectos->sum('costo') }}");
+        let efectivoEnCaja = total - (costosDirectos + costosIndirectos);
+        document.getElementById("efectivo-en-caja").textContent = formatCurrencyValue(efectivoEnCaja);
     }
-
-    // Asegurarse de que updateTotalPagosCliente se llame después de cargar los datos del calendario de pagos
-    function cargarCalendarioPagos() {
-        fetch(`/obras/{{ $obra->id }}/calendario-pagos`)
-            .then(response => response.json())
-            .then(data => {
-                let tableBody = document.getElementById("calendario-pagos-body");
-                tableBody.innerHTML = ""; // Limpiar la tabla antes de agregar los datos
-
-                data.forEach(pago => {
-                    let newRow = tableBody.insertRow();
-
-                    let cellConcepto = newRow.insertCell(0);
-                    cellConcepto.innerHTML = `<input type="text" value="${pago.concepto}" class="editable">`;
-
-                    let cellFechaPago = newRow.insertCell(1);
-                    cellFechaPago.innerHTML = `<input type="date" value="${pago.fecha_pago}" class="editable">`;
-
-                    let cellPago = newRow.insertCell(2);
-                    cellPago.innerHTML = `<input type="number" value="${pago.pago}" class="editable" oninput="updateAcumulado()" onblur="formatCurrency(this)">`;
-
-                    let cellAcumulado = newRow.insertCell(3);
-                    cellAcumulado.innerHTML = `<input type="text" value="${formatCurrencyValue(pago.acumulado)}" class="editable" disabled>`;
-
-                    let cellAccion = newRow.insertCell(4);
-                    cellAccion.innerHTML = `<span onclick="toggleLock(this)" class="lock-icon" style="color: ${pago.bloqueado ? 'green' : 'black'};">${pago.bloqueado ? '🔒' : '🔓'}</span>`;
-
-                    if (pago.bloqueado) {
-                        bloquearFila(newRow);
-                    }
-                });
-
-                updateAcumulado(); // Actualizar el acumulado después de cargar los datos
-                updateTotalPagosCliente(); // Actualizar el total de pagos cliente después de cargar los datos
-            })
-            .catch(error => {
-                console.error('Error al cargar el calendario de pagos:', error);
-            });
-    }
+    // ...existing code...
 </script>

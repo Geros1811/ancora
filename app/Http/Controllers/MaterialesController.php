@@ -8,6 +8,7 @@ use App\Models\Acero;
 use App\Models\Cemento;
 use App\Models\Losa;
 use App\Models\CostoDirecto; // Importar la clase CostoDirecto
+use App\Models\General; // Importar la clase General
 
 class MaterialesController extends Controller
 {
@@ -17,13 +18,15 @@ class MaterialesController extends Controller
         $aceros = Acero::where('obra_id', $obraId)->get();
         $cemento = Cemento::where('obra_id', $obraId)->get();
         $losas = Losa::where('obra_id', $obraId)->get();
+        $generales = General::where('obra_id', $obraId)->get(); // Definir la variable $generales
 
         $costoTotal = $agregados->sum('subtotal') +
                       $aceros->sum('subtotal') +
                       $cemento->sum('subtotal') +
-                      $losas->sum('subtotal');
+                      $losas->sum('subtotal') +
+                      $generales->sum('subtotal'); // Incluir el costo total de generales
 
-        return view('materiales.index', compact('agregados', 'aceros', 'cemento', 'losas', 'obraId', 'costoTotal'));
+        return view('materiales.index', compact('agregados', 'aceros', 'cemento', 'losas', 'generales', 'obraId', 'costoTotal'));
     }
 
     public function storeAgregados(Request $request, $obraId)
@@ -178,12 +181,51 @@ class MaterialesController extends Controller
         return redirect()->route('materiales.index', ['obraId' => $obraId]);
     }
 
+    public function storeGenerales(Request $request, $obraId)
+    {
+        // Eliminar los registros existentes para la obra antes de guardar los nuevos datos
+        General::where('obra_id', $obraId)->delete();
+
+        $costoTotal = 0;
+
+        // Guardar generales
+        $fechas = $request->input('fecha_generales', []);
+        $conceptos = $request->input('concepto_generales', []);
+        $unidades = $request->input('unidad_generales', []);
+        $cantidades = $request->input('cantidad_generales', []);
+        $precios_unitarios = $request->input('precio_unitario_generales', []);
+
+        foreach ($fechas as $index => $fecha) {
+            $cantidad = $cantidades[$index];
+            $precio_unitario = $precios_unitarios[$index];
+            $subtotal = $cantidad * $precio_unitario;
+
+            $detalle = new General();
+            $detalle->obra_id = $obraId;
+            $detalle->fecha = $fecha;
+            $detalle->concepto = $conceptos[$index];
+            $detalle->unidad = $unidades[$index];
+            $detalle->cantidad = $cantidad;
+            $detalle->precio_unitario = $precio_unitario;
+            $detalle->subtotal = $subtotal;
+            $detalle->save();
+
+            $costoTotal += $subtotal;
+        }
+
+        // Actualizar el costo total en la tabla de costos directos
+        $this->updateCostoTotal($obraId);
+
+        return redirect()->route('materiales.index', ['obraId' => $obraId]);
+    }
+
     private function updateCostoTotal($obraId)
     {
         $costoTotal = Agregado::where('obra_id', $obraId)->sum('subtotal') +
                       Acero::where('obra_id', $obraId)->sum('subtotal') +
                       Cemento::where('obra_id', $obraId)->sum('subtotal') +
-                      Losa::where('obra_id', $obraId)->sum('subtotal');
+                      Losa::where('obra_id', $obraId)->sum('subtotal') +
+                      General::where('obra_id', $obraId)->sum('subtotal'); // Incluir el costo total de generales
 
         CostoDirecto::updateOrCreate(
             ['obra_id' => $obraId, 'nombre' => 'Materiales'],

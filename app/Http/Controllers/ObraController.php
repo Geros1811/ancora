@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\CostoIndirecto;
 use App\Models\CostoDirecto;
+use App\Models\CalendarioPago;
 
 class ObraController extends Controller
 {
@@ -62,7 +63,8 @@ class ObraController extends Controller
         $obra = Obra::findOrFail($id);
         $costosDirectos = CostoDirecto::where('obra_id', $id)->get();
         $costosIndirectos = CostoIndirecto::where('obra_id', $id)->get();
-        return view('obras.show', compact('obra', 'costosDirectos', 'costosIndirectos'));
+        $totalPagosCliente = CalendarioPago::where('obra_id', $id)->sum('pago');
+        return view('obras.show', compact('obra', 'costosDirectos', 'costosIndirectos', 'totalPagosCliente'));
     }
 
     public function guardarCalendario(Request $request)

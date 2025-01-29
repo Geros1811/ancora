@@ -51,4 +51,10 @@ class CalendarioPagoController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function getTotalPagos($obraId)
+    {
+        $totalPagos = CalendarioPago::where('obra_id', $obraId)->sum('pago');
+        return response()->json(['total' => $totalPagos]);
+    }
 }

@@ -90,6 +90,7 @@
 
         // Actualizar el total formateado en el título
         document.getElementById("total-pago").textContent = formatCurrencyValue(total) + " MXN";
+        document.getElementById("total-pagos-cliente").textContent = formatCurrencyValue(total); // Actualizar en la tabla de resumen
     }
 
     // Función para formatear a moneda MXN solo al perder el foco

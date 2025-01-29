@@ -125,6 +125,7 @@ Route::post('/materiales/agregados/{obraId}', [MaterialesController::class, 'sto
 Route::post('/materiales/aceros/{obraId}', [MaterialesController::class, 'storeAceros'])->name('materiales.storeAceros');
 Route::post('/materiales/cemento/{obraId}', [MaterialesController::class, 'storeCemento'])->name('materiales.storeCemento');
 Route::post('/materiales/losas/{obraId}', [MaterialesController::class, 'storeLosas'])->name('materiales.storeLosas');
+Route::post('/materiales/generales/{obraId}', [MaterialesController::class, 'storeGenerales'])->name('materiales.storeGenerales');
 
 Route::post('/update-costo-indirecto/{obraId}/{costo}', [CostosController::class, 'updateCostoIndirecto'])->name('updateCostoIndirecto');
 Route::post('/update-costo-directo/{obraId}/{costo}', [CostosController::class, 'updateCostoDirecto'])->name('updateCostoDirecto');
