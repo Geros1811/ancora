@@ -57,13 +57,14 @@
                 font-size: 24px;
             }
             .fullscreen #grafica {
-                width: 100%;
-                height: 100%;
+                width: 100vw;
+                height: 100vh;
                 object-fit: contain; /* Ajustar la gráfica sin estirarla */
             }
             .fullscreen #grafica-container {
                 width: 100vw;
                 height: 100vh;
+                background: none; /* Sin fondo */
             }
             .fullscreen #fullscreen-icon {
                 bottom: 10px;
@@ -352,18 +353,14 @@
                 let graficaContainer = document.getElementById('grafica-container');
                 let grafica = document.getElementById('grafica');
                 let fullscreenIcon = document.getElementById('fullscreen-icon');
-                if (!document.fullscreenElement) {
-                    graficaContainer.requestFullscreen().catch(err => {
-                        alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-                    });
+                if (!graficaContainer.classList.contains('fullscreen')) {
                     graficaContainer.classList.add('fullscreen');
-                    grafica.style.width = '100%';
-                    grafica.style.height = '100%';
+                    grafica.style.width = '100vw';
+                    grafica.style.height = '100vh';
                     grafica.style.maxWidth = 'none';
                     grafica.style.maxHeight = 'none';
                     fullscreenIcon.innerHTML = '❌'; // Cambiar icono a "cerrar"
                 } else {
-                    document.exitFullscreen();
                     graficaContainer.classList.remove('fullscreen');
                     grafica.style.width = '';
                     grafica.style.height = '';

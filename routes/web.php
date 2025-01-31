@@ -22,6 +22,7 @@ use App\Http\Controllers\HerramientaMenorController;
 use App\Http\Controllers\EquipoSeguridadController;
 use App\Http\Controllers\ManoObraController;
 use App\Http\Controllers\MaterialesController;
+use App\Http\Controllers\DestajoController;
 
 Route::get('/costos/{id}', [CostosController::class, 'show'])->name('costos.show');
 
@@ -119,6 +120,10 @@ Route::post('/equipoSeguridad/{obraId}', [EquipoSeguridadController::class, 'sto
 Route::get('/manoObra/{obraId}', [ManoObraController::class, 'index'])->name('manoObra.index');
 Route::post('/manoObra/{obraId}', [ManoObraController::class, 'store'])->name('manoObra.store');
 
+// Ruta para la vista de destajos
+Route::get('/manoObra/{obraId}/destajos', [ManoObraController::class, 'destajos'])->name('manoObra.destajos');
+Route::post('/manoObra/{obraId}/destajos', [DestajoController::class, 'store'])->name('manoObra.storeDestajos');
+
 // Rutas para materiales
 Route::get('/materiales/{obraId}', [MaterialesController::class, 'index'])->name('materiales.index');
 Route::post('/materiales/agregados/{obraId}', [MaterialesController::class, 'storeAgregados'])->name('materiales.storeAgregados');
@@ -129,4 +134,7 @@ Route::post('/materiales/generales/{obraId}', [MaterialesController::class, 'sto
 
 Route::post('/update-costo-indirecto/{obraId}/{costo}', [CostosController::class, 'updateCostoIndirecto'])->name('updateCostoIndirecto');
 Route::post('/update-costo-directo/{obraId}/{costo}', [CostosController::class, 'updateCostoDirecto'])->name('updateCostoDirecto');
+
+Route::get('/obra/{obraId}/destajo', [DestajoController::class, 'index'])->name('destajo.index');
+Route::post('/obra/{obraId}/destajo/store', [DestajoController::class, 'store'])->name('destajo.store');
 
