@@ -92,4 +92,11 @@ class ManoObraController extends Controller
 
         return redirect()->route('manoObra.index', ['obraId' => $obraId]);
     }
+
+    public function destajos($obraId)
+    {
+        $nominas = Nomina::where('obra_id', $obraId)->get();
+        $detalles = Destajo::where('obra_id', $obraId)->get();
+        return view('manoObra.destajos', compact('nominas', 'detalles', 'obraId'));
+    }
 }

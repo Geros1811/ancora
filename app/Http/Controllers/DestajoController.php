@@ -11,9 +11,6 @@ class DestajoController extends Controller
     public function store(Request $request, $obraId)
     {
         try {
-            // Eliminar los registros existentes para la obra antes de guardar los nuevos datos
-            Destajo::where('obra_id', $obraId)->delete();
-
             $costoTotal = 0;
 
             $frentes = $request->input('frente', []);
@@ -46,12 +43,10 @@ class DestajoController extends Controller
             //     ['costo' => $costoTotal]
             // );
 
-            return redirect()->route('destajo.index', ['obraId' => $obraId])
-                             ->with('success', 'Destajos guardados exitosamente.');
+            return back()->with('success', 'Destajos guardados exitosamente.');
         } catch (\Exception $e) {
             Log::error('Error al guardar destajos: ' . $e->getMessage());
-            return redirect()->route('destajo.index', ['obraId' => $obraId])
-                             ->with('error', 'Hubo un error al guardar los destajos. Por favor, intente nuevamente.');
+            return back()->with('error', 'Hubo un error al guardar los destajos. Por favor, intente nuevamente.');
         }
     }
 

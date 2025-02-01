@@ -106,7 +106,7 @@
                             @foreach ($destajos->where('nomina_id', $nomina->id) as $destajo)
                                 <tr>
                                     <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
-                                        <select name="frente[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;">
+                                        <select name="frente[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" {{ $destajo->exists ? 'disabled' : '' }}>
                                             <option value="" disabled selected>Seleccione una opción</option>
                                             <option value="Plomeria" {{ $destajo->frente == 'Plomeria' ? 'selected' : '' }}>Plomeria</option>
                                             <option value="Electricidad" {{ $destajo->frente == 'Electricidad' ? 'selected' : '' }}>Electricidad</option>
@@ -119,11 +119,20 @@
                                             <option value="Tabla Roca" {{ $destajo->frente == 'Tabla Roca' ? 'selected' : '' }}>Tabla Roca</option>
                                             <option value="Otros" {{ $destajo->frente == 'Otros' ? 'selected' : '' }}>Otros</option>
                                         </select>
-                                        <input type="text" name="frente_otro[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%; display: {{ $destajo->frente == 'Otros' ? 'block' : 'none' }};" placeholder="Especificar" value="{{ $destajo->frente_otro }}">
+                                        <input type="text" name="frente_otro[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%; display: {{ $destajo->frente == 'Otros' ? 'block' : 'none' }};" placeholder="Especificar" value="{{ $destajo->frente_otro }}" {{ $destajo->exists ? 'readonly' : '' }}>
                                     </td>
-                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="date" name="fecha[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="{{ $destajo->fecha }}"></td>
-                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" name="no_pago[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="{{ $destajo->no_pago }}"></td>
-                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" step="0.01" name="cantidad[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="{{ $destajo->cantidad }}"></td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                                        <input type="date" name="fecha[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" 
+                                        min="{{ $nomina->fecha_inicio }}" max="{{ $nomina->fecha_fin }}" value="{{ $destajo->fecha }}">
+                                    </td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                                        <a href="{{ route('manoObra.destajos', ['obraId' => $obraId]) }}">
+                                            <input type="number" name="no_pago[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="{{ $destajo->no_pago }}" readonly>
+                                        </a>
+                                    </td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                                        <input type="number" step="0.01" name="cantidad[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="{{ $destajo->cantidad }}" readonly>
+                                    </td>
                                     <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="text" name="observaciones[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="{{ $destajo->observaciones }}"></td>
                                 </tr>
                             @endforeach
@@ -287,9 +296,18 @@
                                 </select>
                                 <input type="text" name="frente_otro[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%; display: none;" placeholder="Especificar">
                             </td>
-                            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="date" name="fecha[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;"></td>
-                            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" name="no_pago[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="0"></td>
-                            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" step="0.01" name="cantidad[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="0"></td>
+                            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                                <input type="date" name="fecha[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" 
+                                min="{{ $nomina->fecha_inicio }}" max="{{ $nomina->fecha_fin }}">
+                            </td>
+                            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                                <a href="{{ route('manoObra.destajos', ['obraId' => $obraId]) }}">
+                                    <input type="number" name="no_pago[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="0" readonly>
+                                </a>
+                            </td>
+                            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                                <input type="number" step="0.01" name="cantidad[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="0" readonly>
+                            </td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="text" name="observaciones[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;"></td>
                         </tr>
                     </tbody>
@@ -322,9 +340,18 @@
                 </select>
                 <input type="text" name="frente_otro[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%; display: none;" placeholder="Especificar">
             </td>
-            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="date" name="fecha[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;"></td>
-            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" name="no_pago[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="0"></td>
-            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" step="0.01" name="cantidad[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="0"></td>
+            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                <input type="date" name="fecha[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" 
+                min="{{ $nomina->fecha_inicio }}" max="{{ $nomina->fecha_fin }}">
+            </td>
+            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                <a href="{{ route('manoObra.destajos', ['obraId' => $obraId]) }}">
+                    <input type="number" name="no_pago[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="0" readonly>
+                </a>
+            </td>
+            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                <input type="number" step="0.01" name="cantidad[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="0" readonly>
+            </td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="text" name="observaciones[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;"></td>
         `;
         tableBody.appendChild(newRow);
