@@ -267,7 +267,7 @@
             <h2 class="table-title" style="font-size: 20px; color: #34495e; margin-bottom: 10px;">Detalles de Destajos</h2>
             <form id="form-destajos" action="{{ route('destajo.store', ['obraId' => $obraId]) }}" method="POST">
                 @csrf
-                <input type="hidden" name="nomina_id" value="{{ $nomina->id }}">
+               
                 <table class="obra-table" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
                     <thead>
                         <tr>
@@ -298,7 +298,7 @@
                             </td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
                                 <input type="date" name="fecha[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" 
-                                min="{{ $nomina->fecha_inicio }}" max="{{ $nomina->fecha_fin }}">
+                                
                             </td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
                                 <a href="{{ route('manoObra.destajos', ['obraId' => $obraId]) }}">
@@ -342,7 +342,7 @@
             </td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
                 <input type="date" name="fecha[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" 
-                min="{{ $nomina->fecha_inicio }}" max="{{ $nomina->fecha_fin }}">
+                
             </td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
                 <a href="{{ route('manoObra.destajos', ['obraId' => $obraId]) }}">
