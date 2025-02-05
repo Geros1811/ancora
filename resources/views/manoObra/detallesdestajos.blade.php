@@ -3,7 +3,7 @@
 @section('content')
 <div class="container" style="max-width: 1200px; margin: 20px auto; padding: 20px; background: #ffffff; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
     <div class="section-header" style="text-align: center;">
-        <h1 style="font-size: 28px; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Detalles de Nomina</h1>
+        <h1 style="font-size: 28px; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Detalles de Mano de Obra</h1>
     </div>
 
     <!-- Información general de mano de obra -->
@@ -82,9 +82,65 @@
                         </tbody>
                     </table>
                     <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow(this)">Añadir Fila</button>
+                    <button type="button" class="btn btn-warning" style="margin-top: 10px;" onclick="crearTablaDestajos()">Destajos</button>
                     <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar</button>
                 </form>
             </div>
+            <!-- Tabla de Destajos -->
+            <div class="table-container" style="margin-top: 40px;">
+                <h2 class="table-title" style="font-size: 20px; color: #34495e; margin-bottom: 10px;">Detalles de Destajos</h2>
+                <form id="form-destajos" action="{{ route('destajo.store', ['obraId' => $obraId]) }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="nomina_id" value="{{ $nomina->id }}">
+                    <table class="obra-table" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                        <thead>
+                            <tr>
+                                <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Frente</th>
+                                <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Fecha</th>
+                                <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">No. Pago</th>
+                                <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Cantidad</th>
+                                <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Observaciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="detalle-destajo-body">
+                            @foreach ($destajos->where('nomina_id', $nomina->id) as $destajo)
+                                <tr>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                                        <select name="frente[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" {{ $destajo->exists ? 'disabled' : '' }}>
+                                            <option value="" disabled selected>Seleccione una opción</option>
+                                            <option value="Plomeria" {{ $destajo->frente == 'Plomeria' ? 'selected' : '' }}>Plomeria</option>
+                                            <option value="Electricidad" {{ $destajo->frente == 'Electricidad' ? 'selected' : '' }}>Electricidad</option>
+                                            <option value="Colocador de Pisos" {{ $destajo->frente == 'Colocador de Pisos' ? 'selected' : '' }}>Colocador de Pisos</option>
+                                            <option value="Pintor" {{ $destajo->frente == 'Pintor' ? 'selected' : '' }}>Pintor</option>
+                                            <option value="Herreria" {{ $destajo->frente == 'Herreria' ? 'selected' : '' }}>Herreria</option>
+                                            <option value="Carpintero" {{ $destajo->frente == 'Carpintero' ? 'selected' : '' }}>Carpintero</option>
+                                            <option value="Aluminio" {{ $destajo->frente == 'Aluminio' ? 'selected' : '' }}>Aluminio</option>
+                                            <option value="Aire Acondicionado" {{ $destajo->frente == 'Aire Acondicionado' ? 'selected' : '' }}>Aire Acondicionado</option>
+                                            <option value="Tabla Roca" {{ $destajo->frente == 'Tabla Roca' ? 'selected' : '' }}>Tabla Roca</option>
+                                            <option value="Otros" {{ $destajo->frente == 'Otros' ? 'selected' : '' }}>Otros</option>
+                                        </select>
+                                        <input type="text" name="frente_otro[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%; display: {{ $destajo->frente == 'Otros' ? 'block' : 'none' }};" placeholder="Especificar" value="{{ $destajo->frente_otro }}" {{ $destajo->exists ? 'readonly' : '' }}>
+                                    </td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                                        <input type="date" name="fecha[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" 
+                                        min="{{ $nomina->fecha_inicio }}" max="{{ $nomina->fecha_fin }}" value="{{ $destajo->fecha }}">
+                                    </td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                                        <a href="{{ route('manoObra.destajos', ['obraId' => $obraId]) }}">
+                                            <input type="number" name="no_pago[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="{{ $destajo->no_pago }}" readonly>
+                                        </a>
+                                    </td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                                        <input type="number" step="0.01" name="cantidad[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="{{ $destajo->cantidad }}" readonly>
+                                    </td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="text" name="observaciones[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="{{ $destajo->observaciones }}"></td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRowDestajos(this)">Añadir Fila</button>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar</button>
+                </form>
             </div>
         @endforeach
     </div>
@@ -200,6 +256,105 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         });
+    }
+
+    function crearTablaDestajos() {
+        const container = document.getElementById('tablas-detalles-container');
+        const newTable = document.createElement('div');
+        newTable.classList.add('table-container');
+        newTable.style.marginTop = '40px';
+        newTable.innerHTML = `
+            <h2 class="table-title" style="font-size: 20px; color: #34495e; margin-bottom: 10px;">Detalles de Destajos</h2>
+            <form id="form-destajos" action="{{ route('destajo.store', ['obraId' => $obraId]) }}" method="POST">
+                @csrf
+               
+                <table class="obra-table" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                    <thead>
+                        <tr>
+                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Frente</th>
+                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Fecha</th>
+                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">No. Pago</th>
+                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Cantidad</th>
+                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Observaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="detalle-destajo-body">
+                        <tr>
+                            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                                <select name="frente[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;">
+                                    <option value="" disabled selected>Seleccione una opción</option>
+                                    <option value="Plomeria">Plomeria</option>
+                                    <option value="Electricidad">Electricidad</option>
+                                    <option value="Colocador de Pisos">Colocador de Pisos</option>
+                                    <option value="Pintor">Pintor</option>
+                                    <option value="Herreria">Herreria</option>
+                                    <option value="Carpintero">Carpintero</option>
+                                    <option value="Aluminio">Aluminio</option>
+                                    <option value="Aire Acondicionado">Aire Acondicionado</option>
+                                    <option value="Tabla Roca">Tabla Roca</option>
+                                    <option value="Otros">Otros</option>
+                                </select>
+                                <input type="text" name="frente_otro[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%; display: none;" placeholder="Especificar">
+                            </td>
+                            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                                <input type="date" name="fecha[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" 
+                                
+                            </td>
+                            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                                <a href="{{ route('manoObra.destajos', ['obraId' => $obraId]) }}">
+                                    <input type="number" name="no_pago[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="0" readonly>
+                                </a>
+                            </td>
+                            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                                <input type="number" step="0.01" name="cantidad[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="0" readonly>
+                            </td>
+                            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="text" name="observaciones[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar</button>
+                <button type="button" class="btn btn-success" style="margin-top: 10px; margin-left: 10px;" onclick="addRowDestajos(this)">Añadir Fila</button>
+            </form>
+        `;
+        container.appendChild(newTable);
+        document.querySelectorAll('.btn-warning').forEach(button => button.style.display = 'none');
+    }
+
+    function addRowDestajos(button) {
+        const tableBody = button.closest('form').querySelector('.detalle-destajo-body');
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                <select name="frente[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;">
+                    <option value="" disabled selected>Seleccione una opción</option>
+                    <option value="Plomeria">Plomeria</option>
+                    <option value="Electricidad">Electricidad</option>
+                    <option value="Colocador de Pisos">Colocador de Pisos</option>
+                    <option value="Pintor">Pintor</option>
+                    <option value="Herreria">Herreria</option>
+                    <option value="Carpintero">Carpintero</option>
+                    <option value="Aluminio">Aluminio</option>
+                    <option value="Aire Acondicionado">Aire Acondicionado</option>
+                    <option value="Tabla Roca">Tabla Roca</option>
+                    <option value="Otros">Otros</option>
+                </select>
+                <input type="text" name="frente_otro[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%; display: none;" placeholder="Especificar">
+            </td>
+            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                <input type="date" name="fecha[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" 
+                
+            </td>
+            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                <a href="{{ route('manoObra.destajos', ['obraId' => $obraId]) }}">
+                    <input type="number" name="no_pago[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="0" readonly>
+                </a>
+            </td>
+            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;">
+                <input type="number" step="0.01" name="cantidad[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;" value="0" readonly>
+            </td>
+            <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="text" name="observaciones[]" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;"></td>
+        `;
+        tableBody.appendChild(newRow);
     }
 </script>
 @endsection

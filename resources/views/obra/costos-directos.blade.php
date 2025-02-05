@@ -20,8 +20,17 @@
             </tr>
             <tr>
                 <td>2</td>
-                <td>Mano de Obra</td>
-                <td><a href="{{ route('manoObra.index', ['obraId' => $obra->id]) }}">${{ number_format($costosDirectos->where('nombre', 'Mano de Obra')->sum('costo'), 2) }}</a></td>
+                <td>
+                    <span class="toggle-button" onclick="toggleSection('manoObra-options')">+</span>
+                    Mano de Obra
+                    <div id="manoObra-options" class="hidden-section">
+                        <ul>
+                            <li><a href="{{ route('manoObra.index', ['obraId' => $obra->id, 'tipo' => 'nomina']) }}">Nómina</a></li>
+                            <li><a >Destajos</a></li>
+                        </ul>
+                    </div>
+                </td>
+                <td>${{ number_format($costosDirectos->where('nombre', 'Mano de Obra')->sum('costo'), 2) }}</td>
             </tr>
             <tr>
                 <td>3</td>
@@ -71,3 +80,31 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    function toggleSection(sectionId) {
+        var section = document.getElementById(sectionId);
+        if (section) {
+            section.classList.toggle('hidden-section');
+        }
+    }
+</script>
+
+<style>
+    .hidden-section {
+        display: none;
+    }
+    .toggle-button {
+        cursor: pointer;
+        font-weight: bold;
+        margin-right: 5px;
+    }
+    ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 5px 0 0 15px;
+    }
+    ul li {
+        margin: 5px 0;
+    }
+</style>

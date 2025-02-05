@@ -25,4 +25,8 @@ class Destajo extends Model
     {
         return $this->belongsTo(Nomina::class);
     }
+    public function destajo()
+{
+    return $this->belongsTo(Destajo::class, 'destajo_id');
+}
 }

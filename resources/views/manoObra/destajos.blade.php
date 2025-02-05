@@ -6,31 +6,36 @@
         <h1 style="font-size: 28px; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Detalles de Destajos</h1>
     </div>
 
-    <div class="info-box" style="margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
-        @foreach ($detalles->groupBy('frente') as $frente => $destajos)
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <h2 style="font-size: 24px; color: #34495e; margin-bottom: 0;">{{ $frente }}</h2>
-                <span style="font-size: 18px; font-weight: bold; color: #2c3e50;">Total: <span class="total-monto" data-frente="{{ $frente }}">$0.00</span></span>
-            </div>
+    <form action="{{ route('destajos.store', ['obraId' => $obraId]) }}" method="POST">
 
-            <table class="table table-bordered" style="width: 100%; border-collapse: collapse; margin-top: 10px;" data-frente="{{ $frente }}">
-                <thead>
-                    <tr>
-                        <th style="background-color: #2980b9; color: white; text-align: center; padding: 10px;">Cotización</th>
-                        <th style="background-color: #2980b9; color: white; text-align: center; padding: 10px;">Monto Aprobado</th>
-                        <th style="background-color: #2980b9; color: white; text-align: center; padding: 10px; width: 160px;">Pago 1 <button type="button" class="btn btn-sm btn-light" onclick="addPago(this)">+</button></th>
-                        <th style="background-color: #2980b9; color: white; text-align: center; padding: 10px;">Pendiente</th>
-                        <th style="background-color: #2980b9; color: white; text-align: center; padding: 10px;">Estado</th>
-                        <th style="background-color: #2980b9; color: white; text-align: center; padding: 10px;">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- No filas precargadas -->
-                </tbody>
-            </table>
-            <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRowDestajos(this, '{{ $frente }}')">Añadir Fila</button>
-        @endforeach
-    </div>
+        @csrf
+        <div class="info-box" style="margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
+            @foreach ($detalles->groupBy('frente') as $frente => $destajos)
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h2 style="font-size: 24px; color: #34495e; margin-bottom: 0;">{{ $frente }}</h2>
+                    <span style="font-size: 18px; font-weight: bold; color: #2c3e50;">Total: <span class="total-monto" data-frente="{{ $frente }}">$0.00</span></span>
+                </div>
+
+                <table class="table table-bordered" style="width: 100%; border-collapse: collapse; margin-top: 10px;" data-frente="{{ $frente }}">
+                    <thead>
+                        <tr>
+                            <th style="background-color: #2980b9; color: white; text-align: center; padding: 10px;">Cotización</th>
+                            <th style="background-color: #2980b9; color: white; text-align: center; padding: 10px;">Monto Aprobado</th>
+                            <th style="background-color: #2980b9; color: white; text-align: center; padding: 10px; width: 160px;">Pago 1 <button type="button" class="btn btn-sm btn-light" onclick="addPago(this)">+</button></th>
+                            <th style="background-color: #2980b9; color: white; text-align: center; padding: 10px;">Pendiente</th>
+                            <th style="background-color: #2980b9; color: white; text-align: center; padding: 10px;">Estado</th>
+                            <th style="background-color: #2980b9; color: white; text-align: center; padding: 10px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- No filas precargadas -->
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRowDestajos(this, '{{ $frente }}')">Añadir Fila</button>
+            @endforeach
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </form>
 </div>
 
 <script>
@@ -39,7 +44,7 @@ function addPago(button) {
     const theadRow = table.querySelector('thead tr');
     const tbodyRows = table.querySelectorAll('tbody tr');
 
-    const pagosCount = table.querySelectorAll('thead th').length - 5; 
+    const pagosCount = table.querySelectorAll('thead th').length - 5;
 
     const th = document.createElement('th');
     th.style.backgroundColor = '#2980b9';
@@ -48,7 +53,7 @@ function addPago(button) {
     th.style.padding = '10px';
     th.style.width = '160px';
     th.innerHTML = `Pago ${pagosCount + 1} <button type="button" class="btn btn-sm btn-light" onclick="addPago(this)">+</button>`;
-    
+
     theadRow.insertBefore(th, theadRow.children[2 + pagosCount]);
 
     tbodyRows.forEach(row => {
@@ -89,7 +94,7 @@ function updateTotal(table) {
 function addRowDestajos(button, frente) {
     const table = document.querySelector(`table[data-frente="${frente}"]`);
     const tableBody = table.querySelector('tbody');
-    const pagosCount = table.querySelectorAll('thead th').length - 5; 
+    const pagosCount = table.querySelectorAll('thead th').length - 5;
 
     const newRow = document.createElement('tr');
     newRow.innerHTML = `

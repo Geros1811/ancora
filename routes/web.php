@@ -23,6 +23,8 @@ use App\Http\Controllers\EquipoSeguridadController;
 use App\Http\Controllers\ManoObraController;
 use App\Http\Controllers\MaterialesController;
 use App\Http\Controllers\DestajoController;
+use App\Http\Controllers\DestajosDetallesController;
+
 
 Route::get('/costos/{id}', [CostosController::class, 'show'])->name('costos.show');
 
@@ -123,6 +125,8 @@ Route::post('/manoObra/{obraId}', [ManoObraController::class, 'store'])->name('m
 // Ruta para la vista de destajos
 Route::get('/manoObra/{obraId}/destajos', [ManoObraController::class, 'destajos'])->name('manoObra.destajos');
 Route::post('/manoObra/{obraId}/destajos', [DestajoController::class, 'store'])->name('manoObra.storeDestajos');
+Route::post('/destajos/{obraId}', [DestajosDetallesController::class, 'store'])
+    ->name('destajos.store');
 
 // Rutas para materiales
 Route::get('/materiales/{obraId}', [MaterialesController::class, 'index'])->name('materiales.index');
