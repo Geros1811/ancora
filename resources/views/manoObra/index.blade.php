@@ -41,17 +41,22 @@
     </div>
  
     <!-- Contenedor de tablas de detalles -->
-    <div id="tablas-detalles-container" style="margin-top: 40px;">
-        @foreach ($nominas as $nomina)
-            <div class="table-container" style="margin-top: 40px;">
-                <!-- Botón para mostrar u ocultar la tabla antes del título de la nómina -->
-                <h2 class="table-title" style="font-size: 20px; color: #34495e; margin-bottom: 10px;">
-                    <button type="button" class="btn btn-info btn-sm" onclick="toggleTableVisibility({{ $nomina->id }})" style="margin-bottom: 10px;">+</button>
+<div id="tablas-detalles-container" style="margin-top: 40px;">
+    @foreach ($nominas as $nomina)
+        <div class="table-container" style="margin-top: 40px;">
+            <!-- Contenedor para alinear el botón y el título -->
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                <!-- Botón para mostrar u ocultar la tabla -->
+                <button type="button" class="btn btn-info btn-sm" onclick="toggleTableVisibility({{ $nomina->id }})" style="margin-right: 10px;">+</button>
+
+                <h2 class="table-title" style="font-size: 20px; color: #34495e; margin: 0;">
                     Detalles de Nómina: {{ $nomina->nombre }} : {{ $nomina->dia_inicio }} : {{ $nomina->fecha_inicio }} - {{ $nomina->dia_fin }} : {{ $nomina->fecha_fin }}  
                     <span id="total-nomina-{{ $nomina->id }}" style="font-size: 16px; color: #e74c3c;" data-nomina-id="{{ $nomina->id }}">
                         TOTAL Nómina: ${{ number_format($nomina->total, 2) }}
                     </span>
                 </h2>
+            </div>
+
             <form action="{{ route('manoObra.store', ['obraId' => $obraId]) }}" method="POST">
                 @csrf
                 <input type="hidden" name="nombre_nomina" value="{{ $nomina->nombre }}">

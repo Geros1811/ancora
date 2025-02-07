@@ -12,13 +12,14 @@ class Destajo extends Model
     protected $table = 'destajos';
 
     protected $fillable = [
-        'nomina_id',
         'obra_id',
+        'nomina_id',
         'frente',
-        'fecha',
-        'no_pago',
         'cantidad',
-        'observaciones'
+        'monto_aprobado',
+        'paso_actual',
+        'no_pago'
+        
     ];
 
     public function nomina()

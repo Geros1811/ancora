@@ -5,54 +5,80 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Destajo;
 use Illuminate\Support\Facades\Log;
+use App\Models\Nomina; // Asegúrate de que este es el nombre correcto del modelo
 
 class DestajoController extends Controller
 {
+    public function index($obraId)
+    {
+        // Recuperar todas las nóminas de la obra
+        $nominas = Nomina::where('obra_id', $obraId)->get();
+        
+        // Recuperar los destajos de la obra
+        $detalles = Destajo::where('obra_id', $obraId)->get();
+        
+        return view('destajo.index', compact('detalles', 'obraId', 'nominas'));
+    }
+
     public function store(Request $request, $obraId)
     {
-        try {
-            $costoTotal = 0;
+        // Validaciones
+        $request->validate([
+            'nomina_id' => 'required|array',
+            'nomina_id.*' => 'integer',
+            'frente' => 'required|array',
+            'frente.*' => 'string',
+            'cantidad' => 'required|array',
+            'cantidad.*' => 'numeric',
+            'monto_aprobado' => 'required|array',
+            'monto_aprobado.*' => 'numeric',
+            'paso_actual' => 'required|array',
+            'paso_actual.*' => 'string',
+        ]);
+        
+        if (!$request->has('nomina_id')) {
+            return back()->with('error', 'No se recibió el ID de nómina.');
+        }
 
+        try {
             $frentes = $request->input('frente', []);
-            $fechas = $request->input('fecha', []);
-            $no_pagos = $request->input('no_pago', []);
             $cantidades = $request->input('cantidad', []);
-            $observaciones = $request->input('observaciones', []);
+            $montoAprobado = $request->input('monto_aprobado', []);
             $nomina_id = $request->input('nomina_id');
+            $no_pago = $request->input('no_pago', ''); // Asegúrate de que este campo se maneje
+            $paso_actual = $request->input('paso_actual'); // Capture the paso_actual field
 
             foreach ($frentes as $index => $frente) {
-                $cantidad = $cantidades[$index] ?? 0;
-                $subtotal = $cantidad; // Asumiendo que el subtotal es igual a la cantidad
+                // Si el frente es "Otros", usar el valor de frente_custom
+                if ($frente === "Otros") {
+                    $frente = $request->input('frente_custom')[$index] ?? 'Otros';
+                }
 
+                $cantidad = $cantidades[$index] ?? 0;
+                $subtotal = $montoAprobado[$index] ?? 0;
+
+                // Validar que la cantidad y el monto aprobado no sean nulos
+                if ($cantidad === null || $subtotal === null) {
+                    continue; // O puedes lanzar un error
+                }
+
+                // Crear el nuevo registro
                 $detalle = new Destajo();
                 $detalle->obra_id = $obraId;
                 $detalle->nomina_id = $nomina_id;
-                $detalle->frente = $frente;
-                $detalle->fecha = $fechas[$index] ?? null;
-                $detalle->no_pago = $no_pagos[$index] ?? '';
+                $detalle->frente = $frente; // Aquí se asigna el valor correcto
+                $detalle->no_pago = $no_pago; // Asegúrate de que este campo se maneje
+                $detalle->paso_actual = $paso_actual; // Save the paso_actual field
                 $detalle->cantidad = $cantidad;
-                $detalle->observaciones = $observaciones[$index] ?? '';
-                $detalle->save();
-
-                $costoTotal += $subtotal;
+                $detalle->monto_aprobado = $subtotal; // Asegúrate de que este campo exista en tu modelo
+                $detalle->save(); // Guardar el registro
             }
 
-            // Actualizar el costo total en la tabla de costos indirectos
-            // CostoIndirecto::updateOrCreate(
-            //     ['obra_id' => $obraId, 'nombre' => 'Destajos'],
-            //     ['costo' => $costoTotal]
-            // );
-
+            Log::info('Datos recibidos en store: ' . json_encode($request->all())); // Log the incoming data
             return back()->with('success', 'Destajos guardados exitosamente.');
         } catch (\Exception $e) {
-            Log::error('Error al guardar destajos: ' . $e->getMessage());
+            Log::error('Error al guardar destajos: ' . $e->getMessage()); // Log the error message
             return back()->with('error', 'Hubo un error al guardar los destajos. Por favor, intente nuevamente.');
         }
-    }
-
-    public function index($obraId)
-    {
-        $detalles = Destajo::where('obra_id', $obraId)->get();
-        return view('destajo.index', compact('detalles', 'obraId'));
     }
 }
