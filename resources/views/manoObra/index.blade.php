@@ -31,43 +31,27 @@
             <button type="button" class="btn btn-primary" onclick="crearTabla()">Crear</button>
         </form>
     </div>
-     <!-- Nueva tabla de resumen de nómina -->
-    <div class="summary-table" style="margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
-        <table style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr>
-                    <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Semana No</th>
-                    <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Del</th>
-                    <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Al</th>
-                    <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Días Trabajados</th>
-                    <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Monto de Nómina</th>
-                    <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Observaciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">1</td>
-                    <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">Fecha Inicio</td>
-                    <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">Fecha Fin</td>
-                    <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
-                        <input type="number" name="dias_trabajados" value="0" style="width: 100%; border: none; text-align: center;">
-                    </td>
-                    <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">$0.00</td>
-                    <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
-                        <input type="text" name="observaciones" value="N/A" style="width: 100%; border: none; text-align: center;">
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="text-right">
+        <!-- Botón para ir al resumen -->
+        <form action="{{ route('resumen', ['obraId' => $obraId]) }}" method="get">
+            <button type="submit" class="btn btn-info">
+                Ver Resumen de Nómina
+            </button>
+        </form>
     </div>
-  <!-- Contenedor de tablas de detalles -->
-<div id="tablas-detalles-container" style="margin-top: 40px;">
-    @foreach ($nominas as $nomina)
-        <div class="table-container" style="margin-top: 40px;">
-            <h2 class="table-title" style="font-size: 20px; color: #34495e; margin-bottom: 10px;">
-                Detalles de Nómina: {{ $nomina->nombre }} ({{ $nomina->fecha_inicio }} - {{ $nomina->fecha_fin }})
-                <span id="total-nomina-{{ $nomina->id }}" style="font-size: 16px; color: #e74c3c;">TOTAL Nómina: $0.00</span>
-            </h2>
+ 
+    <!-- Contenedor de tablas de detalles -->
+    <div id="tablas-detalles-container" style="margin-top: 40px;">
+        @foreach ($nominas as $nomina)
+            <div class="table-container" style="margin-top: 40px;">
+                <!-- Botón para mostrar u ocultar la tabla antes del título de la nómina -->
+                <h2 class="table-title" style="font-size: 20px; color: #34495e; margin-bottom: 10px;">
+                    <button type="button" class="btn btn-info btn-sm" onclick="toggleTableVisibility({{ $nomina->id }})" style="margin-bottom: 10px;">+</button>
+                    Detalles de Nómina: {{ $nomina->nombre }} : {{ $nomina->dia_inicio }} : {{ $nomina->fecha_inicio }} - {{ $nomina->dia_fin }} : {{ $nomina->fecha_fin }}  
+                    <span id="total-nomina-{{ $nomina->id }}" style="font-size: 16px; color: #e74c3c;" data-nomina-id="{{ $nomina->id }}">
+                        TOTAL Nómina: ${{ number_format($nomina->total, 2) }}
+                    </span>
+                </h2>
             <form action="{{ route('manoObra.store', ['obraId' => $obraId]) }}" method="POST">
                 @csrf
                 <input type="hidden" name="nombre_nomina" value="{{ $nomina->nombre }}">
@@ -120,6 +104,23 @@
 </div>
 
 <script>
+    function toggleTableVisibility(nominaId) {
+        const table = document.getElementById("table-container-" + nominaId);
+        const button = event.target;
+        if (table.style.display === "none") {
+            table.style.display = "block";
+            button.textContent = "-"; // Cambiar el texto del botón a "-"
+        } else {
+            table.style.display = "none";
+            button.textContent = "+"; // Cambiar el texto del botón a "+"
+        }
+    }
+    function eliminarDetalle(button) {
+        const row = button.closest("tr");
+        row.remove();
+    }
+
+    
      function crearTabla() {
         const nombreNomina = document.getElementById('nombre_nomina').value;
         const fechaInicio = document.getElementById('fecha_inicio').value;
@@ -170,7 +171,6 @@
                     </tbody>
                 </table>
                 <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow(this)">Añadir Fila</button>
-                <button type="button" class="btn btn-warning" style="margin-top: 10px;" onclick="crearTablaDestajos()">Destajos</button>
                 <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar</button>
             </form>
         `;
@@ -189,14 +189,27 @@
     }
 
     function updateTotal(container) {
-        let total = 0;
-        container.querySelectorAll('.subtotal').forEach(input => {
-            total += parseFloat(input.value) || 0;
-        });
-        const nominaId = container.querySelector('input[name="nomina_id"]').value;
-        document.getElementById(`total-nomina-${nominaId}`).innerText = `TOTAL Nómina: $${total.toFixed(2)}`;
-    }
+    let total = 0;
+    container.querySelectorAll('.subtotal').forEach(input => {
+        total += parseFloat(input.value) || 0;
+    });
 
+    const nominaId = container.querySelector('input[name="nomina_id"]').value;
+    document.getElementById(`total-nomina-${nominaId}`).innerText = `TOTAL Nómina: $${total.toFixed(2)}`;
+
+    // Enviar el total al backend con AJAX
+    fetch(`/actualizar-total-nomina/${nominaId}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+        },
+        body: JSON.stringify({ total })
+    })
+    .then(response => response.json())
+    .then(data => console.log("Total actualizado:", data))
+    .catch(error => console.error("Error al actualizar total:", error));
+}
     function addRow(button) {
         const tableBody = button.closest('form').querySelector('.detalle-costo-body');
         const newRow = document.createElement('tr');

@@ -121,6 +121,11 @@ Route::post('/equipoSeguridad/{obraId}', [EquipoSeguridadController::class, 'sto
 // Rutas para mano de obra
 Route::get('/manoObra/{obraId}', [ManoObraController::class, 'index'])->name('manoObra.index');
 Route::post('/manoObra/{obraId}', [ManoObraController::class, 'store'])->name('manoObra.store');
+Route::post('/actualizar-total-nomina/{nominaId}', [ManoObraController::class, 'actualizarTotalNomina']);
+Route::get('/resumen/{obraId}', [ManoObraController::class, 'resumen'])->name('resumen');
+Route::post('/mano-de-obra/{id}/actualizar', [ManoObraController::class, 'actualizar']);
+
+
 
 // Ruta para la vista de destajos
 Route::get('/manoObra/{obraId}/destajos', [ManoObraController::class, 'destajos'])->name('manoObra.destajos');
