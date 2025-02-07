@@ -134,7 +134,7 @@ Route::post('/destajos/{obraId}', [DestajoController::class, 'store'])
 Route::get('/destajos/{obraId}', [DestajoController::class, 'index'])->name('destajos.index');
 Route::get('/obra/{obraId}/destajo', [DestajoController::class, 'index'])->name('destajo.index');
 Route::post('/obra/{obraId}/destajo/store', [DestajoController::class, 'store'])->name('destajo.store');
-
+Route::get('/detalles-destajos/{id}', [DestajosDetallesController::class, 'show'])->name('detalles.destajos');
 
 // Rutas para materiales
 Route::get('/materiales/{obraId}', [MaterialesController::class, 'index'])->name('materiales.index');
