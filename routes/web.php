@@ -127,14 +127,10 @@ Route::post('/mano-de-obra/{id}/actualizar', [ManoObraController::class, 'actual
 
 
 // Ruta para la vista de destajos
-Route::get('/manoObra/{obraId}/destajos', [DestajoController::class, 'destajos'])->name('manoObra.destajos');
-Route::post('/manoObra/{obraId}/destajos', [DestajoController::class, 'store'])->name('manoObra.storeDestajos');
-Route::post('/destajos/{obraId}', [DestajoController::class, 'store'])
-    ->name('destajos.store');
-Route::get('/destajos/{obraId}', [DestajoController::class, 'index'])->name('destajos.index');
-Route::get('/obra/{obraId}/destajo', [DestajoController::class, 'index'])->name('destajo.index');
-Route::post('/obra/{obraId}/destajo/store', [DestajoController::class, 'store'])->name('destajo.store');
 Route::get('/detalles-destajos/{id}', [DestajosDetallesController::class, 'show'])->name('detalles.destajos');
+Route::post('/obra/{obraId}/destajo/store', [DestajosDetallesController::class, 'store'])->name('destajo.store');
+Route::get('/detalles-destajos/{id}', [DestajosDetallesController::class, 'show'])->name('detalles.destajos');
+Route::post('/detalles-destajos/{obraId}', [DestajosDetallesController::class, 'store'])->name('detalles.destajos.store');
 
 // Rutas para materiales
 Route::get('/materiales/{obraId}', [MaterialesController::class, 'index'])->name('materiales.index');
@@ -146,6 +142,3 @@ Route::post('/materiales/generales/{obraId}', [MaterialesController::class, 'sto
 
 Route::post('/update-costo-indirecto/{obraId}/{costo}', [CostosController::class, 'updateCostoIndirecto'])->name('updateCostoIndirecto');
 Route::post('/update-costo-directo/{obraId}/{costo}', [CostosController::class, 'updateCostoDirecto'])->name('updateCostoDirecto');
-
-
-

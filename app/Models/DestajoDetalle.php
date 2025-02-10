@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class DestajoDetalle extends Model
 {
+    protected $table = 'destajos_detalles';
+
     protected $fillable = [
         'obra_id',
         'frente',
