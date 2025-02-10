@@ -18,6 +18,10 @@ class DestajoDetalle extends Model
         'monto_aprobado_total',
     ];
 
+    protected $casts = [
+        'pagos' => 'array',
+    ];
+
     public function pagos()
     {
         return $this->hasMany(DestajoPago::class);

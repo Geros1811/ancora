@@ -7,25 +7,32 @@
         <h2 style="font-size: 20px; color: #34495e; margin-bottom: 10px;">{{ $nombre_nomina }} ({{ $dia_inicio }} - {{ $fecha_inicio }} al {{ $dia_fin }} - {{ $fecha_fin }})</h2>
     </div>
 
-    <div class="table-container" style="margin-top: 20px;">
-        <table class="obra-table">
-            <thead>
-                <tr>
-                    <th>Cotización</th>
-                    <th>Monto Aprobado</th>
-                    <th id="pago-header">Pago 1 <button type="button" class="btn btn-success btn-sm" onclick="agregarColumnaPago(this)">+</button></th>
-                    <th>Pendiente</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-        <div style="margin-top: 10px; text-align: right;">
-            <strong>Monto Total Autorizado:</strong> $<span id="monto_aprobado_total">0.00</span>
+    <form action="{{ route('detalles.destajos.store', ['obraId' => $obraId]) }}" method="POST">
+        @csrf
+        <input type="hidden" name="nomina_id" value="{{ $detalle->nomina_id }}">
+
+        <div class="table-container" style="margin-top: 20px;">
+            <table class="obra-table">
+                <thead>
+                    <tr>
+                        <th>Cotización</th>
+                        <th>Monto Aprobado</th>
+                        <th id="pago-header">Pago 1 <button type="button" class="btn btn-success btn-sm" onclick="agregarColumnaPago(this)">+</button></th>
+                        <th>Pendiente</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <div style="margin-top: 10px; text-align: right;">
+                <strong>Monto Total Autorizado:</strong> $<span id="monto_aprobado_total">0.00</span>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="agregarFila()">Agregar Fila</button>
         </div>
-        <button type="button" class="btn btn-primary" onclick="agregarFila()">Agregar Fila</button>
-    </div>
+
+        <button type="submit" class="btn btn-success">Guardar Detalles</button>
+    </form>
 
 <style>
     .obra-table {
