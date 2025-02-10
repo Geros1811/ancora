@@ -79,7 +79,11 @@
                                     style="{{ in_array($detalle->frente, ['Plomeria','Electricidad','Colocador de Pisos','Pintor','Herreria','Carpintero','Aluminio','Aire Acondicionado','Tabla Roca']) ? 'display:none;' : '' }}">
                             </td>
                             <td><input type="number" name="monto_aprobado[]" class="form-control" value="{{ $detalle->monto_aprobado }}"></td>
-                            <td><input type="text" name="paso_actual[]" class="form-control" value="{{ $detalle->paso_actual }}" readonly></td>
+                            <td>
+                                <a href="{{ route('detalles.destajos', ['id' => $detalle->id]) }}">
+                                    {{ $detalle->paso_actual }}
+                                </a>
+                            </td>
                             <td><input type="number" name="cantidad[]" class="form-control" value="{{ $detalle->cantidad }}"></td>
                             <td><button type="button" class="btn btn-danger" onclick="eliminarFila(this)">Eliminar</button></td>
                         </tr>
@@ -92,11 +96,6 @@
         </div>
     @endforeach
 </div>
-<td>
-    <a href="{{ route('detalles.destajos', ['id' => $detalle->id]) }}" class="btn btn-primary btn-sm">
-        Ver Detalles
-    </a>
-</td>
 @endsection
 
 {{-- Tus estilos y funciones JavaScript se mantienen igual --}}
@@ -298,4 +297,3 @@
     });
 });
  </script>
-    
