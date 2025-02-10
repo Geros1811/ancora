@@ -23,6 +23,42 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @foreach($destajoDetalles as $destajoDetalle)
+                    <tr>
+                        <td><input type="text" name="cotizacion[]" class="form-control" value="{{ $destajoDetalle->cotizacion }}"></td>
+                        <td><input type="number" name="monto_aprobado[]" class="form-control monto_aprobado" value="{{ $destajoDetalle->monto_aprobado }}" placeholder="$" oninput="calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()"></td>
+                        @php
+                            $pagoCount = 1;
+                        @endphp
+                        @if($destajoDetalle->pagos)
+                            @php
+                                $pagos = json_decode($destajoDetalle->pagos, true);
+                            @endphp
+                            @if(is_array($pagos))
+                                @foreach($pagos as $pago)
+                                    <td>
+                                        Fecha: <input type="date" name="pago_fecha_{{ $pagoCount }}[]" class="form-control" value="{{ $pago['fecha'] }}" onchange="calcularPendiente(this.closest('tr'))">
+                                        Pago: <input type="number" name="pago_numero_{{ $pagoCount }}[]" class="form-control pago_numero" value="{{ $pago['numero'] }}" placeholder="$" oninput="calcularPendiente(this.closest('tr'))">
+                                    </td>
+                                    @php
+                                        $pagoCount++;
+                                    @endphp
+                                @endforeach
+                            @else
+                                <td>No hay pagos</td>
+                            @endif
+                        @else
+                            <td>No hay pagos</td>
+                        @endif
+                        <td><input type="number" name="pendiente[]" class="form-control" value="{{ $destajoDetalle->pendiente }}" placeholder="$" readonly></td>
+                        <td>
+                            <select name="estado[]" class="form-control">
+                                <option value="En Curso" {{ $destajoDetalle->estado == 'En Curso' ? 'selected' : '' }}>En Curso</option>
+                                <option value="Finalizado" {{ $destajoDetalle->estado == 'Finalizado' ? 'selected' : '' }}>Finalizado</option>
+                            </select>
+                        </td>
+                    </tr>
+                    @endforeach
                 </tbody>
             </table>
             <div style="margin-top: 10px; text-align: right;">
