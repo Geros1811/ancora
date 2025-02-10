@@ -16,6 +16,8 @@ class DestajoDetalle extends Model
         'pendiente',
         'estado',
         'monto_aprobado_total',
+        'destajo_id', // Add destajo_id here
+        'pagos', // Add pagos here
     ];
 
     protected $casts = [
