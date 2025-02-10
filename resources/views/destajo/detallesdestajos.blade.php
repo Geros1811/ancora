@@ -17,7 +17,24 @@
                     <tr>
                         <th>Cotización</th>
                         <th>Monto Aprobado</th>
-                        <th id="pago-header">Pago 1 <button type="button" class="btn btn-success btn-sm" onclick="agregarColumnaPago(this)">+</button></th>
+                        <th id="pago-header">
+                            Pago 1 
+                            <button type="button" class="btn btn-success btn-sm" onclick="agregarColumnaPago(this)">+</button>
+                        </th>
+                        @php
+                            $maxPagos = 1;
+                        @endphp
+                        @foreach($destajoDetalles as $destajoDetalle)
+                            @if($destajoDetalle->pagos)
+                                @php
+                                    $pagos = json_decode($destajoDetalle->pagos, true);
+                                    $maxPagos = max($maxPagos, count($pagos));
+                                @endphp
+                            @endif
+                        @endforeach
+                        @for($i = 2; $i <= $maxPagos; $i++)
+                            <th>Pago {{ $i }}</th>
+                        @endfor
                         <th>Pendiente</th>
                         <th>Estado</th>
                     </tr>
@@ -27,29 +44,17 @@
                     <tr>
                         <td><input type="text" name="cotizacion[]" class="form-control" value="{{ $destajoDetalle->cotizacion }}"></td>
                         <td><input type="number" name="monto_aprobado[]" class="form-control monto_aprobado" value="{{ $destajoDetalle->monto_aprobado }}" placeholder="$" oninput="calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()"></td>
+
                         @php
-                            $pagoCount = 1;
+                            $pagos = $destajoDetalle->pagos ? json_decode($destajoDetalle->pagos, true) : [];
                         @endphp
-                        @if($destajoDetalle->pagos)
-                            @php
-                                $pagos = json_decode($destajoDetalle->pagos, true);
-                            @endphp
-                            @if(is_array($pagos))
-                                @foreach($pagos as $pago)
-                                    <td>
-                                        Fecha: <input type="date" name="pago_fecha_{{ $pagoCount }}[]" class="form-control" value="{{ $pago['fecha'] }}" onchange="calcularPendiente(this.closest('tr'))">
-                                        Pago: <input type="number" name="pago_numero_{{ $pagoCount }}[]" class="form-control pago_numero" value="{{ $pago['numero'] }}" placeholder="$" oninput="calcularPendiente(this.closest('tr'))">
-                                    </td>
-                                    @php
-                                        $pagoCount++;
-                                    @endphp
-                                @endforeach
-                            @else
-                                <td>No hay pagos</td>
-                            @endif
-                        @else
-                            <td>No hay pagos</td>
-                        @endif
+                        @for($i = 1; $i <= $maxPagos; $i++)
+                            <td>
+                                Fecha: <input type="date" name="pago_fecha_{{ $i }}[]" class="form-control" value="{{ $pagos[$i]['fecha'] ?? '' }}" onchange="calcularPendiente(this.closest('tr'))">
+                                Pago: <input type="number" name="pago_numero_{{ $i }}[]" class="form-control pago_numero" value="{{ $pagos[$i]['numero'] ?? '' }}" placeholder="$" oninput="calcularPendiente(this.closest('tr'))">
+                            </td>
+                        @endfor
+
                         <td><input type="number" name="pendiente[]" class="form-control" value="{{ $destajoDetalle->pendiente }}" placeholder="$" readonly></td>
                         <td>
                             <select name="estado[]" class="form-control">
@@ -69,6 +74,7 @@
 
         <button type="submit" class="btn btn-success">Guardar Detalles</button>
     </form>
+</div>
 
 <style>
     .obra-table {
@@ -141,33 +147,33 @@
     }
 
     function agregarColumnaPago(button) {
-    button.disabled = true; // Deshabilitar el botón de la columna anterior
+        button.disabled = true; // Deshabilitar el botón de la columna anterior
 
-    const table = document.querySelector('.obra-table');
-    const headerRow = table.querySelector('thead tr');
-    
-    // Contar cuántas columnas de pago hay
-    let pagoCount = headerRow.querySelectorAll('th').length - 4 + 1; // +1 porque añadiremos una nueva
-    const newHeader = document.createElement('th');
-    newHeader.innerHTML = `Pago ${pagoCount} <button type="button" class="btn btn-success btn-sm" onclick="agregarColumnaPago(this)">+</button>`;
-    
-    // Insertar el nuevo encabezado ANTES de la columna "Pendiente"
-    const pendienteHeader = headerRow.querySelector('th:nth-last-child(2)');
-    headerRow.insertBefore(newHeader, pendienteHeader);
+        const table = document.querySelector('.obra-table');
+        const headerRow = table.querySelector('thead tr');
 
-    // Agregar la nueva columna en cada fila del cuerpo de la tabla
-    document.querySelectorAll('.obra-table tbody tr').forEach(row => {
-        const newColumn = document.createElement('td');
-        newColumn.innerHTML = `
-            Fecha: <input type="date" name="pago_fecha_${pagoCount}[]" class="form-control" onchange="calcularPendiente(this.closest('tr'))">
-            Pago: <input type="number" name="pago_numero_${pagoCount}[]" class="form-control pago_numero" value="" placeholder="$" oninput="calcularPendiente(this.closest('tr'))">
-        `;
+        // Contar cuántas columnas de pago hay
+        let pagoCount = headerRow.querySelectorAll('th').length - 4 + 1; // +1 porque añadiremos una nueva
+        const newHeader = document.createElement('th');
+        newHeader.innerHTML = `Pago ${pagoCount} <button type="button" class="btn btn-success btn-sm" onclick="agregarColumnaPago(this)">+</button>`;
 
-        // Insertar antes de la celda "Pendiente"
-        const pendienteCell = row.querySelector('td:nth-last-child(2)');
-        row.insertBefore(newColumn, pendienteCell);
-    });
-}
+        // Insertar el nuevo encabezado ANTES de la columna "Pendiente"
+        const pendienteHeader = headerRow.querySelector('th:nth-last-child(2)');
+        headerRow.insertBefore(newHeader, pendienteHeader);
+
+        // Agregar la nueva columna en cada fila del cuerpo de la tabla
+        document.querySelectorAll('.obra-table tbody tr').forEach(row => {
+            const newColumn = document.createElement('td');
+            newColumn.innerHTML = `
+                Fecha: <input type="date" name="pago_fecha_${pagoCount}[]" class="form-control" onchange="calcularPendiente(this.closest('tr'))">
+                Pago: <input type="number" name="pago_numero_${pagoCount}[]" class="form-control pago_numero" value="" placeholder="$" oninput="calcularPendiente(this.closest('tr'))">
+            `;
+
+            // Insertar antes de la celda "Pendiente"
+            const pendienteCell = row.querySelector('td:nth-last-child(2)');
+            row.insertBefore(newColumn, pendienteCell);
+        });
+    }
 
 function agregarFila() {
     const tableBody = document.querySelector('.obra-table tbody');
