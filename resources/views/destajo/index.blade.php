@@ -49,43 +49,32 @@
                         <tr>
                             <th>Frente</th>
                             <th>Monto Aprobado</th>
-                            <th>Paso Actual</th>
                             <th>Cantidad</th>
-                            <th>Acciones</th>
+                            <th style="width: 170px; text-align: center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tabla-{{ $nominaId }}">
                         @foreach($destajos as $detalle)
-                        <tr>
+                        <tr class="fila-destajo" data-id="{{ $detalle->id }}">
                             <td>
-                                <select name="frente[]" class="form-control" onchange="toggleCustomInput(this)">
-                                    <option value="Plomeria" {{ $detalle->frente == 'Plomeria' ? 'selected' : '' }}>Plomeria</option>
-                                    <option value="Electricidad" {{ $detalle->frente == 'Electricidad' ? 'selected' : '' }}>Electricidad</option>
-                                    <option value="Colocador de Pisos" {{ $detalle->frente == 'Colocador de Pisos' ? 'selected' : '' }}>Colocador de Pisos</option>
-                                    <option value="Pintor" {{ $detalle->frente == 'Pintor' ? 'selected' : '' }}>Pintor</option>
-                                    <option value="Herreria" {{ $detalle->frente == 'Herreria' ? 'selected' : '' }}>Herreria</option>
-                                    <option value="Carpintero" {{ $detalle->frente == 'Carpintero' ? 'selected' : '' }}>Carpintero</option>
-                                    <option value="Aluminio" {{ $detalle->frente == 'Aluminio' ? 'selected' : '' }}>Aluminio</option>
-                                    <option value="Aire Acondicionado" {{ $detalle->frente == 'Aire Acondicionado' ? 'selected' : '' }}>Aire Acondicionado</option>
-                                    <option value="Tabla Roca" {{ $detalle->frente == 'Tabla Roca' ? 'selected' : '' }}>Tabla Roca</option>
-                                    <option value="Otros" 
-                                        {{ !in_array($detalle->frente, ['Plomeria','Electricidad','Colocador de Pisos','Pintor','Herreria','Carpintero','Aluminio','Aire Acondicionado','Tabla Roca']) ? 'selected' : '' }}>
-                                        Otros
-                                    </option>
+                                <select name="frente[]" class="form-control frente" disabled>
+                                    <option value="{{ $detalle->frente }}" selected>{{ $detalle->frente }}</option>
                                 </select>
                                 <input type="text" name="frente_custom[]" class="form-control custom-input" placeholder="Especifique" 
                                     value="{{ !in_array($detalle->frente, ['Plomeria','Electricidad','Colocador de Pisos','Pintor','Herreria','Carpintero','Aluminio','Aire Acondicionado','Tabla Roca']) ? $detalle->frente : '' }}"
                                     onblur="this.value = this.value.trim();"
-                                    style="{{ in_array($detalle->frente, ['Plomeria','Electricidad','Colocador de Pisos','Pintor','Herreria','Carpintero','Aluminio','Aire Acondicionado','Tabla Roca']) ? 'display:none;' : '' }}">
+                                    style="{{ in_array($detalle->frente, ['Plomeria','Electricidad','Colocador de Pisos','Pintor','Herreria','Carpintero','Aluminio','Aire Acondicionado','Tabla Roca']) ? 'display:none;' : '' }}" readonly>
                             </td>
-                            <td><input type="number" name="monto_aprobado[]" class="form-control" value="{{ $detalle->monto_aprobado }}"></td>
-                            <td>
-                                <a href="{{ route('detalles.destajos', ['id' => $detalle->id]) }}">
-                                    {{ $detalle->paso_actual }}
-                                </a>
+                            <td><input type="number" name="monto_aprobado[]" class="form-control monto_aprobado" value="{{ $detalle->monto_aprobado }}" readonly></td>
+                            <td><input type="number" name="cantidad[]" class="form-control cantidad" value="{{ $detalle->cantidad }}" readonly></td>
+                            <td style="text-align: center">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                                    <a href="{{ route('detalles.destajos', ['id' => $detalle->id]) }}" class="btn btn-sm btn-info">
+                                        Ir a detalles
+                                    </a>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="eliminarFila(this)" disabled>Eliminar</button>
+                                </div>
                             </td>
-                            <td><input type="number" name="cantidad[]" class="form-control" value="{{ $detalle->cantidad }}"></td>
-                            <td><button type="button" class="btn btn-danger" onclick="eliminarFila(this)">Eliminar</button></td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -179,9 +168,8 @@
                             <tr>
                                 <th>Frente</th>
                                 <th>Monto Aprobado</th>
-                                <th>Paso Actual</th>
                                 <th>Cantidad</th>
-                                <th>Acciones</th>
+                                <th style="width: 170px; text-align: center;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-${nominaId}">
@@ -202,7 +190,6 @@
                                     <input type="text" name="frente_custom[]" class="form-control custom-input" placeholder="Especifique" onblur="this.value = this.value.trim();">
                                 </td>
                                 <td><input type="number" name="monto_aprobado[]" class="form-control" value="0" readonly></td>
-                                <td><input type="text" name="paso_actual[]" class="form-control" value="1" readonly></td>
                                 <td><input type="number" name="cantidad[]" class="form-control" value="0" readonly></td>
                                 <td><button type="button" class="btn btn-danger" onclick="eliminarFila(this)">Eliminar</button></td>
                             </tr>
@@ -246,7 +233,6 @@
                     <input type="text" name="frente_custom[]" class="form-control custom-input" placeholder="Especifique" onblur="this.value = this.value.trim();">
                 </td>
                 <td><input type="number" name="monto_aprobado[]" class="form-control" value="0" readonly></td>
-                <td><input type="text" name="paso_actual[]" class="form-control" value="1" readonly></td>
                 <td><input type="number" name="cantidad[]" class="form-control" value="0" readonly></td>
                 <td><button type="button" class="btn btn-danger" onclick="eliminarFila(this)">Eliminar</button></td>
             </tr>
@@ -257,43 +243,6 @@
     function eliminarFila(button) {
         button.closest("tr").remove();
     }
-    document.querySelectorAll('.guardar-btn').forEach(button => {
-    button.addEventListener('click', function() {
-        const id = button.getAttribute('data-id');
-        const fila = document.querySelector(`.fila-destajo[data-id="${id}"]`);
 
-        // Obtener valores de los campos en la fila
-        const frente = fila.querySelector('.frente').value;
-        const cantidad = fila.querySelector('.cantidad').value;
-
-        // Enviar la solicitud de actualización
-        fetch(`/destajos-detalles/${id}/actualizar`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            },
-            body: JSON.stringify({
-                frente: frente,
-                cantidad: cantidad
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log('Destajo actualizado correctamente');
-
-                // Bloquear los campos después de guardar
-                fila.querySelector('.frente').disabled = true;
-                fila.querySelector('.cantidad').disabled = true;
-
-                // Reemplazar el botón con "Guardado"
-                fila.querySelector('.guardar-btn').outerHTML = '<span style="color: gray;">Guardado</span>';
-            } else {
-                console.error('Error al actualizar destajo');
-            }
-        })
-        .catch(error => console.error('Error al hacer la solicitud', error));
-    });
-});
+    
  </script>

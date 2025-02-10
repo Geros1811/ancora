@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Obra;
 use App\Models\Destajo;
 
-
 class DestajosDetallesController extends Controller
 {
     public function show($id)
@@ -30,51 +29,67 @@ class DestajosDetallesController extends Controller
     }
 
     public function store(Request $request, $obraId)
-{
-    $cotizaciones = $request->input('cotizacion');
-    $montosAprobados = $request->input('monto_aprobado');
-    $pendientes = $request->input('pendiente');
-    $estados = $request->input('estado');
-    $nominaId = $request->input('nomina_id');
-
-    // Find the Destajo model
-    $destajo = Destajo::where('obra_id', $obraId)->where('nomina_id', $nominaId)->firstOrFail();
-
-    foreach ($cotizaciones as $index => $cotizacion) {
-        DestajoDetalle::updateOrCreate(
-            [
-                'obra_id' => $obraId,
-                'destajo_id' => $destajo->id,
-                'cotizacion' => $cotizacion,
-            ],
-            [
-                    'monto_aprobado' => $montosAprobados[$index],
-                    'pendiente' => $pendientes[$index],
-                    'estado' => $estados[$index],
-                    'pagos' => json_encode($this->getPagos($request, $index)),
-                    'destajo_id' => $destajo->id, // Add destajo_id here
-                ]
-            );
-        }
-
-        return redirect()->back()->with('success', 'Detalles guardados correctamente.');
-    }
-
-    private function getPagos(Request $request, $index)
     {
-        $pagos = [];
+        $cotizaciones = $request->input('cotizacion');
+        $montosAprobados = $request->input('monto_aprobado');
+        $pendientes = $request->input('pendiente');
+        $estados = $request->input('estado');
+        $nominaId = $request->input('nomina_id');
+
+        // Calculate total amount approved and total amount paid
+        $totalMontoAprobado = array_sum($montosAprobados);
+        $totalCantidadPagada = 0;
         foreach ($request->input() as $key => $value) {
-            if (strpos($key, 'pago_fecha_') === 0) {
-                $parts = explode('_', $key);
-                $pagoNumber = $parts[2];
-                if (isset($request->input("pago_fecha_$pagoNumber")[$index])) {
-                    $pagos[$pagoNumber] = [
-                        'fecha' => $request->input("pago_fecha_$pagoNumber")[$index],
-                        'numero' => $request->input("pago_numero_$pagoNumber")[$index] ?? null,
-                    ];
+            if (strpos($key, 'pago_numero_') === 0) {
+                foreach($value as $pago){
+                    $totalCantidadPagada += $pago;
                 }
             }
         }
-        return $pagos;
+
+        // Find the Destajo model
+        $destajo = Destajo::where('obra_id', $obraId)->where('nomina_id', $nominaId)->firstOrFail();
+
+        // Update the Destajo model with the totals
+        $destajo->monto_aprobado = $totalMontoAprobado;
+        $destajo->cantidad = $totalCantidadPagada;
+        $destajo->save();
+
+        foreach ($cotizaciones as $index => $cotizacion) {
+            DestajoDetalle::updateOrCreate(
+                [
+                    'obra_id' => $obraId,
+                    'destajo_id' => $destajo->id,
+                    'cotizacion' => $cotizacion,
+                ],
+                [
+                        'monto_aprobado' => $montosAprobados[$index],
+                        'pendiente' => $pendientes[$index],
+                        'estado' => $estados[$index],
+                        'pagos' => json_encode($this->getPagos($request, $index)),
+                        'destajo_id' => $destajo->id, // Add destajo_id here
+                    ]
+                );
+            }
+
+            return redirect()->back()->with('success', 'Detalles guardados correctamente.');
+        }
+
+        private function getPagos(Request $request, $index)
+        {
+            $pagos = [];
+            foreach ($request->input() as $key => $value) {
+                if (strpos($key, 'pago_fecha_') === 0) {
+                    $parts = explode('_', $key);
+                    $pagoNumber = $parts[2];
+                    if (isset($request->input("pago_fecha_$pagoNumber")[$index])) {
+                        $pagos[$pagoNumber] = [
+                            'fecha' => $request->input("pago_fecha_$pagoNumber")[$index],
+                            'numero' => $request->input("pago_numero_$pagoNumber")[$index] ?? null,
+                        ];
+                    }
+                }
+            }
+            return $pagos;
+        }
     }
-}

@@ -28,25 +28,21 @@ public function store(Request $request)
         'nomina_id'       => 'required|exists:nominas,id',
         'frente'          => 'required|array',
         'monto_aprobado'  => 'required|array',
-        'paso_actual'     => 'required|array',
         'cantidad'        => 'required|array',
     ]);
 
-    // Eliminar los destajos existentes para la nómina y obra seleccionadas
-    Destajo::where('obra_id', $request->obraId)
-           ->where('nomina_id', $request->nomina_id)
-           ->delete();
-
-    // Crear nuevos registros
     foreach ($request->frente as $index => $frente) {
-        $destajo = new Destajo();
-        $destajo->nomina_id = $request->nomina_id;
-        $destajo->obra_id   = $request->obraId;
-        $destajo->frente    = $frente === "Otros" ? $request->frente_custom[$index] : $frente;
-        $destajo->monto_aprobado = $request->monto_aprobado[$index];
-        $destajo->paso_actual    = $request->paso_actual[$index];
-        $destajo->cantidad       = $request->cantidad[$index];
-        $destajo->save();
+        Destajo::updateOrCreate(
+            [
+                'obra_id' => $request->obraId,
+                'nomina_id' => $request->nomina_id,
+                'frente' => $frente === "Otros" ? $request->frente_custom[$index] : $frente,
+            ],
+            [
+                'monto_aprobado' => $request->monto_aprobado[$index],
+                'cantidad' => $request->cantidad[$index],
+            ]
+        );
     }
 
     return redirect()->route('destajos.index', ['obraId' => $request->obraId])

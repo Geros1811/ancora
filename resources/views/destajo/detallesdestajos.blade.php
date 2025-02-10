@@ -69,6 +69,9 @@
             <div style="margin-top: 10px; text-align: right;">
                 <strong>Monto Total Autorizado:</strong> $<span id="monto_aprobado_total">0.00</span>
             </div>
+            <div style="margin-top: 10px; text-align: right;">
+                <strong>Cantidad Total Pagada:</strong> $<span id="cantidad_total_pagada">0.00</span>
+            </div>
             <button type="button" class="btn btn-primary" onclick="agregarFila()">Agregar Fila</button>
         </div>
 
@@ -123,11 +126,23 @@
 
 <script>
     function calcularTotalMontoAprobado() {
-        let total = 0;
+        let totalMontoAprobado = 0;
+        let totalCantidadPagada = 0;
         document.querySelectorAll('input[name="monto_aprobado[]"]').forEach(function(input) {
-            total += Number(input.value);
+            totalMontoAprobado += Number(input.value);
         });
-        document.getElementById('monto_aprobado_total').innerText = total.toFixed(2);
+
+        document.querySelectorAll('tbody tr').forEach(function(row) {
+            let totalPagos = 0;
+            let pagoInputs = row.querySelectorAll('td > input[name^="pago_numero"]');
+            pagoInputs.forEach(function(pago) {
+                totalPagos += Number(pago.value) || 0;
+            });
+            totalCantidadPagada += totalPagos;
+        });
+
+        document.getElementById('monto_aprobado_total').innerText = totalMontoAprobado.toFixed(2);
+        document.getElementById('cantidad_total_pagada').innerText = totalCantidadPagada.toFixed(2);
     }
 
     function calcularPendiente(row) {
@@ -139,11 +154,23 @@
         });
         let pendiente = montoAprobado - totalPagos;
         row.querySelector('input[name="pendiente[]"]').value = pendiente.toFixed(2);
-		if (pendiente <= 0) {
-			row.querySelector('select[name="estado[]"]').value = 'Finalizado';
-		} else {
-			row.querySelector('select[name="estado[]"]').value = 'En Curso';
-		}
+        if (pendiente <= 0) {
+            row.querySelector('select[name="estado[]"]').value = 'Finalizado';
+        } else {
+            row.querySelector('select[name="estado[]"]').value = 'En Curso';
+        }
+
+        // Recalculate total amount paid
+        let totalCantidadPagada = 0;
+        document.querySelectorAll('tbody tr').forEach(function(row) {
+            let totalPagos = 0;
+            let pagoInputs = row.querySelectorAll('td > input[name^="pago_numero"]');
+            pagoInputs.forEach(function(pago) {
+                totalPagos += Number(pago.value) || 0;
+            });
+            totalCantidadPagada += totalPagos;
+        });
+        document.getElementById('cantidad_total_pagada').innerText = totalCantidadPagada.toFixed(2);
     }
 
     function agregarColumnaPago(button) {
