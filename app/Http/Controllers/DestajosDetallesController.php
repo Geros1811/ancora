@@ -55,20 +55,30 @@ class DestajosDetallesController extends Controller
         $destajo->save();
 
         foreach ($cotizaciones as $index => $cotizacion) {
-             DestajoDetalle::updateOrCreate(
-                [
+            $destajoDetalle = DestajoDetalle::where('obra_id', $obraId)
+                ->where('destajo_id', $destajoId)
+                ->where('cotizacion', $cotizacion)
+                ->first();
+
+            if ($destajoDetalle) {
+                // Update existing record
+                $destajoDetalle->monto_aprobado = $montosAprobados[$index] ?? 0;
+                $destajoDetalle->pendiente = $pendientes[$index] ?? 0;
+                $destajoDetalle->estado = $estados[$index] ?? 'En Curso';
+                $destajoDetalle->pagos = json_encode($this->getPagos($request, $index));
+                $destajoDetalle->save();
+            } else {
+                // Create new record
+                DestajoDetalle::create([
                     'obra_id' => $obraId,
                     'destajo_id' => $destajoId,
                     'cotizacion' => $cotizacion,
-                ],
-                [
                     'monto_aprobado' => $montosAprobados[$index] ?? 0,
                     'pendiente' => $pendientes[$index] ?? 0,
                     'estado' => $estados[$index] ?? 'En Curso',
                     'pagos' => json_encode($this->getPagos($request, $index)),
-                    
-                ]
-            );
+                ]);
+            }
         }
 
         return redirect()->back()->with('success', 'Detalles guardados correctamente.');

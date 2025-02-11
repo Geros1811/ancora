@@ -27,8 +27,6 @@ public function store(Request $request)
     $request->validate([
         'nomina_id'       => 'required|exists:nominas,id',
         'frente'          => 'required|array',
-        'monto_aprobado'  => 'required|array',
-        'cantidad'        => 'required|array',
     ]);
 
     foreach ($request->frente as $index => $frente) {
@@ -39,8 +37,8 @@ public function store(Request $request)
                 'frente' => $frente === "Otros" ? $request->frente_custom[$index] : $frente,
             ],
             [
-                'monto_aprobado' => $request->monto_aprobado[$index],
-                'cantidad' => $request->cantidad[$index],
+                'cantidad' => 0,
+                'monto_aprobado' => 0,
             ]
         );
     }
