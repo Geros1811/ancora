@@ -55,5 +55,9 @@ public function store(Request $request)
         return $this->belongsTo(Nomina::class, 'nomina_id');
     }
     
-
+    public function destroy(Destajo $destajo)
+    {
+        $destajo->delete();
+        return response()->json(['success' => 'Destajo deleted successfully']);
+    }
 }

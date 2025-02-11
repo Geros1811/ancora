@@ -150,4 +150,4 @@ Route::post('/materiales/generales/{obraId}', [MaterialesController::class, 'sto
 Route::post('/update-costo-indirecto/{obraId}/{costo}', [CostosController::class, 'updateCostoIndirecto'])->name('updateCostoIndirecto');
 Route::post('/update-costo-directo/{obraId}/{costo}', [CostosController::class, 'updateCostoDirecto'])->name('updateCostoDirecto');
 
-
+Route::delete('/destajos/{destajo}', [DestajoController::class, 'destroy'])->name('destajos.destroy');

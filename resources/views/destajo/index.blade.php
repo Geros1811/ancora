@@ -37,10 +37,18 @@
 <div id="contenedor-tablas">
     @foreach($destajosAgrupados as $nominaId => $destajos)
         <div class="table-container" style="margin-top: 20px;">
-            <h3>
-                {{ $destajos->first()->nomina->nombre }} - 
-                {{ $destajos->first()->nomina->fecha_inicio }} al {{ $destajos->first()->nomina->fecha_fin }}
-            </h3>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>
+                    {{ $destajos->first()->nomina->nombre }} - 
+                    {{ $destajos->first()->nomina->fecha_inicio }} al {{ $destajos->first()->nomina->fecha_fin }}
+                </h3>
+                @php
+                    $totalCantidad = $destajos->sum('cantidad');
+                @endphp
+                <div class="total-cantidad" style="font-size: 16px; font-weight: bold;">
+                    Total Cantidad: ${{ number_format($totalCantidad, 2) }}
+                </div>
+            </div>
             <form class="destajo-form" action="{{ route('destajos.store', ['obraId' => $obraId]) }}" method="POST">
                 @csrf
                 <input type="hidden" name="nomina_id" value="{{ $nominaId }}">
@@ -68,7 +76,7 @@
                                     <a href="{{ route('detalles.destajos', ['id' => $detalle->id]) }}" class="btn btn-sm btn-info">
                                         Ir a detalles
                                     </a>
-                                    <button type="button" class="btn btn-danger btn-sm" onclick="eliminarFila(this)" disabled>Eliminar</button>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="eliminarFila(this)">Eliminar</button>
                                 </div>
                             </td>
                         </tr>
@@ -130,6 +138,12 @@
 
     .custom-input {
         display: none;
+    }
+    .total-cantidad {
+        font-size: 16px;
+        font-weight: bold;
+        display: inline;
+        margin-left: 10px; /* Adjust as needed */
     }
 </style>
 
@@ -237,7 +251,29 @@
     }
     
     function eliminarFila(button) {
-        button.closest("tr").remove();
+        var row = button.closest("tr");
+        var destajoId = row.dataset.id;
+
+        if (confirm('¿Estás seguro de que quieres eliminar este destajo?')) {
+            fetch('/destajos/' + destajoId, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => {
+                if (response.ok) {
+                    row.remove();
+                } else {
+                    alert('Error al eliminar el destajo.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al eliminar el destajo.');
+            });
+        }
     }
 
     
