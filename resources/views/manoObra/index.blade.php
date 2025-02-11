@@ -47,77 +47,82 @@
             <!-- Contenedor para alinear el botón y el título -->
             <div style="display: flex; align-items: center; margin-bottom: 10px;">
                 <!-- Botón para mostrar u ocultar la tabla -->
-                <button type="button" class="btn btn-info btn-sm" onclick="toggleTableVisibility({{ $nomina->id }})" style="margin-right: 10px;">+</button>
+                <button type="button" class="btn btn-info btn-sm" onclick="toggleTableVisibility({{ $nomina->id }})" style="margin-right: 10px;">
+                    <span class="toggle-button">+</span>
+                </button>
 
                 <h2 class="table-title" style="font-size: 20px; color: #34495e; margin: 0;">
-                    Detalles de Nómina: {{ $nomina->nombre }} : {{ $nomina->dia_inicio }} : {{ $nomina->fecha_inicio }} - {{ $nomina->dia_fin }} : {{ $nomina->fecha_fin }}  
+                    Detalles de Nómina: {{ $nomina->nombre }} : {{ $nomina->dia_inicio }} : {{ $nomina->fecha_inicio }} - {{ $nomina->dia_fin }} : {{ $nomina->fecha_fin }}
                     <span id="total-nomina-{{ $nomina->id }}" style="font-size: 16px; color: #e74c3c;" data-nomina-id="{{ $nomina->id }}">
                         TOTAL Nómina: ${{ number_format($nomina->total, 2) }}
                     </span>
                 </h2>
             </div>
 
-            <form action="{{ route('manoObra.store', ['obraId' => $obraId]) }}" method="POST">
-                @csrf
-                <input type="hidden" name="nombre_nomina" value="{{ $nomina->nombre }}">
-                <input type="hidden" name="fecha_inicio" value="{{ $nomina->fecha_inicio }}">
-                <input type="hidden" name="fecha_fin" value="{{ $nomina->fecha_fin }}">
-                <input type="hidden" name="nomina_id" value="{{ $nomina->id }}">
-                <table class="obra-table" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-                    <thead>
-                        <tr>
-                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Nombre</th>
-                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Puesto</th>
-                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;">L</th>
-                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;">M</th>
-                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;">MI</th>
-                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;">J</th>
-                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;">V</th>
-                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;">S</th>
-                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Total Días</th>
-                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Precio Diario</th>
-                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Extras/Menos</th>
-                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Precio</th>
-                            <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="detalle-costo-body">
-                        @foreach ($detalles->where('nomina_id', $nomina->id) as $detalle)
+            <div id="table-container-{{ $nomina->id }}">
+                <form action="{{ route('manoObra.store', ['obraId' => $obraId]) }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="nombre_nomina" value="{{ $nomina->nombre }}">
+                    <input type="hidden" name="fecha_inicio" value="{{ $nomina->fecha_inicio }}">
+                    <input type="hidden" name="fecha_fin" value="{{ $nomina->fecha_fin }}">
+                    <input type="hidden" name="nomina_id" value="{{ $nomina->id }}">
+                    <table class="obra-table" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                        <thead>
                             <tr>
-                                <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="text" name="nombre[]" value="{{ $detalle->nombre }}" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;"></td>
-                                <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="text" name="puesto[]" value="{{ $detalle->puesto }}" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;"></td>
-                                <td style="border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;"><input type="number" name="lunes[]" value="{{ $detalle->lunes }}" class="form-control horas" style="border: none; background: transparent; text-align: center; width: 100%;" min="0" max="1" oninput="updateSubtotal(this)"></td>
-                                <td style="border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;"><input type="number" name="martes[]" value="{{ $detalle->martes }}" class="form-control horas" style="border: none; background: transparent; text-align: center; width: 100%;" min="0" max="1" oninput="updateSubtotal(this)"></td>
-                                <td style="border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;"><input type="number" name="miercoles[]" value="{{ $detalle->miercoles }}" class="form-control horas" style="border: none; background: transparent; text-align: center; width: 100%;" min="0" max="1" oninput="updateSubtotal(this)"></td>
-                                <td style="border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;"><input type="number" name="jueves[]" value="{{ $detalle->jueves }}" class="form-control horas" style="border: none; background: transparent; text-align: center; width: 100%;" min="0" max="1" oninput="updateSubtotal(this)"></td>
-                                <td style="border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;"><input type="number" name="viernes[]" value="{{ $detalle->viernes }}" class="form-control horas" style="border: none; background: transparent; text-align: center; width: 100%;" min="0" max="1" oninput="updateSubtotal(this)"></td>
-                                <td style="border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;"><input type="number" name="sabado[]" value="{{ $detalle->sabado }}" class="form-control horas" style="border: none; background: transparent; text-align: center; width: 100%;" min="0" max="1" oninput="updateSubtotal(this)"></td>
-                                <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" name="total_dias[]" value="{{ $detalle->total_horas }}" class="form-control total-horas" style="border: none; background: transparent; text-align: center; width: 100%;" readonly></td>
-                                <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" step="0.01" name="precio_diario[]" value="{{ $detalle->precio_hora }}" class="form-control precio-hora" style="border: none; background: transparent; text-align: center; width: 100%;" oninput="updateSubtotal(this)"></td>
-                                <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" step="0.01" name="extras_menos[]" value="{{ $detalle->extras_menos }}" class="form-control extras-menos" style="border: none; background: transparent; text-align: center; width: 100%;" oninput="updateSubtotal(this)"></td>
-                                <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="text" name="subtotal[]" value="{{ $detalle->subtotal }}" class="form-control subtotal" style="border: none; background: transparent; text-align: center; width: 100%;" readonly></td>
-                                <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
+                                <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Nombre</th>
+                                <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Puesto</th>
+                                <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;">L</th>
+                                <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;">M</th>
+                                <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;">MI</th>
+                                <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;">J</th>
+                                <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;">V</th>
+                                <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;">S</th>
+                                <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Total Días</th>
+                                <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Precio Diario</th>
+                                <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Extras/Menos</th>
+                                <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Precio</th>
+                                <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Acciones</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-                <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow(this)">Añadir Fila</button>
-                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar</button>
-            </form>
+                        </thead>
+                        <tbody class="detalle-costo-body">
+                            @foreach ($detalles->where('nomina_id', $nomina->id) as $detalle)
+                                <tr>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="text" name="nombre[]" value="{{ $detalle->nombre }}" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;"></td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="text" name="puesto[]" value="{{ $detalle->puesto }}" class="form-control" style="border: none; background: transparent; text-align: center; width: 100%;"></td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;"><input type="number" name="lunes[]" value="{{ $detalle->lunes }}" class="form-control horas" style="border: none; background: transparent; text-align: center; width: 100%;" min="0" max="1" oninput="updateSubtotal(this)"></td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;"><input type="number" name="martes[]" value="{{ $detalle->martes }}" class="form-control horas" style="border: none; background: transparent; text-align: center; width: 100%;" min="0" max="1" oninput="updateSubtotal(this)"></td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;"><input type="number" name="miercoles[]" value="{{ $detalle->miercoles }}" class="form-control horas" style="border: none; background: transparent; text-align: center; width: 100%;" min="0" max="1" oninput="updateSubtotal(this)"></td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;"><input type="number" name="jueves[]" value="{{ $detalle->jueves }}" class="form-control horas" style="border: none; background: transparent; text-align: center; width: 100%;" min="0" max="1" oninput="updateSubtotal(this)"></td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;"><input type="number" name="viernes[]" value="{{ $detalle->viernes }}" class="form-control horas" style="border: none; background: transparent; text-align: center; width: 100%;" min="0" max="1" oninput="updateSubtotal(this)"></td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;"><input type="number" name="sabado[]" value="{{ $detalle->sabado }}" class="form-control horas" style="border: none; background: transparent; text-align: center; width: 100%;" min="0" max="1" oninput="updateSubtotal(this)"></td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" name="total_dias[]" value="{{ $detalle->total_horas }}" class="form-control total-horas" style="border: none; background: transparent; text-align: center; width: 100%;" readonly></td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" step="0.01" name="precio_diario[]" value="{{ $detalle->precio_hora }}" class="form-control precio-hora" style="border: none; background: transparent; text-align: center; width: 100%;" oninput="updateSubtotal(this)"></td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" step="0.01" name="extras_menos[]" value="{{ $detalle->extras_menos }}" class="form-control extras-menos" style="border: none; background: transparent; text-align: center; width: 100%;" oninput="updateSubtotal(this)"></td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="text" name="subtotal[]" value="{{ $detalle->subtotal }}" class="form-control subtotal" style="border: none; background: transparent; text-align: center; width: 100%;" readonly></td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow(this)">Añadir Fila</button>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar</button>
+                </form>
+            </div>
         </div>
     @endforeach
 </div>
 
 <script>
     function toggleTableVisibility(nominaId) {
-        const table = document.getElementById("table-container-" + nominaId);
+        const container = document.getElementById("table-container-" + nominaId);
         const button = event.target;
-        if (table.style.display === "none") {
-            table.style.display = "block";
-            button.textContent = "-"; // Cambiar el texto del botón a "-"
+        const toggleButton = button.querySelector('.toggle-button');
+        if (container.style.display === "none") {
+            container.style.display = "block";
+            toggleButton.textContent = "-"; // Cambiar el texto del botón a "-"
         } else {
-            table.style.display = "none";
-            button.textContent = "+"; // Cambiar el texto del botón a "+"
+            container.style.display = "none";
+            toggleButton.textContent = "+"; // Cambiar el texto del botón a "+"
         }
     }
     function eliminarDetalle(button) {
@@ -226,7 +231,7 @@
             <td style="border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;"><input type="number" name="miercoles[]" class="form-control horas" style="border: none; background: transparent; text-align: center; width: 100%;" min="0" max="1" oninput="updateSubtotal(this)"></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;"><input type="number" name="jueves[]" class="form-control horas" style="border: none; background: transparent; text-align: center; width: 100%;" min="0" max="1" oninput="updateSubtotal(this)"></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;"><input type="number" name="viernes[]" class="form-control horas" style="border: none; background: transparent; text-align: center; width: 100%;" min="0" max="1" oninput="updateSubtotal(this)"></td>
-            <td style="border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;"><input type="number" name="sabado[]" class="form-control horas" style="border: none; background: transparent; text-align: center; width: 100%;" min="0" max="1" oninput="updateSubtotal(this)"></td>
+            <td style="border: 1px solid #ddd; text-align: center; padding: 5px; width: 40px;"><input type="number" name="sabado[]" value="0" class="form-control horas" style="border: none; background: transparent; text-align: center; width: 100%;" min="0" max="1" oninput="updateSubtotal(this)"></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" name="total_dias[]" class="form-control total-horas" style="border: none; background: transparent; text-align: center; width: 100%;" readonly></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" step="0.01" name="precio_diario[]" class="form-control precio-hora" style="border: none; background: transparent; text-align: center; width: 100%;" oninput="updateSubtotal(this)"></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" step="0.01" name="extras_menos[]" class="form-control extras-menos" style="border: none; background: transparent; text-align: center; width: 100%;" oninput="updateSubtotal(this)"></td>
@@ -234,6 +239,8 @@
             <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
         `;
         tableBody.appendChild(newRow);
+        const totalHorasInput = newRow.querySelector('.total-horas');
+        totalHorasInput.value = 0;
     }
 
     function removeRow(button) {
