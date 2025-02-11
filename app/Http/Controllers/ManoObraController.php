@@ -125,11 +125,18 @@ class ManoObraController extends Controller
     {
         // Obtener las nóminas asociadas a la obra filtrando por obra_id
         $nominas = Nomina::where('obra_id', $obraId)->orderBy('fecha_inicio', 'asc')->get();
+
+        // Obtener los destajos asociados a cada nómina
+        foreach ($nominas as $nomina) {
+            $nomina->destajos = Destajo::where('obra_id', $obraId)
+                ->where('nomina_id', $nomina->id)
+                ->get();
+        }
         
         // Pasar las nóminas a la vista
         return view('manoObra.resumen', compact('nominas'));
     }
-    
+
     public function actualizar(Request $request, $id) {
         $nomina = Nomina::findOrFail($id);
     

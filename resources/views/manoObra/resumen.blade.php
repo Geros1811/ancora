@@ -45,6 +45,30 @@
                         @endif
                     </td>
                 </tr>
+                @if($nomina->destajos->isNotEmpty())
+                    @foreach($nomina->destajos as $destajo)
+                        <tr style="background-color: #e0f7fa;">
+                        <tr style="background-color: #e0f7fa;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">
+                                Destajo
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">
+                                {{\Carbon\Carbon::parse($nomina->fecha_inicio)->locale('es')->format('d M Y')}}
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">
+                                {{\Carbon\Carbon::parse($nomina->fecha_fin)->locale('es')->format('d M Y')}}
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #ddd;"></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">
+                                <span class="destajo-cantidad">${{ number_format($destajo->cantidad, 2) }}</span>
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">
+                                <span class="destajo-frente">{{ $destajo->frente }}</span>
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #ddd;"></td>
+                        </tr>
+                    @endforeach
+                @endif
             @endforeach
         </tbody>
     </table>
@@ -94,5 +118,18 @@
 <style>
     .bloqueada {
         background-color: #d4edda; /* Verde claro */
+    }
+    .destajo-list {
+        padding-left: 20px;
+    }
+
+    .destajo-info {
+        font-size: 0.9em;
+        color: #555;
+        margin-bottom: 3px;
+    }
+
+    .destajo-frente {
+        font-weight: bold;
     }
 </style>
