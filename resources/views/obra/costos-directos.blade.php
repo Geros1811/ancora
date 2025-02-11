@@ -1,7 +1,7 @@
 <!-- Tabla de costos directos -->
 <h2>
     <span class="toggle-button" onclick="toggleSection('costos-directos')">+</span>
-    Costos Directos (Total: ${{ number_format($costosDirectos->sum('costo'), 2) }})
+    Costos Directos (Total: ${{ number_format($costosDirectos->sum('costo') + $totalCantidadDestajos, 2) }})
 </h2>
 <div id="costos-directos" class="hidden-section">
     <table class="obra-table">
@@ -30,7 +30,7 @@
                         </ul>
                     </div>
                 </td>
-                <td>${{ number_format($costosDirectos->where('nombre', 'Mano de Obra')->sum('costo'), 2) }}</td>
+                <td>${{ number_format($costosDirectos->where('nombre', 'Mano de Obra')->sum('costo') + $totalCantidadDestajos, 2) }}</td>
             </tr>
             <tr>
                 <td>3</td>
