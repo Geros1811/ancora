@@ -72,6 +72,8 @@
                             <td><input type="number" name="monto_aprobado[]" class="form-control monto_aprobado" value="{{ $detalle->monto_aprobado }}" readonly></td>
                             <td><input type="number" name="cantidad[]" class="form-control cantidad" value="{{ $detalle->cantidad }}" readonly></td>
                             <td style="text-align: center">
+                                 <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
                                 <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
                                     <a href="{{ route('detalles.destajos', ['id' => $detalle->id]) }}" class="btn btn-sm btn-info">
                                         Ir a detalles

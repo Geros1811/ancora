@@ -7,9 +7,9 @@
         <h2 style="font-size: 20px; color: #34495e; margin-bottom: 10px;">{{ $nombre_nomina }} ({{ $dia_inicio }} - {{ $fecha_inicio }} al {{ $dia_fin }} - {{ $fecha_fin }})</h2>
     </div>
 
-    <form action="{{ route('detalles.destajos.store', ['obraId' => $obraId]) }}" method="POST">
+    <form action="{{ route('detalles.destajos.store', ['obraId' => $obraId, 'destajoId' => $detalle->id]) }}" method="POST">
         @csrf
-        <input type="hidden" name="nomina_id" value="{{ $detalle->nomina_id }}">
+        
 
         <div class="table-container" style="margin-top: 20px;">
             <table class="obra-table">
@@ -205,25 +205,25 @@
 function agregarFila() {
     const tableBody = document.querySelector('.obra-table tbody');
     const newRow = document.createElement('tr');
-    newRow.dataset.pagoCount = document.querySelector('.obra-table thead tr').querySelectorAll('th').length - 4; // Contar columnas de pago
+    newRow.dataset.pagoCount = document.querySelector('.obra-table thead tr').querySelectorAll('th').length - 4;
 
     let newRowHTML = `
         <td><input type="text" name="cotizacion[]" class="form-control" value=""></td>
-        <td><input type="number" name="monto_aprobado[]" class="form-control monto_aprobado" value="" placeholder="$" oninput="calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()"></td>
+        <td><input type="number" name="monto_aprobado[]" class="form-control monto_aprobado" value="0" placeholder="$" oninput="calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()"></td>
     `;
 
-    let numPagoColumns = newRow.dataset.pagoCount; // Número de pagos actuales
+    let numPagoColumns = parseInt(newRow.dataset.pagoCount);
     for (let i = 1; i <= numPagoColumns; i++) {
         newRowHTML += `
             <td>
-                Fecha: <input type="date" name="pago_fecha_${i}[]" class="form-control" onchange="calcularPendiente(this.closest('tr'))">
-                Pago: <input type="number" name="pago_numero_${i}[]" class="form-control pago_numero" value="" placeholder="$" oninput="calcularPendiente(this.closest('tr'))">
+                Fecha: <input type="date" name="pago_fecha_${i}[]" class="form-control" value="" onchange="calcularPendiente(this.closest('tr'))">
+                Pago: <input type="number" name="pago_numero_${i}[]" class="form-control pago_numero" value="0" placeholder="$" oninput="calcularPendiente(this.closest('tr'))">
             </td>
         `;
     }
 
     newRowHTML += `
-        <td><input type="number" name="pendiente[]" class="form-control" value="" placeholder="$" readonly></td>
+        <td><input type="number" name="pendiente[]" class="form-control" value="0" placeholder="$" readonly></td>
         <td>
             <select name="estado[]" class="form-control">
                 <option value="En Curso" selected>En Curso</option>

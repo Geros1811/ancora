@@ -28,13 +28,12 @@ class DestajosDetallesController extends Controller
         return view('destajo.detallesdestajos', compact('detalle', 'obra', 'fecha_inicio', 'fecha_fin', 'nombre_nomina', 'dia_inicio', 'dia_fin', 'obraId', 'destajoDetalles'));
     }
 
-    public function store(Request $request, $obraId)
+    public function store(Request $request, $obraId, $destajoId)
     {
         $cotizaciones = $request->input('cotizacion');
         $montosAprobados = $request->input('monto_aprobado');
         $pendientes = $request->input('pendiente');
         $estados = $request->input('estado');
-        $nominaId = $request->input('nomina_id');
 
         // Calculate total amount approved and total amount paid
         $totalMontoAprobado = array_sum($montosAprobados);
@@ -48,7 +47,7 @@ class DestajosDetallesController extends Controller
         }
 
         // Find the Destajo model
-        $destajo = Destajo::where('obra_id', $obraId)->where('nomina_id', $nominaId)->firstOrFail();
+        $destajo = Destajo::findOrFail($destajoId);
 
         // Update the Destajo model with the totals
         $destajo->monto_aprobado = $totalMontoAprobado;
@@ -56,40 +55,40 @@ class DestajosDetallesController extends Controller
         $destajo->save();
 
         foreach ($cotizaciones as $index => $cotizacion) {
-            DestajoDetalle::updateOrCreate(
+             DestajoDetalle::updateOrCreate(
                 [
                     'obra_id' => $obraId,
-                    'destajo_id' => $destajo->id,
+                    'destajo_id' => $destajoId,
                     'cotizacion' => $cotizacion,
                 ],
                 [
-                        'monto_aprobado' => $montosAprobados[$index],
-                        'pendiente' => $pendientes[$index],
-                        'estado' => $estados[$index],
-                        'pagos' => json_encode($this->getPagos($request, $index)),
-                        'destajo_id' => $destajo->id, // Add destajo_id here
-                    ]
-                );
-            }
-
-            return redirect()->back()->with('success', 'Detalles guardados correctamente.');
+                    'monto_aprobado' => $montosAprobados[$index] ?? 0,
+                    'pendiente' => $pendientes[$index] ?? 0,
+                    'estado' => $estados[$index] ?? 'En Curso',
+                    'pagos' => json_encode($this->getPagos($request, $index)),
+                    
+                ]
+            );
         }
 
-        private function getPagos(Request $request, $index)
-        {
-            $pagos = [];
-            foreach ($request->input() as $key => $value) {
-                if (strpos($key, 'pago_fecha_') === 0) {
-                    $parts = explode('_', $key);
-                    $pagoNumber = $parts[2];
-                    if (isset($request->input("pago_fecha_$pagoNumber")[$index])) {
-                        $pagos[$pagoNumber] = [
-                            'fecha' => $request->input("pago_fecha_$pagoNumber")[$index],
-                            'numero' => $request->input("pago_numero_$pagoNumber")[$index] ?? null,
-                        ];
-                    }
+        return redirect()->back()->with('success', 'Detalles guardados correctamente.');
+    }
+
+    private function getPagos(Request $request, $index)
+    {
+        $pagos = [];
+        foreach ($request->input() as $key => $value) {
+            if (strpos($key, 'pago_fecha_') === 0) {
+                $parts = explode('_', $key);
+                $pagoNumber = $parts[2];
+                if (isset($request->input("pago_fecha_$pagoNumber")[$index])) {
+                    $pagos[$pagoNumber] = [
+                        'fecha' => $request->input("pago_fecha_$pagoNumber")[$index],
+                        'numero' => $request->input("pago_numero_$pagoNumber")[$index] ?? null,
+                    ];
                 }
             }
-            return $pagos;
         }
+        return $pagos;
     }
+}
