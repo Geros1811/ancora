@@ -291,7 +291,7 @@
                 let presupuesto = parseFloat("{{ $obra->presupuesto }}");
                 let costosDirectos = {
                     'Materiales': parseFloat("{{ optional($costosDirectos->where('nombre', 'Materiales')->first())->costo ?? 0.00 }}"),
-                    'Mano de Obra': parseFloat("{{ $costosDirectos->where('nombre', 'Mano de Obra')->sum('costo') }}"),
+                    'Mano de Obra': parseFloat("{{ $costosDirectos->where('nombre', 'Mano de Obra')->sum('costo') + $totalCantidadDestajos }}"),
                     'Equipo de Seguridad': parseFloat("{{ optional($costosDirectos->where('nombre', 'Equipo de Seguridad')->first())->costo ?? 0.00 }}"),
                     'Herramienta Menor': parseFloat("{{ optional($costosDirectos->where('nombre', 'Herramienta Menor')->first())->costo ?? 0.00 }}"),
                     'Maquinaria Menor': parseFloat("{{ optional($costosDirectos->where('nombre', 'Maquinaria Menor')->first())->costo ?? 0.00 }}"),
@@ -302,7 +302,7 @@
                     'Comidas': parseFloat("{{ optional($costosDirectos->where('nombre', 'Comidas')->first())->costo ?? 0.00 }}"),
                     'Trámites': parseFloat("{{ optional($costosDirectos->where('nombre', 'Trámites')->first())->costo ?? 0.00 }}")
                 };
-                let costosIndirectos = {
+                 let costosIndirectos = {
                     'Papelería': parseFloat("{{ optional($costosIndirectos->where('nombre', 'Papelería')->first())->costo ?? 0.00 }}"),
                     'Gasolina': parseFloat("{{ optional($costosIndirectos->where('nombre', 'Gasolina')->first())->costo ?? 0.00 }}"),
                     'Rentas': parseFloat("{{ optional($costosIndirectos->where('nombre', 'Rentas')->first())->costo ?? 0.00 }}"),
