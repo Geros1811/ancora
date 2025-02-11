@@ -60,10 +60,6 @@
                                 <select name="frente[]" class="form-control frente" disabled>
                                     <option value="{{ $detalle->frente }}" selected>{{ $detalle->frente }}</option>
                                 </select>
-                                <input type="text" name="frente_custom[]" class="form-control custom-input" placeholder="Especifique" 
-                                    value="{{ !in_array($detalle->frente, ['Plomeria','Electricidad','Colocador de Pisos','Pintor','Herreria','Carpintero','Aluminio','Aire Acondicionado','Tabla Roca']) ? $detalle->frente : '' }}"
-                                    onblur="this.value = this.value.trim();"
-                                    style="{{ in_array($detalle->frente, ['Plomeria','Electricidad','Colocador de Pisos','Pintor','Herreria','Carpintero','Aluminio','Aire Acondicionado','Tabla Roca']) ? 'display:none;' : '' }}" readonly>
                             </td>
                             <td><input type="number" name="monto_aprobado[]" class="form-control monto_aprobado" value="{{ $detalle->monto_aprobado }}" readonly></td>
                             <td><input type="number" name="cantidad[]" class="form-control cantidad" value="{{ $detalle->cantidad }}" readonly></td>
