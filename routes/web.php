@@ -139,6 +139,13 @@ Route::post('/obra/{obraId}/destajo/store', [DestajosDetallesController::class, 
 Route::get('/detalles-destajos/{id}', [DestajosDetallesController::class, 'show'])->name('detalles.destajos');
 Route::post('/detalles-destajos/{obraId}/{destajoId}', [DestajosDetallesController::class, 'store'])->name('detalles.destajos.store');
 
+
+
+Route::get('/mano-obra/pdf/{nomina_id}', [ManoObraController::class, 'generarPDF'])->name('mano-obra.pdf');
+
+
+
+
 // Rutas para materiales
 Route::get('/materiales/{obraId}', [MaterialesController::class, 'index'])->name('materiales.index');
 Route::post('/materiales/agregados/{obraId}', [MaterialesController::class, 'storeAgregados'])->name('materiales.storeAgregados');

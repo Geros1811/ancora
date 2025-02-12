@@ -56,6 +56,10 @@
                     <span id="total-nomina-{{ $nomina->id }}" style="font-size: 16px; color: #e74c3c;" data-nomina-id="{{ $nomina->id }}">
                         TOTAL Nómina: ${{ number_format($nomina->total, 2) }}
                     </span>
+                    <a href="{{ route('mano-obra.pdf', $nomina->id) }}" class="btn btn-primary" target="_blank">
+                        Generar PDF
+                    </a>
+                    
                 </h2>
             </div>
 
