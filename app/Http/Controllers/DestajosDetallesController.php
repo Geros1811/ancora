@@ -7,6 +7,8 @@ use App\Models\DestajoDetalle;
 use Illuminate\Support\Facades\Log;
 use App\Models\Obra;
 use App\Models\Destajo;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Response;
 
 class DestajosDetallesController extends Controller
 {
@@ -82,6 +84,26 @@ class DestajosDetallesController extends Controller
         }
 
         return redirect()->back()->with('success', 'Detalles guardados correctamente.');
+    }
+
+    public function generatePdf($id)
+    {
+        $detalle = Destajo::findOrFail($id);
+        $obraId = $detalle->obra_id;
+        $obra = Obra::findOrFail($obraId);
+
+        // Access fecha_inicio and fecha_fin from the related Nomina model
+        $fecha_inicio = $detalle->nomina->fecha_inicio;
+        $fecha_fin = $detalle->nomina->fecha_fin;
+        $nombre_nomina = $detalle->nomina->nombre;
+        $dia_inicio = $detalle->nomina->dia_inicio;
+        $dia_fin = $detalle->nomina->dia_fin;
+
+        $destajoDetalles = DestajoDetalle::where('destajo_id', $detalle->id)->get();
+
+        $pdf = Pdf::loadView('destajo.pdf', compact('detalle', 'obra', 'fecha_inicio', 'fecha_fin', 'nombre_nomina', 'dia_inicio', 'dia_fin', 'obraId', 'destajoDetalles'));
+
+        return $pdf->stream('detalles_destajo.pdf');
     }
 
     private function getPagos(Request $request, $index)

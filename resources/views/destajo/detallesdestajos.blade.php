@@ -76,6 +76,9 @@
         </div>
 
         <button type="submit" class="btn btn-success">Guardar Detalles</button>
+        <a href="{{ route('destajos.detalles.pdf', $detalle->id) }}" class="btn btn-primary" target="_blank">
+            Generar PDF
+        </a>
     </form>
 </div>
 

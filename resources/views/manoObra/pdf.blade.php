@@ -8,7 +8,7 @@
         @page { size: landscape; margin: 20px; }
         body { font-family: Arial, sans-serif; font-size: 10px; margin: 0; padding: 0; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { border: 1px solid black; padding: 5px; text-align: center; }
+        th, td { border: 1px solid black; padding: 16px; text-align: center; }
         th { background-color: #ddd; }
         .firma-container { display: flex; justify-content: space-between; margin-top: 30px; width: 100%; }
         .firma { text-align: center; width: 30%; display: inline-block; vertical-align: top; }
@@ -17,7 +17,7 @@
 <body>
     <h1 style="text-align: center;">Obra: {{ $obra->nombre ?? 'N/A' }}</h1>
     <h2 style="text-align: center;">Nómina de la Semana {{ $nomina->nombre ?? 'N/A' }}</h2>
-    <h3 style="text-align: center;">Del: {{ $nomina->fecha_inicio ?? 'N/A' }} Al: {{ $nomina->fecha_fin ?? 'N/A' }}</h3>
+        <h3 style="text-align: center;">Del:  {{ $nomina->dia_inicio }}  {{ \Carbon\Carbon::parse($nomina->fecha_inicio)->format('d/m/Y') }} Al {{ $nomina->dia_fin }}  {{ \Carbon\Carbon::parse($nomina->fecha_fin)->format('d/m/Y') }}</h3>
 
     <!-- Tabla de Mano de Obra -->
     <h3>Mano de Obra</h3>
@@ -80,7 +80,7 @@
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $destajo->frente }}</td>
                     <td>${{ number_format($destajo->monto_aprobado, 2) }}</td>
-                    <td>{{ $destajo->cantidad }}</td>
+                    <td>${{ number_format( $destajo->cantidad, 2)}}</td>
                     <td></td>
                 </tr>
             @endforeach
@@ -91,15 +91,15 @@
     <div class="firma-container">
         <div class="firma">
             <p>___________________________</p>
-            <p>Autorizo</p>
+            <h2>Autorizo</h2>
         </div>
         <div class="firma">
             <p>___________________________</p>
-            <p>Reviso</p>
+            <h2>Reviso</h2>
         </div>
         <div class="firma">
             <p>___________________________</p>
-            <p>Aprobo</p>
+            <h2>Aprobo</h2>
         </div>
     </div>
 </body>
