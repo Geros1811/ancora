@@ -158,5 +158,6 @@ Route::post('/update-costo-indirecto/{obraId}/{costo}', [CostosController::class
 Route::post('/update-costo-directo/{obraId}/{costo}', [CostosController::class, 'updateCostoDirecto'])->name('updateCostoDirecto');
 
 Route::delete('/destajos/{destajo}', [DestajoController::class, 'destroy'])->name('destajos.destroy');
+Route::post('/destajos/toggleLock/{id}', [DestajoController::class, 'toggleLock'])->name('destajos.toggleLock');
 
 Route::get('/destajos/{id}/pdf', [DestajosDetallesController::class, 'generatePdf'])->name('destajos.detalles.pdf');

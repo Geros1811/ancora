@@ -29,11 +29,47 @@ public function store(Request $request)
         'frente'          => 'required|array',
     ]);
 
+    $obraId = $request->obraId;
+    $nominaId = $request->nomina_id;
+
+    // Get the current nomina
+    $currentNomina = Nomina::findOrFail($nominaId);
+
+    // Find the previous week's nomina
+    $previousNomina = Nomina::where('obra_id', $obraId)
+        ->where('fecha_fin', '<', $currentNomina->fecha_inicio)
+        ->orderBy('fecha_fin', 'desc')
+        ->first();
+
+    if ($previousNomina) {
+       // Get "en curso" destajos from the previous week
+        $enCursoDestajos = Destajo::where('obra_id', $obraId)
+            ->where('nomina_id', $previousNomina->id)
+            ->whereExists(function ($query) {
+                $query->select(\DB::raw(1))
+                      ->from('destajos_detalles')
+                      ->whereColumn('destajos_detalles.destajo_id', 'destajos.id')
+                      ->where('destajos_detalles.estado', 'En Curso');
+            })
+            ->get();
+
+        // Create new destajos for the current week
+        foreach ($enCursoDestajos as $destajo) {
+            Destajo::create([
+                'obra_id' => $obraId,
+                'nomina_id' => $nominaId,
+                'frente' => $destajo->frente,
+                'cantidad' => $destajo->cantidad,
+                'monto_aprobado' => $destajo->monto_aprobado,
+            ]);
+        }
+    }
+
     foreach ($request->frente as $index => $frente) {
         Destajo::updateOrCreate(
             [
-                'obra_id' => $request->obraId,
-                'nomina_id' => $request->nomina_id,
+                'obra_id' => $obraId,
+                'nomina_id' => $nominaId,
                 'frente' => $frente === "Otros" ? $request->frente_custom[$index] : $frente,
             ],
             [
@@ -43,7 +79,7 @@ public function store(Request $request)
         );
     }
 
-    return redirect()->route('destajos.index', ['obraId' => $request->obraId])
+    return redirect()->route('destajos.index', ['obraId' => $obraId])
                      ->with('success', 'Destajos guardados correctamente.');
 }
 
@@ -58,4 +94,15 @@ public function store(Request $request)
         $destajo->delete();
         return response()->json(['success' => 'Destajo deleted successfully']);
     }
+
+    public function toggleLock(Request $request, $id)
+    {
+        $destajo = Destajo::findOrFail($id);
+        $destajo->locked = !$destajo->locked;
+        $destajo->save();
+
+        return redirect()->route('destajos.index', ['obraId' => $destajo->obra_id])->with('success', 'Destajo bloqueado/desbloqueado correctamente.');
+    }
+
+
 }

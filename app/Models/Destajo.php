@@ -18,8 +18,8 @@ class Destajo extends Model
         'cantidad',
         'monto_aprobado',
         'paso_actual',
-        'no_pago'
-        
+        'no_pago',
+        'locked'
     ];
 
     public function nomina()

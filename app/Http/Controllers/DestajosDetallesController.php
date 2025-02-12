@@ -27,11 +27,17 @@ class DestajosDetallesController extends Controller
 
         $destajoDetalles = DestajoDetalle::where('destajo_id', $detalle->id)->get();
 
-        return view('destajo.detallesdestajos', compact('detalle', 'obra', 'fecha_inicio', 'fecha_fin', 'nombre_nomina', 'dia_inicio', 'dia_fin', 'obraId', 'destajoDetalles'));
+        return view('destajo.detallesdestajos', compact('detalle', 'obra', 'fecha_inicio', 'fecha_fin', 'nombre_nomina', 'dia_inicio', 'dia_fin', 'obraId', 'destajoDetalles', 'detalle'));
     }
 
     public function store(Request $request, $obraId, $destajoId)
     {
+        $destajo = Destajo::findOrFail($destajoId);
+
+        if ($destajo->locked) {
+            return redirect()->back()->with('error', 'Este destajo está bloqueado y no se puede editar.');
+        }
+
         $cotizaciones = $request->input('cotizacion');
         $montosAprobados = $request->input('monto_aprobado');
         $pendientes = $request->input('pendiente');

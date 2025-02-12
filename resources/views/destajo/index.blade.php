@@ -59,11 +59,12 @@
                             <th>Monto Aprobado</th>
                             <th>Cantidad</th>
                             <th style="width: 170px; text-align: center">Acciones</th>
+                            <th>Bloquear</th>
                         </tr>
                     </thead>
                     <tbody id="tabla-{{ $nominaId }}">
                         @foreach($destajos as $detalle)
-                        <tr class="fila-destajo" data-id="{{ $detalle->id }}">
+                        <tr class="fila-destajo {{ $detalle->locked ? 'locked-row' : '' }}" data-id="{{ $detalle->id }}">
                             <td>
                                 <select name="frente[]" class="form-control frente" disabled>
                                     <option value="{{ $detalle->frente }}" selected>{{ $detalle->frente }}</option>
@@ -80,6 +81,14 @@
                                     </a>
                                     <button type="button" class="btn btn-danger btn-sm" onclick="eliminarFila(this)">Eliminar</button>
                                 </div>
+                            </td>
+                            <td>
+                                <form action="{{ route('destajos.toggleLock', $detalle->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-warning">
+                                        {{ $detalle->locked ? 'Desbloquear' : 'Bloquear' }}
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                         @endforeach
@@ -146,6 +155,10 @@
         font-weight: bold;
         display: inline;
         margin-left: 10px; /* Adjust as needed */
+    }
+
+    .locked-row {
+        background-color: #ADD8E6; /* LightBlue color */
     }
 </style>
 

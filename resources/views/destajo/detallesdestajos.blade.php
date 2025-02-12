@@ -41,23 +41,23 @@
                 </thead>
                 <tbody>
                     @foreach($destajoDetalles as $destajoDetalle)
-                    <tr>
-                        <td><input type="text" name="cotizacion[]" class="form-control" value="{{ $destajoDetalle->cotizacion }}"></td>
-                        <td><input type="number" name="monto_aprobado[]" class="form-control monto_aprobado" value="{{ $destajoDetalle->monto_aprobado }}" placeholder="$" oninput="calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()"></td>
+                    <tr class="{{ $detalle->locked ? 'locked-row' : '' }}">
+                        <td><input type="text" name="cotizacion[]" class="form-control" value="{{ $destajoDetalle->cotizacion }}" {{ $detalle->locked ? 'disabled' : '' }}></td>
+                        <td><input type="number" name="monto_aprobado[]" class="form-control monto_aprobado" value="{{ $destajoDetalle->monto_aprobado }}" placeholder="$" oninput="calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()" {{ $detalle->locked ? 'disabled' : '' }}></td>
 
                         @php
                             $pagos = $destajoDetalle->pagos ? json_decode($destajoDetalle->pagos, true) : [];
                         @endphp
                         @for($i = 1; $i <= $maxPagos; $i++)
                             <td>
-                                Fecha: <input type="date" name="pago_fecha_{{ $i }}[]" class="form-control" value="{{ $pagos[$i]['fecha'] ?? '' }}" onchange="calcularPendiente(this.closest('tr'))">
-                                Pago: <input type="number" name="pago_numero_{{ $i }}[]" class="form-control pago_numero" value="{{ $pagos[$i]['numero'] ?? '' }}" placeholder="$" oninput="calcularPendiente(this.closest('tr'))">
+                                Fecha: <input type="date" name="pago_fecha_{{ $i }}[]" class="form-control" value="{{ $pagos[$i]['fecha'] ?? '' }}" onchange="calcularPendiente(this.closest('tr'))" {{ $detalle->locked ? 'disabled' : '' }}>
+                                Pago: <input type="number" name="pago_numero_{{ $i }}[]" class="form-control pago_numero" value="{{ $pagos[$i]['numero'] ?? '' }}" placeholder="$" oninput="calcularPendiente(this.closest('tr'))" {{ $detalle->locked ? 'disabled' : '' }}>
                             </td>
                         @endfor
 
                         <td><input type="number" name="pendiente[]" class="form-control" value="{{ $destajoDetalle->pendiente }}" placeholder="$" readonly></td>
                         <td>
-                            <select name="estado[]" class="form-control">
+                            <select name="estado[]" class="form-control" {{ $detalle->locked ? 'disabled' : '' }}>
                                 <option value="En Curso" {{ $destajoDetalle->estado == 'En Curso' ? 'selected' : '' }}>En Curso</option>
                                 <option value="Finalizado" {{ $destajoDetalle->estado == 'Finalizado' ? 'selected' : '' }}>Finalizado</option>
                             </select>
@@ -72,10 +72,10 @@
             <div style="margin-top: 10px; text-align: right;">
                 <strong>Cantidad Total Pagada:</strong> $<span id="cantidad_total_pagada">0.00</span>
             </div>
-            <button type="button" class="btn btn-primary" onclick="agregarFila()">Agregar Fila</button>
+            <button type="button" class="btn btn-primary" onclick="agregarFila()" {{ $detalle->locked ? 'disabled' : '' }}>Agregar Fila</button>
         </div>
 
-        <button type="submit" class="btn btn-success">Guardar Detalles</button>
+        <button type="submit" class="btn btn-success" {{ $detalle->locked ? 'disabled' : '' }}>Guardar Detalles</button>
         <a href="{{ route('destajos.detalles.pdf', $detalle->id) }}" class="btn btn-primary" target="_blank">
             Generar PDF
         </a>
@@ -124,6 +124,10 @@
 
     .table-container button {
         margin-top: 15px;
+    }
+
+    .locked-row {
+        background-color: #90EE90; /* LightGreen color */
     }
 </style>
 
