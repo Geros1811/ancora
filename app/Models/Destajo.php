@@ -30,4 +30,9 @@ class Destajo extends Model
 {
     return $this->belongsTo(Destajo::class, 'destajo_id');
 }
+public function detalles()
+{
+    return $this->hasMany(DestajoDetalle::class, 'destajo_id');
+}
+
 }

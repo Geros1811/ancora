@@ -68,12 +68,12 @@
                         <tr class="fila-destajo {{ $detalle->locked ? 'locked-row' : '' }}" data-id="{{ $detalle->id }}">
                             <td>{{ $index + 1 }}</td>
                             <td>
-                                <select name="frente[]" class="form-control frente" disabled>
+                                <select name="frente[]" class="form-control frente" disabled {{ $detalle->editable ? '' : 'disabled' }}>
                                     <option value="{{ $detalle->frente }}" selected>{{ $detalle->frente }}</option>
                                 </select>
                             </td>
-                            <td><input type="number" name="monto_aprobado[]" class="form-control monto_aprobado" value="{{ $detalle->monto_aprobado }}" readonly></td>
-                            <td><input type="number" name="cantidad[]" class="form-control cantidad" value="{{ $detalle->cantidad }}" readonly></td>
+                            <td><input type="number" name="monto_aprobado[]" class="form-control monto_aprobado" value="{{ $detalle->monto_aprobado }}" readonly {{ $detalle->editable ? '' : 'readonly' }}></td>
+                            <td><input type="number" name="cantidad[]" class="form-control cantidad" value="{{ $detalle->cantidad }}" readonly {{ $detalle->editable ? '' : 'readonly' }}></td>
                             <td style="text-align: center">
                                  <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
                                 <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">

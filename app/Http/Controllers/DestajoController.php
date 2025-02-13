@@ -41,28 +41,30 @@ public function store(Request $request)
         ->orderBy('fecha_fin', 'desc')
         ->first();
 
+    $enCursoDestajos = [];
     if ($previousNomina) {
-       // Get "en curso" destajos from the previous week
+        // Get "en curso" destajos from the previous week
         $enCursoDestajos = Destajo::where('obra_id', $obraId)
             ->where('nomina_id', $previousNomina->id)
             ->whereExists(function ($query) {
                 $query->select(\DB::raw(1))
-                      ->from('destajos_detalles')
-                      ->whereColumn('destajos_detalles.destajo_id', 'destajos.id')
-                      ->where('destajos_detalles.estado', 'En Curso');
+                    ->from('destajos_detalles')
+                    ->whereColumn('destajos_detalles.destajo_id', 'destajos.id')
+                    ->where('destajos_detalles.estado', 'En Curso');
             })
             ->get();
+    }
 
-        // Create new destajos for the current week
-        foreach ($enCursoDestajos as $destajo) {
-            Destajo::create([
-                'obra_id' => $obraId,
-                'nomina_id' => $nominaId,
-                'frente' => $destajo->frente,
-                'cantidad' => $destajo->cantidad,
-                'monto_aprobado' => $destajo->monto_aprobado,
-            ]);
-        }
+    // Create new destajos for the current week
+    foreach ($enCursoDestajos as $destajo) {
+        Destajo::create([
+            'obra_id' => $obraId,
+            'nomina_id' => $nominaId,
+            'frente' => $destajo->frente,
+            'cantidad' => $destajo->cantidad,
+            'monto_aprobado' => $destajo->monto_aprobado,
+            'editable' => true, // Mark as editable
+        ]);
     }
 
     foreach ($request->frente as $index => $frente) {
@@ -75,6 +77,7 @@ public function store(Request $request)
             [
                 'cantidad' => 0,
                 'monto_aprobado' => 0,
+                'editable' => true, // Mark as editable
             ]
         );
     }

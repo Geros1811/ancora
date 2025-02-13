@@ -12,6 +12,63 @@
         
 
         <div class="table-container" style="margin-top: 20px;">
+        
+            @if(isset($previousDestajoDetalles) && count($previousDestajoDetalles) > 0)
+                <h3>Detalles de la semana anterior (En Curso)</h3>
+                <table class="obra-table">
+                    <thead>
+                        <tr>
+                            <th>Cotización</th>
+                            <th>Monto Aprobado</th>
+                            <th id="pago-header">
+                                Pago 1
+                            </th>
+                            @php
+                                $maxPagos = 1;
+                            @endphp
+                            @foreach($previousDestajoDetalles as $destajoDetalle)
+                                @if($destajoDetalle->pagos)
+                                    @php
+                                        $pagos = json_decode($destajoDetalle->pagos, true);
+                                        $maxPagos = max($maxPagos, count($pagos));
+                                    @endphp
+                                @endif
+                            @endforeach
+                            @for($i = 2; $i <= $maxPagos; $i++)
+                                <th>Pago {{ $i }}</th>
+                            @endfor
+                            <th>Pendiente</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($previousDestajoDetalles as $destajoDetalle)
+                            <tr>
+                                <td><input type="text" class="form-control" value="{{ $destajoDetalle->cotizacion }}" readonly></td>
+                                <td><input type="number" class="form-control monto_aprobado" value="{{ $destajoDetalle->monto_aprobado }}" placeholder="$" readonly></td>
+                                @php
+                                    $pagos = $destajoDetalle->pagos ? json_decode($destajoDetalle->pagos, true) : [];
+                                @endphp
+                                @for($i = 1; $i <= $maxPagos; $i++)
+                                    <td>
+                                        Fecha: <input type="date" class="form-control" value="{{ $pagos[$i]['fecha'] ?? '' }}" readonly>
+                                        Pago: <input type="number" class="form-control pago_numero" value="{{ $pagos[$i]['numero'] ?? '' }}" placeholder="$" readonly>
+                                    </td>
+                                @endfor
+                                <td><input type="number" class="form-control" value="{{ $destajoDetalle->pendiente }}" placeholder="$" readonly></td>
+                                <td>
+                                    <select class="form-control" disabled>
+                                        <option value="En Curso" @if($destajoDetalle->estado == 'En Curso') selected @endif>En Curso</option>
+                                        <option value="Finalizado">Finalizado</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @endif
+
             <table class="obra-table">
                 <thead>
                     <tr>
@@ -19,12 +76,17 @@
                         <th>Monto Aprobado</th>
                         <th id="pago-header">
                             Pago 1 
-                            <button type="button" class="btn btn-success btn-sm" onclick="agregarColumnaPago(this)">+</button>
+                            <button type="button" class="btn btn-success btn-sm" onclick="agregarColumnaPago(this)" {{ $editable ? '' : 'disabled' }}>+</button>
                         </th>
                         @php
                             $maxPagos = 1;
                         @endphp
-                        @foreach($destajoDetalles as $destajoDetalle)
+                        @if(isset($previousDestajoDetalles))
+                            @php
+                                $previousDestajoDetallesArray = $previousDestajoDetalles->toArray();
+                            @endphp
+                        @endif
+                        @foreach($destajoDetalles as $index => $destajoDetalle)
                             @if($destajoDetalle->pagos)
                                 @php
                                     $pagos = json_decode($destajoDetalle->pagos, true);
@@ -40,24 +102,24 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($destajoDetalles as $destajoDetalle)
-                    <tr class="{{ $detalle->locked ? 'locked-row' : '' }}">
-                        <td><input type="text" name="cotizacion[]" class="form-control" value="{{ $destajoDetalle->cotizacion }}" {{ $detalle->locked ? 'disabled' : '' }}></td>
-                        <td><input type="number" name="monto_aprobado[]" class="form-control monto_aprobado" value="{{ $destajoDetalle->monto_aprobado }}" placeholder="$" oninput="calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()" {{ $detalle->locked ? 'disabled' : '' }}></td>
+                    @foreach($destajoDetalles as $index => $destajoDetalle)
+                    <tr class="{{ $detalle->locked ? 'locked-row' : '' }} {{ $destajoDetalle->estado == 'En Curso' ? 'en-curso-row' : '' }}">
+                        <td><input type="text" name="cotizacion[]" class="form-control" value="{{ $destajoDetalle->cotizacion  }}" {{ $editable ? '' : 'readonly' }}></td>
+                        <td><input type="number" name="monto_aprobado[]" class="form-control monto_aprobado" value="{{ $destajoDetalle->monto_aprobado }}" placeholder="$" oninput="calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()" {{ $editable ? '' : 'readonly' }}></td>
 
                         @php
                             $pagos = $destajoDetalle->pagos ? json_decode($destajoDetalle->pagos, true) : [];
                         @endphp
                         @for($i = 1; $i <= $maxPagos; $i++)
                             <td>
-                                Fecha: <input type="date" name="pago_fecha_{{ $i }}[]" class="form-control" value="{{ $pagos[$i]['fecha'] ?? '' }}" onchange="calcularPendiente(this.closest('tr'))" {{ $detalle->locked ? 'disabled' : '' }}>
-                                Pago: <input type="number" name="pago_numero_{{ $i }}[]" class="form-control pago_numero" value="{{ $pagos[$i]['numero'] ?? '' }}" placeholder="$" oninput="calcularPendiente(this.closest('tr'))" {{ $detalle->locked ? 'disabled' : '' }}>
+                                Fecha: <input type="date" name="pago_fecha_{{ $i }}[]" class="form-control" value="{{ $pagos[$i]['fecha'] ?? '' }}" onchange="calcularPendiente(this.closest('tr'))" {{ $editable ? '' : 'readonly' }}>
+                                Pago: <input type="number" name="pago_numero_{{ $i }}[]" class="form-control pago_numero" value="{{ $pagos[$i]['numero'] ?? '' }}" placeholder="$" oninput="calcularPendiente(this.closest('tr'))" {{ $editable ? '' : 'readonly' }}>
                             </td>
                         @endfor
 
                         <td><input type="number" name="pendiente[]" class="form-control" value="{{ $destajoDetalle->pendiente }}" placeholder="$" readonly></td>
                         <td>
-                            <select name="estado[]" class="form-control" {{ $detalle->locked ? 'disabled' : '' }}>
+                            <select name="estado[]" class="form-control" {{ $editable ? '' : 'disabled' }}>
                                 <option value="En Curso" {{ $destajoDetalle->estado == 'En Curso' ? 'selected' : '' }}>En Curso</option>
                                 <option value="Finalizado" {{ $destajoDetalle->estado == 'Finalizado' ? 'selected' : '' }}>Finalizado</option>
                             </select>
@@ -72,10 +134,10 @@
             <div style="margin-top: 10px; text-align: right;">
                 <strong>Cantidad Total Pagada:</strong> $<span id="cantidad_total_pagada">0.00</span>
             </div>
-            <button type="button" class="btn btn-primary" onclick="agregarFila()" {{ $detalle->locked ? 'disabled' : '' }}>Agregar Fila</button>
+            <button type="button" class="btn btn-primary" onclick="agregarFila()" {{ $editable && !$detalle->locked ? '' : 'disabled' }}>Agregar Fila</button>
         </div>
 
-        <button type="submit" class="btn btn-success" {{ $detalle->locked ? 'disabled' : '' }}>Guardar Detalles</button>
+        <button type="submit" class="btn btn-success" {{ $editable && !$detalle->locked ? '' : 'disabled' }}>Guardar Detalles</button>
         <a href="{{ route('destajos.detalles.pdf', $detalle->id) }}" class="btn btn-primary" target="_blank">
             Generar PDF
         </a>
@@ -126,8 +188,8 @@
         margin-top: 15px;
     }
 
-    .locked-row {
-        background-color: #90EE90; /* LightGreen color */
+    .en-curso-row {
+        background-color: #FFFFE0; /* LightYellow color */
     }
 </style>
 

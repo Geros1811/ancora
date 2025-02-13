@@ -7,28 +7,52 @@ use App\Models\DestajoDetalle;
 use Illuminate\Support\Facades\Log;
 use App\Models\Obra;
 use App\Models\Destajo;
+use App\Models\Nomina;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Response;
 
 class DestajosDetallesController extends Controller
 {
     public function show($id)
-    {
-        $detalle = Destajo::findOrFail($id);
-        $obraId = $detalle->obra_id;
-        $obra = Obra::findOrFail($obraId);
+{
+    $detalle = Destajo::findOrFail($id);
+    $obraId = $detalle->obra_id;
+    $obra = Obra::findOrFail($obraId);
 
-        // Access fecha_inicio and fecha_fin from the related Nomina model
-        $fecha_inicio = $detalle->nomina->fecha_inicio;
-        $fecha_fin = $detalle->nomina->fecha_fin;
-        $nombre_nomina = $detalle->nomina->nombre;
-        $dia_inicio = $detalle->nomina->dia_inicio;
-        $dia_fin = $detalle->nomina->dia_fin;
+    // Datos de la nómina asociada
+    $fecha_inicio = $detalle->nomina->fecha_inicio;
+    $fecha_fin = $detalle->nomina->fecha_fin;
+    $nombre_nomina = $detalle->nomina->nombre;
+    $dia_inicio = $detalle->nomina->dia_inicio;
+    $dia_fin = $detalle->nomina->dia_fin;
 
-        $destajoDetalles = DestajoDetalle::where('destajo_id', $detalle->id)->get();
+    // Obtener detalles del destajo actual
+    $destajoDetalles = DestajoDetalle::where('destajo_id', $detalle->id)->get();
 
-        return view('destajo.detallesdestajos', compact('detalle', 'obra', 'fecha_inicio', 'fecha_fin', 'nombre_nomina', 'dia_inicio', 'dia_fin', 'obraId', 'destajoDetalles', 'detalle'));
+    // Buscar un destajo anterior con el mismo frente que esté en curso
+    $previousDetalle = Destajo::where('obra_id', $obraId)
+        ->where('frente', $detalle->frente) // Asegurar que es el mismo frente
+        ->where('id', '<', $detalle->id) // Buscar anteriores
+        ->whereHas('detalles', function ($query) {
+            $query->where('estado', 'En Curso');
+        })
+        ->orderBy('id', 'desc')
+        ->first();
+
+    $previousDestajoDetalles = null;
+    if ($previousDetalle) {
+        $previousDestajoDetalles = DestajoDetalle::where('destajo_id', $previousDetalle->id)->get();
     }
+
+    // Determinar si se puede editar
+    $editable = !$detalle->locked;
+
+    return view('destajo.detallesdestajos', compact(
+        'detalle', 'obra', 'fecha_inicio', 'fecha_fin', 'nombre_nomina', 
+        'dia_inicio', 'dia_fin', 'obraId', 'destajoDetalles', 
+        'editable', 'previousDetalle', 'previousDestajoDetalles'
+    ));
+}
 
     public function store(Request $request, $obraId, $destajoId)
     {
@@ -84,10 +108,10 @@ class DestajosDetallesController extends Controller
                     'monto_aprobado' => $montosAprobados[$index] ?? 0,
                     'pendiente' => $pendientes[$index] ?? 0,
                     'estado' => $estados[$index] ?? 'En Curso',
-                    'pagos' => json_encode($this->getPagos($request, $index)),
+                    'pagos' => json_encode($this->getPagos($request, $index))
                 ]);
             }
-        }
+              }
 
         return redirect()->back()->with('success', 'Detalles guardados correctamente.');
     }
