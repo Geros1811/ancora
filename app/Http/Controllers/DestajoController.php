@@ -101,7 +101,7 @@ public function store(Request $request)
         $destajo->locked = !$destajo->locked;
         $destajo->save();
 
-        return redirect()->route('destajos.index', ['obraId' => $destajo->obra_id])->with('success', 'Destajo bloqueado/desbloqueado correctamente.');
+        return response()->json(['success' => true, 'locked' => $destajo->locked]);
     }
 
 

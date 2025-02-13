@@ -55,6 +55,7 @@
                 <table class="obra-table">
                     <thead>
                         <tr>
+                            <th>#</th>
                             <th>Frente</th>
                             <th>Monto Aprobado</th>
                             <th>Cantidad</th>
@@ -63,8 +64,9 @@
                         </tr>
                     </thead>
                     <tbody id="tabla-{{ $nominaId }}">
-                        @foreach($destajos as $detalle)
+                        @foreach($destajos as $index => $detalle)
                         <tr class="fila-destajo {{ $detalle->locked ? 'locked-row' : '' }}" data-id="{{ $detalle->id }}">
+                            <td>{{ $index + 1 }}</td>
                             <td>
                                 <select name="frente[]" class="form-control frente" disabled>
                                     <option value="{{ $detalle->frente }}" selected>{{ $detalle->frente }}</option>
@@ -83,12 +85,9 @@
                                 </div>
                             </td>
                             <td>
-                                <form action="{{ route('destajos.toggleLock', $detalle->id) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="btn btn-sm btn-warning">
-                                        {{ $detalle->locked ? 'Desbloquear' : 'Bloquear' }}
-                                    </button>
-                                </form>
+                                <button type="button" class="btn btn-sm btn-warning toggle-lock-btn" data-id="{{ $detalle->id }}" data-locked="{{ $detalle->locked }}" {{ $detalle->locked ? 'disabled' : '' }}>
+                                    {{ $detalle->locked ? 'Desbloquear' : 'Bloquear' }}
+                                </button>
                             </td>
                         </tr>
                         @endforeach
@@ -136,7 +135,7 @@
         width: 100%;
         padding: 3px;
         border-radius: 4px;
-        border: 1px solid #ddd;
+        border: none;
         box-sizing: border-box;
         background-color: white;
         color: black;
@@ -157,11 +156,17 @@
         margin-left: 10px; /* Adjust as needed */
     }
 
+
     .locked-row {
-        background-color: #ADD8E6; /* LightBlue color */
+        background-color: #ADD8E6 !important; /* LightBlue color */
+    }
+
+    .locked-row td input {
+        background-color: #ADD8E6 !important;
     }
 </style>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function actualizarFechas() {
         var select = document.getElementById("nomina_id");
@@ -291,5 +296,40 @@
         }
     }
 
-    
+    $(document).ready(function() {
+        $('.toggle-lock-btn').click(function() {
+            var destajoId = $(this).data('id');
+            var locked = $(this).data('locked');
+            var button = $(this);
+
+            $.ajax({
+                url: '/api/destajos/toggleLock/' + destajoId,
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        button.data('locked', response.locked);
+                        button.text(response.locked ? 'Desbloquear' : 'Bloquear');
+                        var row = button.closest('tr');
+                        if (response.locked) {
+                            row.addClass('locked-row');
+                        } else {
+                            row.removeClass('locked-row');
+                        }
+                        button.prop('disabled', true); // Disable the button after click
+                    } else {
+                        alert('Error al cambiar el estado del destajo.');
+                    }
+                },
+                error: function() {
+                    alert('Error al comunicarse con el servidor.');
+                }
+            });
+        });
+
+        // Disable initially locked buttons
+        $('.toggle-lock-btn[data-locked="true"]').prop('disabled', true);
+    });
  </script>
