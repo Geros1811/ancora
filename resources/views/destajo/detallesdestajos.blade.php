@@ -1,13 +1,37 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    // Si no existe $nombre_nomina, asumimos que estamos en modo pendiente,
+    // por lo que forzamos que los campos sean editables.
+    $isPendiente = !isset($nombre_nomina);
+    if ($isPendiente) {
+        $editable = true;
+    }
+@endphp
+
 <div class="container" style="max-width: 1200px; margin: 20px auto; padding: 20px; background: #ffffff; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
     <div class="section-header" style="text-align: center;">
-        <h1 style="font-size: 28px; font-weight: bold; color: #2c3e50; margin-bottom: 5px;">Detalles de Destajo: {{ $detalle->frente }}</h1>
-        <h2 style="font-size: 20px; color: #34495e; margin-bottom: 10px;">{{ $nombre_nomina }} ({{ $dia_inicio }} - {{ $fecha_inicio }} al {{ $dia_fin }} - {{ $fecha_fin }})</h2>
+        <h1 style="font-size: 28px; font-weight: bold; color: #2c3e50; margin-bottom: 5px;">
+            Detalles de Destajo: {{ $detalle->frente }}
+        </h1>
+        @if(isset($nombre_nomina))
+            <h2 style="font-size: 20px; color: #34495e; margin-bottom: 10px;">
+                {{ $nombre_nomina }} ({{ $dia_inicio }} - {{ $fecha_inicio }} al {{ $dia_fin }} - {{ $fecha_fin }})
+            </h2>
+        @else
+            <h2 style="font-size: 20px; color: #34495e; margin-bottom: 10px;">
+                Modo Pendiente (En Curso)
+            </h2>
+        @endif
     </div>
 
-    <form action="{{ route('detalles.destajos.store', ['obraId' => $obraId, 'destajoId' => $detalle->id]) }}" method="POST">
+    {{-- Seleccionar la acción del formulario según el modo --}}
+    @if(isset($nombre_nomina))
+        <form action="{{ route('detalles.destajos.store', ['obraId' => $obraId, 'destajoId' => $detalle->id]) }}" method="POST">
+    @else
+        <form action="{{ route('detalles.destajos.storePendiente', ['obraId' => $obraId, 'destajoId' => $detalle->id]) }}" method="POST">
+    @endif
         @csrf
 
         <div class="table-container" style="margin-top: 20px;">
@@ -26,8 +50,8 @@
                         @foreach($destajoDetalles as $destajoDetalle)
                             @if($destajoDetalle->pagos)
                                 @php
-                                    $pagos = json_decode($destajoDetalle->pagos, true);
-                                    $maxPagos = max($maxPagos, count($pagos));
+                                    $pagosTemp = json_decode($destajoDetalle->pagos, true);
+                                    $maxPagos = max($maxPagos, count($pagosTemp));
                                 @endphp
                             @endif
                         @endforeach
@@ -39,27 +63,33 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{-- Insertar los datos de la semana anterior (si existen) en las filas correspondientes --}}
+                    {{-- Filas principales --}}
                     @foreach($destajoDetalles as $index => $destajoDetalle)
                         @php
                             $pagos = $destajoDetalle->pagos ? json_decode($destajoDetalle->pagos, true) : [];
                             $estado = $destajoDetalle->estado;
                         @endphp
-                        
                         <tr class="{{ $detalle->locked ? 'locked-row' : '' }} {{ $destajoDetalle->estado == 'En Curso' ? 'en-curso-row' : '' }}">
-                            <td><input type="text" name="cotizacion[]" class="form-control" value="{{ $destajoDetalle->cotizacion }}" {{ $editable ? '' : 'readonly' }}></td>
-                            <td><input type="number" name="monto_aprobado[]" class="form-control monto_aprobado" value="{{ $destajoDetalle->monto_aprobado }}" placeholder="$" oninput="calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()" {{ $editable ? '' : 'readonly' }}></td>
-
+                            <td>
+                                <input type="text" name="cotizacion[]" class="form-control" value="{{ $destajoDetalle->cotizacion }}" {{ (!$detalle->locked) ? '' : 'readonly' }}>
+                            </td>
+                            <td>
+                                <input type="number" name="monto_aprobado[]" class="form-control monto_aprobado" value="{{ $destajoDetalle->monto_aprobado }}" placeholder="$" 
+                                    oninput="calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()" {{ (!$detalle->locked) ? '' : 'readonly' }}>
+                            </td>
+                            
                             @for($i = 1; $i <= $maxPagos; $i++)
                                 <td>
-                                    Fecha: <input type="date" name="pago_fecha_{{ $i }}[]" class="form-control" value="{{ $pagos[$i]['fecha'] ?? '' }}" onchange="calcularPendiente(this.closest('tr'))" {{ $editable ? '' : 'readonly' }}>
-                                    Pago: <input type="number" name="pago_numero_{{ $i }}[]" class="form-control pago_numero" value="{{ $pagos[$i]['numero'] ?? '' }}" placeholder="$" oninput="calcularPendiente(this.closest('tr'))" {{ $editable ? '' : 'readonly' }}>
+                                    Fecha: <input type="date" name="pago_fecha_{{ $i }}[]" class="form-control" value="{{ $pagos[$i]['fecha'] ?? '' }}" onchange="calcularPendiente(this.closest('tr'))" {{ (!$detalle->locked) ? '' : 'readonly' }}>
+                                    Pago: <input type="number" name="pago_numero_{{ $i }}[]" class="form-control pago_numero" value="{{ $pagos[$i]['numero'] ?? '' }}" placeholder="$" oninput="calcularPendiente(this.closest('tr'))" {{ (!$detalle->locked) ? '' : 'readonly' }}>
                                 </td>
                             @endfor
 
-                            <td><input type="number" name="pendiente[]" class="form-control" value="{{ $destajoDetalle->pendiente }}" placeholder="$" readonly></td>
                             <td>
-                                <select name="estado[]" class="form-control" {{ $editable ? '' : 'disabled' }}>
+                                <input type="number" name="pendiente[]" class="form-control" value="{{ $destajoDetalle->pendiente }}" placeholder="$" readonly>
+                            </td>
+                            <td>
+                                <select name="estado[]" class="form-control" {{ (!$detalle->locked) ? '' : 'disabled' }}>
                                     <option value="En Curso" {{ $estado == 'En Curso' ? 'selected' : '' }}>En Curso</option>
                                     <option value="Finalizado" {{ $estado == 'Finalizado' ? 'selected' : '' }}>Finalizado</option>
                                 </select>
@@ -67,30 +97,35 @@
                         </tr>
                     @endforeach
 
-                    {{-- Si existen detalles de la semana anterior, se añaden a la misma tabla --}}
+                    {{-- Filas anteriores: se muestran ahora como editables --}}
                     @if(isset($previousDestajoDetalles) && count($previousDestajoDetalles) > 0)
                         @foreach($previousDestajoDetalles as $destajoDetalle)
                             @php
                                 $pagos = $destajoDetalle->pagos ? json_decode($destajoDetalle->pagos, true) : [];
                                 $estado = $destajoDetalle->estado;
                             @endphp
-
                             <tr class="previous-destajo-detail">
-                                <td><input type="text" class="form-control" value="{{ $destajoDetalle->cotizacion }}" readonly></td>
-                                <td><input type="number" class="form-control monto_aprobado" value="{{ $destajoDetalle->monto_aprobado }}" placeholder="$" readonly></td>
+                                <td>
+                                    <input type="text" name="cotizacion[]" class="form-control" value="{{ $destajoDetalle->cotizacion }}">
+                                </td>
+                                <td>
+                                    <input type="number" name="monto_aprobado[]" class="form-control monto_aprobado" value="{{ $destajoDetalle->monto_aprobado }}" placeholder="$">
+                                </td>
                                 
                                 @for($i = 1; $i <= $maxPagos; $i++)
                                     <td>
-                                        Fecha: <input type="date" class="form-control" value="{{ $pagos[$i]['fecha'] ?? '' }}" readonly>
-                                        Pago: <input type="number" class="form-control pago_numero" value="{{ $pagos[$i]['numero'] ?? '' }}" placeholder="$" readonly>
+                                        Fecha: <input type="date" name="pago_fecha_{{ $i }}[]" class="form-control" value="{{ $pagos[$i]['fecha'] ?? '' }}" onchange="calcularPendiente(this.closest('tr'))">
+                                        Pago: <input type="number" name="pago_numero_{{ $i }}[]" class="form-control pago_numero" value="{{ $pagos[$i]['numero'] ?? '' }}" placeholder="$" oninput="calcularPendiente(this.closest('tr'))">
                                     </td>
                                 @endfor
 
-                                <td><input type="number" class="form-control" value="{{ $destajoDetalle->pendiente }}" placeholder="$" readonly></td>
                                 <td>
-                                    <select class="form-control" disabled>
-                                        <option value="En Curso" @if($estado == 'En Curso') selected @endif>En Curso</option>
-                                        <option value="Finalizado">Finalizado</option>
+                                    <input type="number" name="pendiente[]" class="form-control" value="{{ $destajoDetalle->pendiente }}" placeholder="$" readonly>
+                                </td>
+                                <td>
+                                    <select name="estado[]" class="form-control">
+                                        <option value="En Curso" {{ $estado == 'En Curso' ? 'selected' : '' }}>En Curso</option>
+                                        <option value="Finalizado" {{ $estado == 'Finalizado' ? 'selected' : '' }}>Finalizado</option>
                                     </select>
                                 </td>
                             </tr>
@@ -105,17 +140,22 @@
             <div style="margin-top: 10px; text-align: right;">
                 <strong>Cantidad Total Pagada:</strong> $<span id="cantidad_total_pagada">0.00</span>
             </div>
-            <button type="button" class="btn btn-primary" onclick="agregarFila()" {{ $editable && !$detalle->locked ? '' : 'disabled' }}>Agregar Fila</button>
+            <button type="button" class="btn btn-primary" onclick="agregarFila()" {{ (!$detalle->locked) ? '' : 'disabled' }}>Agregar Fila</button>
         </div>
 
-        <button type="submit" class="btn btn-success" {{ $editable && !$detalle->locked ? '' : 'disabled' }}>Guardar Detalles</button>
-        <a href="{{ route('destajos.detalles.pdf', $detalle->id) }}" class="btn btn-primary" target="_blank">
-            Generar PDF
-        </a>
+        <button type="submit" class="btn btn-success" {{ (!$detalle->locked) ? '' : 'disabled' }}>Guardar Detalles</button>
+        
+        @if(isset($nombre_nomina))
+            <a href="{{ route('destajos.detalles.pdf', $detalle->id) }}" class="btn btn-primary" target="_blank">
+                Generar PDF
+            </a>
+        @else
+            <a href="{{ route('destajos.detalles.pdfPendiente', $detalle->id) }}" class="btn btn-primary" target="_blank">
+                Generar PDF
+            </a>
+        @endif
     </form>
 </div>
-
-
 
 <style>
     .obra-table {
@@ -140,7 +180,7 @@
 
     .obra-table tr:nth-child(even) {
         background-color: #f9f9f9;
-        }
+    }
 
     .obra-table tr:nth-child(odd) {
         background-color: #ffffff;
@@ -162,7 +202,7 @@
     }
 
     .en-curso-row {
-        background-color: #FFFFE0; /* LightYellow color */
+        background-color: #FFFFE0;
     }
 </style>
 
@@ -188,100 +228,93 @@
     }
 
     function calcularPendiente(row) {
-        let montoAprobado = Number(row.querySelector('input[name="monto_aprobado[]"]').value) || 0;
+        let montoInput = row.querySelector('input[name="monto_aprobado[]"]');
+        if (!montoInput) return;
+        let montoAprobado = Number(montoInput.value) || 0;
         let totalPagos = 0;
-        let pagoInputs = row.querySelectorAll('td > input[name^="pago_numero"]');
+        let pagoInputs = row.querySelectorAll('input[name^="pago_numero"]');
         pagoInputs.forEach(function(pago) {
             totalPagos += Number(pago.value) || 0;
         });
         let pendiente = montoAprobado - totalPagos;
-        row.querySelector('input[name="pendiente[]"]').value = pendiente.toFixed(2);
-        if (pendiente <= 0) {
-            row.querySelector('select[name="estado[]"]').value = 'Finalizado';
-        } else {
-            row.querySelector('select[name="estado[]"]').value = 'En Curso';
+        let pendienteInput = row.querySelector('input[name="pendiente[]"]');
+        if (pendienteInput) {
+            pendienteInput.value = pendiente.toFixed(2);
+        }
+        let estadoSelect = row.querySelector('select[name="estado[]"]');
+        if (estadoSelect) {
+            estadoSelect.value = pendiente <= 0 ? 'Finalizado' : 'En Curso';
         }
 
-        // Recalculate total amount paid
+        // Recalcular total de pagos
         let totalCantidadPagada = 0;
-        document.querySelectorAll('tbody tr').forEach(function(row) {
-            let totalPagos = 0;
-            let pagoInputs = row.querySelectorAll('td > input[name^="pago_numero"]');
-            pagoInputs.forEach(function(pago) {
-                totalPagos += Number(pago.value) || 0;
+        document.querySelectorAll('tbody tr').forEach(function(r) {
+            let pagosRow = r.querySelectorAll('input[name^="pago_numero"]');
+            pagosRow.forEach(function(pago) {
+                totalCantidadPagada += Number(pago.value) || 0;
             });
-            totalCantidadPagada += totalPagos;
         });
-        document.getElementById('cantidad_total_pagada').innerText = totalCantidadPagada.toFixed(2);
+        let totalPagadaElem = document.getElementById('cantidad_total_pagada');
+        if (totalPagadaElem) {
+            totalPagadaElem.innerText = totalCantidadPagada.toFixed(2);
+        }
     }
 
     function agregarColumnaPago(button) {
-        button.disabled = true; // Deshabilitar el botón de la columna anterior
-
+        button.disabled = true;
         const table = document.querySelector('.obra-table');
         const headerRow = table.querySelector('thead tr');
-
-        // Contar cuántas columnas de pago hay
-        let pagoCount = headerRow.querySelectorAll('th').length - 4 + 1; // +1 porque añadiremos una nueva
+        let pagoCount = headerRow.querySelectorAll('th').length - 4 + 1;
         const newHeader = document.createElement('th');
         newHeader.innerHTML = `Pago ${pagoCount} <button type="button" class="btn btn-success btn-sm" onclick="agregarColumnaPago(this)">+</button>`;
-
-        // Insertar el nuevo encabezado ANTES de la columna "Pendiente"
         const pendienteHeader = headerRow.querySelector('th:nth-last-child(2)');
         headerRow.insertBefore(newHeader, pendienteHeader);
 
-        // Agregar la nueva columna en cada fila del cuerpo de la tabla
         document.querySelectorAll('.obra-table tbody tr').forEach(row => {
             const newColumn = document.createElement('td');
             newColumn.innerHTML = `
                 Fecha: <input type="date" name="pago_fecha_${pagoCount}[]" class="form-control" onchange="calcularPendiente(this.closest('tr'))">
-                Pago: <input type="number" name="pago_numero_${pagoCount}[]" class="form-control pago_numero" value="" placeholder="$" oninput="calcularPendiente(this.closest('tr'))">
+                Pago: <input type="number" name="pago_numero_${pagoCount}[]" class="form-control pago_numero" placeholder="$" oninput="calcularPendiente(this.closest('tr'))">
             `;
-
-            // Insertar antes de la celda "Pendiente"
             const pendienteCell = row.querySelector('td:nth-last-child(2)');
             row.insertBefore(newColumn, pendienteCell);
         });
     }
 
-function agregarFila() {
-    const tableBody = document.querySelector('.obra-table tbody');
-    const newRow = document.createElement('tr');
+    function agregarFila() {
+        const tableBody = document.querySelector('.obra-table tbody');
+        const newRow = document.createElement('tr');
+        let numPagoColumns = document.querySelector('.obra-table thead tr').querySelectorAll('th').length - 4;
+        let newRowHTML = `
+            <td><input type="text" name="cotizacion[]" class="form-control" value=""></td>
+            <td><input type="number" name="monto_aprobado[]" class="form-control monto_aprobado" value="0" placeholder="$" oninput="calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()"></td>
+        `;
 
-    // Calculate the number of payment columns based on the header
-    let numPagoColumns = document.querySelector('.obra-table thead tr').querySelectorAll('th').length - 4;
+        for (let i = 1; i <= numPagoColumns; i++) {
+            newRowHTML += `
+                <td>
+                    Fecha: <input type="date" name="pago_fecha_${i}[]" class="form-control" onchange="calcularPendiente(this.closest('tr'))">
+                    Pago: <input type="number" name="pago_numero_${i}[]" class="form-control pago_numero" value="0" placeholder="$" oninput="calcularPendiente(this.closest('tr'))">
+                </td>
+            `;
+        }
 
-    let newRowHTML = `
-        <td><input type="text" name="cotizacion[]" class="form-control" value=""></td>
-        <td><input type="number" name="monto_aprobado[]" class="form-control monto_aprobado" value="0" placeholder="$" oninput="calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()"></td>
-    `;
-
-    for (let i = 1; i <= numPagoColumns; i++) {
         newRowHTML += `
+            <td><input type="number" name="pendiente[]" class="form-control" value="0" placeholder="$" readonly></td>
             <td>
-                Fecha: <input type="date" name="pago_fecha_${i}[]" class="form-control" value="" onchange="calcularPendiente(this.closest('tr'))">
-                Pago: <input type="number" name="pago_numero_${i}[]" class="form-control pago_numero" value="0" placeholder="$" oninput="calcularPendiente(this.closest('tr'))">
+                <select name="estado[]" class="form-control">
+                    <option value="En Curso" selected>En Curso</option>
+                    <option value="Finalizado">Finalizado</option>
+                </select>
             </td>
         `;
+        newRow.innerHTML = newRowHTML;
+        tableBody.appendChild(newRow);
+        calcularPendiente(newRow);
+        calcularTotalMontoAprobado();
     }
 
-    newRowHTML += `
-        <td><input type="number" name="pendiente[]" class="form-control" value="0" placeholder="$" readonly></td>
-        <td>
-            <select name="estado[]" class="form-control">
-                <option value="En Curso" selected>En Curso</option>
-                <option value="Finalizado">Finalizado</option>
-            </select>
-        </td>
-    `;
-
-    newRow.innerHTML = newRowHTML;
-    tableBody.appendChild(newRow);
-    calcularPendiente(newRow);
-    calcularTotalMontoAprobado();
-}
-
-    // Call calcularTotalMontoAprobado initially to calculate the total on page load
+    // Inicializar totales al cargar la página
     calcularTotalMontoAprobado();
 </script>
 @endsection
