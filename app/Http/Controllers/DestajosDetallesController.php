@@ -17,7 +17,7 @@ class DestajosDetallesController extends Controller
 
     public function show($id)
     {
-        $detalle = Destajo::findOrFail($id);
+        $detalle = $this->getDestajoDetailsById($id);
         $obraId = $detalle->obra_id;
         $obra = Obra::findOrFail($obraId);
 
@@ -31,28 +31,18 @@ class DestajosDetallesController extends Controller
         // Obtener todos los detalles asociados al destajo (sin filtro de estado)
         $destajoDetalles = DestajoDetalle::where('destajo_id', $detalle->id)->get();
 
-        // Búsqueda de destajo anterior (si se requiere)
-        $previousDetalle = Destajo::where('obra_id', $obraId)
-            ->where('frente', $detalle->frente)
-            ->where('id', '<', $detalle->id)
-            ->whereHas('detalles', function ($query) {
-                $query->where('estado', 'En Curso');
-            })
-            ->orderBy('id', 'desc')
-            ->first();
-
-        $previousDestajoDetalles = null;
-        if ($previousDetalle) {
-            $previousDestajoDetalles = DestajoDetalle::where('destajo_id', $previousDetalle->id)->get();
-        }
-
         $editable = !$detalle->locked;
 
         return view('destajo.detallesdestajos', compact(
-            'detalle', 'obra', 'fecha_inicio', 'fecha_fin', 'nombre_nomina', 
-            'dia_inicio', 'dia_fin', 'obraId', 'destajoDetalles', 
-            'editable', 'previousDetalle', 'previousDestajoDetalles'
+            'detalle', 'obra', 'fecha_inicio', 'fecha_fin', 'nombre_nomina',
+            'dia_inicio', 'dia_fin', 'obraId', 'destajoDetalles',
+            'editable'
         ));
+    }
+
+    private function getDestajoDetailsById($id)
+    {
+        return Destajo::findOrFail($id);
     }
 
     public function store(Request $request, $obraId, $destajoId)
@@ -137,98 +127,92 @@ class DestajosDetallesController extends Controller
     // Se utilizarán los mismos nombres de inputs y la misma vista para que funcione igual.
     // ============================================================================
 
-    public function showPendiente($id)
+    public function exportarDestajos(Request $request, $obraId)
     {
-        $detalle = Destajo::findOrFail($id);
-        $obraId  = $detalle->obra_id;
-        $obra    = Obra::findOrFail($obraId);
-    
-        // Obtener únicamente los detalles con estado "En Curso"
-        $destajoDetalles = DestajoDetalle::where('destajo_id', $detalle->id)
-            ->where('estado', 'En Curso')
+        $nominaId = $request->nomina_id;
+
+        // Obtener la nómina actual
+        $currentNomina = Nomina::findOrFail($nominaId);
+
+        // Obtener la siguiente nómina
+        $nextNomina = Nomina::where('obra_id', $obraId)
+            ->where('fecha_inicio', '>', $currentNomina->fecha_fin)
+            ->orderBy('fecha_inicio', 'asc')
+            ->first();
+
+        if (!$nextNomina) {
+            return redirect()->route('destajos.index', ['obraId' => $obraId])
+                             ->with('error', 'No hay nóminas con fechas posteriores.');
+        }
+
+        // Obtener los destajos actuales
+        $destajos = Destajo::where('obra_id', $obraId)
+            ->where('nomina_id', $nominaId)
             ->get();
-    
-        // Forzar la edición en modo pendiente (si es lo deseado)
-        $editable = true;
-    
-        return view('destajo.detallesdestajos', compact(
-            'detalle', 'obra', 'obraId', 'destajoDetalles', 'editable'
-        ));
+
+        // Crear nuevos destajos para la siguiente nómina
+        foreach ($destajos as $destajo) {
+            $newDestajo = $destajo->replicate();
+            $newDestajo->nomina_id = $nextNomina->id;
+            $newDestajo->monto_aprobado = 0;
+            $newDestajo->cantidad = 0;
+            $newDestajo->locked = false;
+            $newDestajo->save();
+
+            // Replicar los detalles del destajo
+            $destajoDetalles = DestajoDetalle::where('destajo_id', $destajo->id)->get();
+            foreach ($destajoDetalles as $detalle) {
+                $newDetalle = $detalle->replicate();
+                $newDetalle->destajo_id = $newDestajo->id;
+                $newDetalle->monto_aprobado = 0;
+                $newDetalle->pendiente = $detalle->monto_aprobado;
+                $newDetalle->estado = 'En Curso';
+                $newDetalle->pagos = json_encode([]);
+                $newDetalle->save();
+            }
+        }
+
+        return redirect()->route('destajos.index', ['obraId' => $obraId])
+                         ->with('success', 'Destajos exportados correctamente.');
     }
 
-    public function storePendiente(Request $request, $obraId, $destajoId)
+    public function exportar(Request $request, $obraId, $destajoId)
     {
         $destajo = Destajo::findOrFail($destajoId);
+        $currentNomina = $destajo->nomina;
 
-        if ($destajo->locked) {
-            return redirect()->back()->with('error', 'Este destajo está bloqueado y no se puede editar.');
+        // Obtener la siguiente nómina
+        $nextNomina = Nomina::where('obra_id', $obraId)
+            ->where('fecha_inicio', '>', $currentNomina->fecha_fin)
+            ->orderBy('fecha_inicio', 'asc')
+            ->first();
+
+        if (!$nextNomina) {
+            return redirect()->back()->with('error', 'No hay nóminas con fechas posteriores.');
         }
 
-        $cotizaciones    = $request->input('cotizacion');
-        $montosAprobados = $request->input('monto_aprobado');
-        $pendientes      = $request->input('pendiente');
-        $estados         = $request->input('estado');
+        // Crear nuevo destajo para la siguiente nómina
+        $newDestajo = $destajo->replicate();
+        $newDestajo->nomina_id = $nextNomina->id;
+        $newDestajo->monto_aprobado = 0;
+        $newDestajo->cantidad = 0;
+        $newDestajo->locked = false;
+        $newDestajo->save();
 
-        // Calcular totales
-        $totalMontoAprobado = array_sum($montosAprobados);
-        $totalCantidadPagada = 0;
-        foreach ($request->input() as $key => $value) {
-            if (strpos($key, 'pago_numero_') === 0) {
-                foreach ($value as $pago) {
-                    $totalCantidadPagada += $pago;
-                }
-            }
+        // Replicar los detalles del destajo
+        $destajoDetalles = DestajoDetalle::where('destajo_id', $destajo->id)->get();
+        foreach ($destajoDetalles as $detalle) {
+            $newDetalle = $detalle->replicate();
+            $newDetalle->destajo_id = $newDestajo->id;
+            $newDetalle->monto_aprobado = $detalle->monto_aprobado;
+            $newDetalle->pendiente = $detalle->monto_aprobado;
+            $newDetalle->estado = 'En Curso';
+            $newDetalle->pagos = $detalle->pagos; // Mantener los pagos
+            $newDetalle->save();
         }
 
-        // Actualizar totales en el registro principal
-        $destajo->monto_aprobado = $totalMontoAprobado;
-        $destajo->cantidad        = $totalCantidadPagada;
-        $destajo->save();
-
-        foreach ($cotizaciones as $index => $cotizacion) {
-            // Filtrar por estado "En Curso" para asegurarnos de trabajar sobre los pendientes
-            $destajoDetalle = DestajoDetalle::where('obra_id', $obraId)
-                ->where('destajo_id', $destajoId)
-                ->where('cotizacion', $cotizacion)
-                ->where('estado', 'En Curso')
-                ->first();
-
-            $data = [
-                'obra_id'        => $obraId,
-                'destajo_id'     => $destajoId,
-                'cotizacion'     => $cotizacion,
-                'monto_aprobado' => $montosAprobados[$index] ?? 0,
-                'pendiente'      => $pendientes[$index] ?? 0,
-                'estado'         => $estados[$index] ?? 'En Curso',
-                'pagos'          => json_encode($this->getPagos($request, $index))
-            ];
-
-            if ($destajoDetalle) {
-                $destajoDetalle->update($data);
-            } else {
-                DestajoDetalle::create($data);
-            }
-        }
-
-        return redirect()->back()->with('success', 'Detalles guardados correctamente.');
-    }
-
-    public function generatePdfPendiente($id)
-    {
-        $detalle = Destajo::findOrFail($id);
-        $obraId  = $detalle->obra_id;
-        $obra    = Obra::findOrFail($obraId);
-
-        // Obtener solo los detalles con estado "En Curso"
-        $destajoDetalles = DestajoDetalle::where('destajo_id', $detalle->id)
-            ->where('estado', 'En Curso')
-            ->get();
-
-        $pdf = Pdf::loadView('destajo.pdf', compact(
-            'detalle', 'obra', 'obraId', 'destajoDetalles'
-        ));
-
-        return $pdf->stream('detalles_destajo_pendiente.pdf');
+        return redirect()->route('destajos.detalles', ['id' => $newDestajo->id])
+                         ->with('success', 'Detalles exportados correctamente.');
     }
 
     // ============================================================================
@@ -252,4 +236,5 @@ class DestajosDetallesController extends Controller
         }
         return $pagos;
     }
+
 }

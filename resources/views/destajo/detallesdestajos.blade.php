@@ -154,6 +154,7 @@
                 Generar PDF
             </a>
         @endif
+        <button type="button" class="btn btn-secondary" onclick="exportarDetalles()">Exportar</button>
     </form>
 </div>
 
@@ -312,6 +313,15 @@
         tableBody.appendChild(newRow);
         calcularPendiente(newRow);
         calcularTotalMontoAprobado();
+    }
+
+    function exportarDetalles() {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{{ route('detalles.destajos.exportar', ['obraId' => $obraId, 'destajoId' => $detalle->id]) }}";
+        form.innerHTML = '@csrf';
+        document.body.appendChild(form);
+        form.submit();
     }
 
     // Inicializar totales al cargar la página

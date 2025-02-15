@@ -139,12 +139,11 @@ Route::post('/obra/{obraId}/destajo/store', [DestajosDetallesController::class, 
 Route::get('/detalles-destajos/{id}', [DestajosDetallesController::class, 'show'])->name('detalles.destajos');
 Route::post('/detalles-destajos/{obraId}/{destajoId}', [DestajosDetallesController::class, 'store'])->name('detalles.destajos.store');
 
-
+Route::post('/exportar-destajos/{obraId}', [DestajoController::class, 'exportarDestajos'])->name('exportar.destajos');
 
 Route::get('/mano-obra/pdf/{nomina_id}', [ManoObraController::class, 'generarPDF'])->name('mano-obra.pdf');
 
-
-
+Route::post('detalles/destajos/exportar/{obraId}/{destajoId}', [DestajosDetallesController::class, 'exportar'])->name('detalles.destajos.exportar');
 
 // Rutas para materiales
 Route::get('/materiales/{obraId}', [MaterialesController::class, 'index'])->name('materiales.index');
@@ -162,3 +161,5 @@ Route::delete('/destajos/{destajo}', [DestajoController::class, 'destroy'])->nam
 Route::get('/destajos/{id}/pdf', [DestajosDetallesController::class, 'generatePdf'])->name('destajos.detalles.pdf');
 
 Route::post('/api/destajos/toggleLock/{id}', [DestajoController::class, 'toggleLock'])->name('api.destajos.toggleLock');
+
+Route::get('/destajos/detalles/{id}', [DestajosDetallesController::class, 'show'])->name('destajos.detalles');
