@@ -138,6 +138,7 @@ Route::get('/detalles-destajos/{id}', [DestajosDetallesController::class, 'show'
 Route::post('/obra/{obraId}/destajo/store', [DestajosDetallesController::class, 'store'])->name('destajo.store');
 Route::get('/detalles-destajos/{id}', [DestajosDetallesController::class, 'show'])->name('detalles.destajos');
 Route::post('/detalles-destajos/{obraId}/{destajoId}', [DestajosDetallesController::class, 'store'])->name('detalles.destajos.store');
+Route::post('/detalles-destajos/{obraId}/{destajoId}/upload-image', [DestajosDetallesController::class, 'uploadImage'])->name('detalles.destajos.uploadImage');
 
 Route::post('/exportar-destajos/{obraId}', [DestajoController::class, 'exportarDestajos'])->name('exportar.destajos');
 

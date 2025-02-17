@@ -28,4 +28,9 @@ class DestajoDetalle extends Model
     {
         return $this->hasMany(DestajoPago::class);
     }
+
+    public function imagenes()
+    {
+        return $this->hasMany(Imagen::class);
+    }
 }

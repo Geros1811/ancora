@@ -28,9 +28,9 @@
 
     {{-- Seleccionar la acción del formulario según el modo --}}
     @if(isset($nombre_nomina))
-        <form action="{{ route('detalles.destajos.store', ['obraId' => $obraId, 'destajoId' => $detalle->id]) }}" method="POST">
+        <form action="{{ route('detalles.destajos.store', ['obraId' => $obraId, 'destajoId' => $detalle->id]) }}" method="POST" enctype="multipart/form-data">
     @else
-        <form action="{{ route('detalles.destajos.storePendiente', ['obraId' => $obraId, 'destajoId' => $detalle->id]) }}" method="POST">
+        <form action="{{ route('detalles.destajos.storePendiente', ['obraId' => $obraId, 'destajoId' => $detalle->id]) }}" method="POST" enctype="multipart/form-data">
     @endif
         @csrf
         <input type="hidden" name="fecha_inicio" value="{{ $fecha_inicio }}">
@@ -158,6 +158,35 @@
         @endif
         <button type="button" class="btn btn-secondary" onclick="exportarDetalles()" {{ (!$detalle->locked) ? '' : 'disabled' }}>Exportar</button>
     </form>
+
+    {{-- Formulario para subir imágenes --}}
+    <form action="{{ route('detalles.destajos.uploadImage', ['obraId' => $obraId, 'destajoId' => $detalle->id]) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <div class="form-group">
+            <label for="image">Subir Imagen:</label>
+            <input type="file" name="image" class="form-control" accept="image/*" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Subir Imagen</button>
+    </form>
+
+    {{-- Mostrar imágenes subidas --}}
+    <div class="image-gallery" style="margin-top: 20px;">
+        <h3>Imágenes Subidas:</h3>
+        <div class="row">
+            @if(isset($imagenes) && count($imagenes) > 0)
+                @foreach($imagenes as $imagen)
+                    <div class="col-md-3">
+                        <div class="thumbnail">
+                            <img src="{{ asset('storage/' . $imagen->path) }}" alt="Imagen" style="width:100%">
+                            <div class="caption">
+                                <p>{{ $imagen->created_at }}</p>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            @endif
+        </div>
+    </div>
 </div>
 
 <style>
@@ -207,6 +236,17 @@
     .en-curso-row {
         background-color: #FFFFE0;
     }
+
+    .image-gallery .thumbnail {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 5px;
+        margin-bottom: 20px;
+    }
+
+    .image-gallery .thumbnail img {
+        border-radius: 4px;
+    }
 </style>
 
 <script>
@@ -238,28 +278,54 @@
     }
 
     function calcularPendiente(row) {
-    let montoInput = row.querySelector('input[name="monto_aprobado[]"]');
-    if (!montoInput) return;
-    let montoAprobado = Number(montoInput.value) || 0;
-    let totalPagos = 0;
-    let pagoInputs = row.querySelectorAll('input[name^="pago_numero"]');
+        let montoInput = row.querySelector('input[name="monto_aprobado[]"]');
+        if (!montoInput) return;
+        let montoAprobado = Number(montoInput.value) || 0;
+        let totalPagos = 0;
+        let pagoInputs = row.querySelectorAll('input[name^="pago_numero"]');
+        let fechaInputs = row.querySelectorAll('input[name^="pago_fecha"]');
 
-    for (let i = 0; i < pagoInputs.length; i++) {
-        let pago = Number(pagoInputs[i].value) || 0;
-        totalPagos += pago; // Se suman todos los pagos sin importar la fecha
+        for (let i = 0; i < pagoInputs.length; i++) {
+            let pago = Number(pagoInputs[i].value) || 0;
+            let fecha = fechaInputs[i].value;
+
+            if (fecha >= '{{ $fecha_inicio }}' && fecha <= '{{ $fecha_fin }}') {
+                totalPagos += pago;
+            }
+        }
+
+        let pendiente = montoAprobado - totalPagos;
+        let pendienteInput = row.querySelector('input[name="pendiente[]"]');
+        if (pendienteInput) {
+            pendienteInput.value = pendiente.toFixed(2);
+        }
+        let estadoSelect = row.querySelector('select[name="estado[]"]');
+        if (estadoSelect) {
+            estadoSelect.value = pendiente <= 0 ? 'Finalizado' : 'En Curso';
+        }
+
+        // Recalcular total de pagos
+        let totalCantidadPagada = 0;
+        document.querySelectorAll('tbody tr').forEach(function(r) {
+            let pagosRow = r.querySelectorAll('input[name^="pago_numero"]');
+            let fechasRow = r.querySelectorAll('input[name^="pago_fecha"]');
+
+            for (let i = 0; i < pagosRow.length; i++) {
+                let pago = Number(pagosRow[i].value) || 0;
+                let fecha = fechasRow[i].value;
+
+                if (fecha >= '{{ $fecha_inicio }}' && fecha <= '{{ $fecha_fin }}') {
+                    totalCantidadPagada += pago;
+                }
+            }
+        });
+
+        let totalPagadaElem = document.getElementById('cantidad_total_pagada');
+        if (totalPagadaElem) {
+            totalPagadaElem.innerText = totalCantidadPagada.toFixed(2);
+        }
     }
 
-    let pendiente = montoAprobado - totalPagos;
-    let pendienteInput = row.querySelector('input[name="pendiente[]"]');
-    if (pendienteInput) {
-        pendienteInput.value = pendiente.toFixed(2);
-    }
-    
-    let estadoSelect = row.querySelector('select[name="estado[]"]');
-    if (estadoSelect) {
-        estadoSelect.value = pendiente <= 0 ? 'Finalizado' : 'En Curso';
-    }
-    }
     function agregarColumnaPago(button, fechaInicio, fechaFin) {
         button.disabled = true;
         const table = document.querySelector('.obra-table');
