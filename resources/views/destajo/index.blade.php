@@ -78,10 +78,10 @@
                                  <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
                                 <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
                                 <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
-                                    <a href="{{ route('detalles.destajos', ['id' => $detalle->id]) }}" class="btn btn-sm btn-info">
+                                    <a href="{{ route('detalles.destajos', ['id' => $detalle->id]) }}" class="btn btn-sm btn-info" {{ $detalle->locked ? 'disabled' : '' }}>
                                         Ir a detalles
                                     </a>
-                                    <button type="button" class="btn btn-danger btn-sm" onclick="eliminarFila(this)">Eliminar</button>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="eliminarFila(this)" {{ $detalle->locked ? 'disabled' : '' }}>Eliminar</button>
                                 </div>
                             </td>
                             <td>

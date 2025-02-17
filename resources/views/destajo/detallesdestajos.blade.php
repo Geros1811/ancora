@@ -156,7 +156,7 @@
                 Generar PDF
             </a>
         @endif
-        <button type="button" class="btn btn-secondary" onclick="exportarDetalles()">Exportar</button>
+        <button type="button" class="btn btn-secondary" onclick="exportarDetalles()" {{ (!$detalle->locked) ? '' : 'disabled' }}>Exportar</button>
     </form>
 </div>
 
