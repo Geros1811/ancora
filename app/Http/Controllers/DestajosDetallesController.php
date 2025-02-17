@@ -46,59 +46,73 @@ class DestajosDetallesController extends Controller
     }
 
     public function store(Request $request, $obraId, $destajoId)
-    {
-        $destajo = Destajo::findOrFail($destajoId);
+{
+    $destajo = Destajo::findOrFail($destajoId);
 
-        if ($destajo->locked) {
-            return redirect()->back()->with('error', 'Este destajo está bloqueado y no se puede editar.');
-        }
+    if ($destajo->locked) {
+        return redirect()->back()->with('error', 'Este destajo está bloqueado y no se puede editar.');
+    }
 
-        $cotizaciones    = $request->input('cotizacion');
-        $montosAprobados = $request->input('monto_aprobado');
-        $pendientes      = $request->input('pendiente');
-        $estados         = $request->input('estado');
+    $cotizaciones    = $request->input('cotizacion');
+    $montosAprobados = $request->input('monto_aprobado');
+    $pendientes      = $request->input('pendiente');
+    $estados         = $request->input('estado');
 
-        // Calcular totales
-        $totalMontoAprobado = array_sum($montosAprobados);
-        $totalCantidadPagada = 0;
-        foreach ($request->input() as $key => $value) {
-            if (strpos($key, 'pago_numero_') === 0) {
-                foreach ($value as $pago) {
-                    $totalCantidadPagada += $pago;
+    // Calcular el monto total aprobado
+    $totalMontoAprobado = array_sum($montosAprobados);
+
+    // **Reiniciar el total de pagos antes de recalcular**
+    $totalCantidadPagada = 0;
+
+    foreach ($request->input() as $key => $value) {
+        if (strpos($key, 'pago_numero_') === 0) {
+            foreach ($value as $index => $pago) {
+                $fechaPago = $request->input("pago_fecha_" . explode('_', $key)[2])[$index];
+
+                // **Asegurar que las fechas sean comparables**
+                $fechaPago = date('Y-m-d', strtotime($fechaPago));
+                $fechaInicio = date('Y-m-d', strtotime($request->input('fecha_inicio')));
+                $fechaFin = date('Y-m-d', strtotime($request->input('fecha_fin')));
+
+                if ($fechaPago >= $fechaInicio && $fechaPago <= $fechaFin) {
+                    $totalCantidadPagada += floatval($pago); // Convertir a número flotante
                 }
             }
         }
-
-        // Actualizar totales en el registro principal
-        $destajo->monto_aprobado = $totalMontoAprobado;
-        $destajo->cantidad        = $totalCantidadPagada;
-        $destajo->save();
-
-        foreach ($cotizaciones as $index => $cotizacion) {
-            $destajoDetalle = DestajoDetalle::where('obra_id', $obraId)
-                ->where('destajo_id', $destajoId)
-                ->where('cotizacion', $cotizacion)
-                ->first();
-
-            $data = [
-                'obra_id'        => $obraId,
-                'destajo_id'     => $destajoId,
-                'cotizacion'     => $cotizacion,
-                'monto_aprobado' => $montosAprobados[$index] ?? 0,
-                'pendiente'      => $pendientes[$index] ?? 0,
-                'estado'         => $estados[$index] ?? 'En Curso',
-                'pagos'          => json_encode($this->getPagos($request, $index))
-            ];
-
-            if ($destajoDetalle) {
-                $destajoDetalle->update($data);
-            } else {
-                DestajoDetalle::create($data);
-            }
-        }
-
-        return redirect()->back()->with('success', 'Detalles guardados correctamente.');
     }
+
+    // **Actualizar los totales en el destajo**
+    $destajo->monto_aprobado = $totalMontoAprobado;
+    $destajo->cantidad = $totalCantidadPagada;
+    $destajo->save();
+
+    // Guardar los detalles de los pagos en `DestajoDetalle`
+    foreach ($cotizaciones as $index => $cotizacion) {
+        $destajoDetalle = DestajoDetalle::where('obra_id', $obraId)
+            ->where('destajo_id', $destajoId)
+            ->where('cotizacion', $cotizacion)
+            ->first();
+
+        $data = [
+            'obra_id'        => $obraId,
+            'destajo_id'     => $destajoId,
+            'cotizacion'     => $cotizacion,
+            'monto_aprobado' => $montosAprobados[$index] ?? 0,
+            'pendiente'      => $pendientes[$index] ?? 0,
+            'estado'         => $estados[$index] ?? 'En Curso',
+            'pagos'          => json_encode($this->getPagos($request, $index))
+        ];
+
+        if ($destajoDetalle) {
+            $destajoDetalle->update($data);
+        } else {
+            DestajoDetalle::create($data);
+        }
+    }
+
+    return redirect()->back()->with('success', 'Detalles guardados correctamente.');
+}
+
 
     public function generatePdf($id)
     {
@@ -227,11 +241,11 @@ class DestajosDetallesController extends Controller
                 $parts = explode('_', $key);
                 $pagoNumber = $parts[2];
                 if (isset($request->input("pago_fecha_$pagoNumber")[$index])) {
-                    $pagos[$pagoNumber] = [
-                        'fecha'  => $request->input("pago_fecha_$pagoNumber")[$index],
-                        'numero' => $request->input("pago_numero_$pagoNumber")[$index] ?? null,
-                    ];
-                }
+                                            $pagos[$pagoNumber] = [
+                            'fecha'  => $request->input("pago_fecha_$pagoNumber")[$index],
+                            'numero' => $request->input("pago_numero_$pagoNumber")[$index] ?? null,
+                        ];
+                                    }
             }
         }
         return $pagos;

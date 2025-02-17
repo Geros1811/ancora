@@ -33,6 +33,8 @@
         <form action="{{ route('detalles.destajos.storePendiente', ['obraId' => $obraId, 'destajoId' => $detalle->id]) }}" method="POST">
     @endif
         @csrf
+        <input type="hidden" name="fecha_inicio" value="{{ $fecha_inicio }}">
+        <input type="hidden" name="fecha_fin" value="{{ $fecha_fin }}">
 
         <div class="table-container" style="margin-top: 20px;">
             <table class="obra-table">
@@ -42,7 +44,7 @@
                         <th>Monto Aprobado</th>
                         <th id="pago-header">
                             Pago 1 
-                            <button type="button" class="btn btn-success btn-sm" onclick="agregarColumnaPago(this)" {{ $editable ? '' : 'disabled' }}>+</button>
+                            <button type="button" class="btn btn-success btn-sm" onclick="agregarColumnaPago(this, '{{ $fecha_inicio }}', '{{ $fecha_fin }}')" {{ $editable ? '' : 'disabled' }}>+</button>
                         </th>
                         @php
                             $maxPagos = 1;
@@ -140,7 +142,7 @@
             <div style="margin-top: 10px; text-align: right;">
                 <strong>Cantidad Total Pagada:</strong> $<span id="cantidad_total_pagada">0.00</span>
             </div>
-            <button type="button" class="btn btn-primary" onclick="agregarFila()" {{ (!$detalle->locked) ? '' : 'disabled' }}>Agregar Fila</button>
+            <button type="button" class="btn btn-primary" onclick="agregarFila('{{ $fecha_inicio }}', '{{ $fecha_fin }}')" {{ (!$detalle->locked) ? '' : 'disabled' }}>Agregar Fila</button>
         </div>
 
         <button type="submit" class="btn btn-success" {{ (!$detalle->locked) ? '' : 'disabled' }}>Guardar Detalles</button>
@@ -218,9 +220,16 @@
         document.querySelectorAll('tbody tr').forEach(function(row) {
             let totalPagos = 0;
             let pagoInputs = row.querySelectorAll('td > input[name^="pago_numero"]');
-            pagoInputs.forEach(function(pago) {
-                totalPagos += Number(pago.value) || 0;
-            });
+            let fechaInputs = row.querySelectorAll('td > input[name^="pago_fecha"]');
+
+            for (let i = 0; i < pagoInputs.length; i++) {
+                let pago = Number(pagoInputs[i].value) || 0;
+                let fecha = fechaInputs[i].value;
+
+                if (fecha >= '{{ $fecha_inicio }}' && fecha <= '{{ $fecha_fin }}') {
+                    totalPagos += pago;
+                }
+            }
             totalCantidadPagada += totalPagos;
         });
 
@@ -229,52 +238,42 @@
     }
 
     function calcularPendiente(row) {
-        let montoInput = row.querySelector('input[name="monto_aprobado[]"]');
-        if (!montoInput) return;
-        let montoAprobado = Number(montoInput.value) || 0;
-        let totalPagos = 0;
-        let pagoInputs = row.querySelectorAll('input[name^="pago_numero"]');
-        pagoInputs.forEach(function(pago) {
-            totalPagos += Number(pago.value) || 0;
-        });
-        let pendiente = montoAprobado - totalPagos;
-        let pendienteInput = row.querySelector('input[name="pendiente[]"]');
-        if (pendienteInput) {
-            pendienteInput.value = pendiente.toFixed(2);
-        }
-        let estadoSelect = row.querySelector('select[name="estado[]"]');
-        if (estadoSelect) {
-            estadoSelect.value = pendiente <= 0 ? 'Finalizado' : 'En Curso';
-        }
+    let montoInput = row.querySelector('input[name="monto_aprobado[]"]');
+    if (!montoInput) return;
+    let montoAprobado = Number(montoInput.value) || 0;
+    let totalPagos = 0;
+    let pagoInputs = row.querySelectorAll('input[name^="pago_numero"]');
 
-        // Recalcular total de pagos
-        let totalCantidadPagada = 0;
-        document.querySelectorAll('tbody tr').forEach(function(r) {
-            let pagosRow = r.querySelectorAll('input[name^="pago_numero"]');
-            pagosRow.forEach(function(pago) {
-                totalCantidadPagada += Number(pago.value) || 0;
-            });
-        });
-        let totalPagadaElem = document.getElementById('cantidad_total_pagada');
-        if (totalPagadaElem) {
-            totalPagadaElem.innerText = totalCantidadPagada.toFixed(2);
-        }
+    for (let i = 0; i < pagoInputs.length; i++) {
+        let pago = Number(pagoInputs[i].value) || 0;
+        totalPagos += pago; // Se suman todos los pagos sin importar la fecha
     }
 
-    function agregarColumnaPago(button) {
+    let pendiente = montoAprobado - totalPagos;
+    let pendienteInput = row.querySelector('input[name="pendiente[]"]');
+    if (pendienteInput) {
+        pendienteInput.value = pendiente.toFixed(2);
+    }
+    
+    let estadoSelect = row.querySelector('select[name="estado[]"]');
+    if (estadoSelect) {
+        estadoSelect.value = pendiente <= 0 ? 'Finalizado' : 'En Curso';
+    }
+    }
+    function agregarColumnaPago(button, fechaInicio, fechaFin) {
         button.disabled = true;
         const table = document.querySelector('.obra-table');
         const headerRow = table.querySelector('thead tr');
         let pagoCount = headerRow.querySelectorAll('th').length - 4 + 1;
         const newHeader = document.createElement('th');
-        newHeader.innerHTML = `Pago ${pagoCount} <button type="button" class="btn btn-success btn-sm" onclick="agregarColumnaPago(this)">+</button>`;
+        newHeader.innerHTML = `Pago ${pagoCount} <button type="button" class="btn btn-success btn-sm" onclick="agregarColumnaPago(this, '${fechaInicio}', '${fechaFin}')">+</button>`;
         const pendienteHeader = headerRow.querySelector('th:nth-last-child(2)');
         headerRow.insertBefore(newHeader, pendienteHeader);
 
         document.querySelectorAll('.obra-table tbody tr').forEach(row => {
             const newColumn = document.createElement('td');
             newColumn.innerHTML = `
-                Fecha: <input type="date" name="pago_fecha_${pagoCount}[]" class="form-control" onchange="calcularPendiente(this.closest('tr'))">
+                Fecha: <input type="date" name="pago_fecha_${pagoCount}[]" class="form-control" min="${fechaInicio}" max="${fechaFin}" onchange="calcularPendiente(this.closest('tr'))">
                 Pago: <input type="number" name="pago_numero_${pagoCount}[]" class="form-control pago_numero" placeholder="$" oninput="calcularPendiente(this.closest('tr'))">
             `;
             const pendienteCell = row.querySelector('td:nth-last-child(2)');
@@ -282,7 +281,7 @@
         });
     }
 
-    function agregarFila() {
+    function agregarFila(fechaInicio, fechaFin) {
         const tableBody = document.querySelector('.obra-table tbody');
         const newRow = document.createElement('tr');
         let numPagoColumns = document.querySelector('.obra-table thead tr').querySelectorAll('th').length - 4;
@@ -294,7 +293,7 @@
         for (let i = 1; i <= numPagoColumns; i++) {
             newRowHTML += `
                 <td>
-                    Fecha: <input type="date" name="pago_fecha_${i}[]" class="form-control" onchange="calcularPendiente(this.closest('tr'))">
+                    Fecha: <input type="date" name="pago_fecha_${i}[]" class="form-control" min="${fechaInicio}" max="${fechaFin}" onchange="calcularPendiente(this.closest('tr'))">
                     Pago: <input type="number" name="pago_numero_${i}[]" class="form-control pago_numero" value="0" placeholder="$" oninput="calcularPendiente(this.closest('tr'))">
                 </td>
             `;
