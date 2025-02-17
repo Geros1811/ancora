@@ -57,13 +57,23 @@
                         TOTAL Nómina: ${{ number_format($nomina->total, 2) }}
                     </span>
                     <a href="{{ route('mano-obra.pdf', $nomina->id) }}" class="btn btn-primary" target="_blank">
-                        Generar PDF
+                        <i class="fas fa-file-pdf"></i> Generar PDF
                     </a>
-                    
+                    <a href="{{ route('manoObra.imagenes', $nomina->id) }}" class="btn btn-primary" style="margin-left: 10px;">
+                        <i class="fas fa-images"></i> Ver Todas las Imágenes
+                    </a>
+                    <form action="{{ route('manoObra.uploadImage', ['obraId' => $obraId, 'nominaId' => $nomina->id]) }}" method="POST" enctype="multipart/form-data" style="margin-left: 10px;">
+                        @csrf
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="image" style="font-size: 12px;">Subir Imagen:</label>
+                            <input type="file" name="image" class="form-control" accept="image/*" required style="padding: 2px; font-size: 12px;">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="padding: 2px 5px; font-size: 12px;"><i class="fas fa-upload"></i> Subir</button>
+                    </form>
                 </h2>
             </div>
 
-            <div id="table-container-{{ $nomina->id }}">
+            <div id="table-container-{{ $nomina->id }}" style="display: none;">
                 <form action="{{ route('manoObra.store', ['obraId' => $obraId]) }}" method="POST">
                     @csrf
                     <input type="hidden" name="nombre_nomina" value="{{ $nomina->nombre }}">
@@ -103,18 +113,84 @@
                                     <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" step="0.01" name="precio_diario[]" value="{{ $detalle->precio_hora }}" class="form-control precio-hora" style="border: none; background: transparent; text-align: center; width: 100%;" oninput="updateSubtotal(this)"></td>
                                     <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="number" step="0.01" name="extras_menos[]" value="{{ $detalle->extras_menos }}" class="form-control extras-menos" style="border: none; background: transparent; text-align: center; width: 100%;" oninput="updateSubtotal(this)"></td>
                                     <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><input type="text" name="subtotal[]" value="{{ $detalle->subtotal }}" class="form-control subtotal" style="border: none; background: transparent; text-align: center; width: 100%;" readonly></td>
-                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
+                                    <td style="border: 1px solid #ddd; text-align: center; padding: 5px;"><button type="button" class="btn btn-danger" onclick="removeRow(this)"><i class="fas fa-trash-alt"></i> Eliminar</button></td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
-                    <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow(this)">Añadir Fila</button>
-                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar</button>
+                    <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow(this)"><i class="fas fa-plus"></i> Añadir Fila</button>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;"><i class="fas fa-save"></i> Guardar</button>
                 </form>
             </div>
         </div>
     @endforeach
 </div>
+
+<style>
+    .btn {
+        border-radius: 5px;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    .obra-table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: white;
+        color: black;
+        border-radius: 8px;
+    }
+
+    .obra-table th, .obra-table td {
+        padding: 3px;
+        text-align: left;
+        border: 1px solid #ddd;
+        font-size: 12px;
+    }
+
+    .obra-table th {
+        background-color: #0056b3;
+        color: white;
+    }
+
+    .obra-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .obra-table tr:nth-child(odd) {
+        background-color: #ffffff;
+    }
+
+    .obra-table td input, .obra-table td select {
+        width: 100%;
+        padding: 3px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        box-sizing: border-box;
+        background-color: white;
+        color: black;
+        font-size: 12px;
+    }
+
+    .table-container button {
+        margin-top: 15px;
+    }
+
+    .en-curso-row {
+        background-color: #FFFFE0;
+    }
+
+    .image-gallery .thumbnail {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 5px;
+        margin-bottom: 20px;
+    }
+
+    .image-gallery .thumbnail img {
+        border-radius: 4px;
+    }
+</style>
 
 <script>
     function toggleTableVisibility(nominaId) {

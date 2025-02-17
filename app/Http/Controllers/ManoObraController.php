@@ -11,6 +11,10 @@ use App\Models\Nomina;
 use Carbon\Carbon;
 use App\Models\Destajo;
 use App\Models\Obra;
+use Illuminate\Support\Facades\Storage;
+use App\Models\Imagen;
+
+
 
 class ManoObraController extends Controller
 {
@@ -22,6 +26,30 @@ class ManoObraController extends Controller
         $destajos = Destajo::where('obra_id', $obraId)->get();
 
         return view('manoObra.index', compact('nominas', 'detalles', 'costoTotal', 'destajos', 'obraId'));
+    }
+
+    public function uploadImage(Request $request, $obraId, $nominaId)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $imagePath = $request->file('image')->store('images', 'public');
+
+        $imagen = new Imagen();
+        $imagen->path = $imagePath;
+        $imagen->nomina_id = $nominaId;
+        $imagen->save();
+
+        return back()->with('success', 'Imagen subida correctamente.');
+    }
+
+    public function imagenes($nominaId)
+    {
+        $nomina = Nomina::findOrFail($nominaId);
+        $imagenes = Imagen::where('nomina_id', $nominaId)->get();
+
+        return view('manoObra.imagenes', compact('nomina', 'imagenes'));
     }
 
     public function store(Request $request, $obraId)

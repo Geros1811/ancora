@@ -123,8 +123,9 @@ Route::get('/manoObra/{obraId}', [ManoObraController::class, 'index'])->name('ma
 Route::post('/manoObra/{obraId}', [ManoObraController::class, 'store'])->name('manoObra.store');
 Route::post('/actualizar-total-nomina/{nominaId}', [ManoObraController::class, 'actualizarTotalNomina']);
 Route::get('/resumen/{obraId}', [ManoObraController::class, 'resumen'])->name('resumen');
+Route::post('/manoObra/{obraId}/{nominaId}/upload-image', [ManoObraController::class, 'uploadImage'])->name('manoObra.uploadImage');
 Route::post('/mano-de-obra/{id}/actualizar', [ManoObraController::class, 'actualizar']);
-
+Route::get('/manoObra/{nominaId}/imagenes', [ManoObraController::class, 'imagenes'])->name('manoObra.imagenes');
 
 // Ruta para la vista de destajos
 Route::get('/manoObra/{obraId}/destajos', [DestajoController::class, 'destajos'])->name('manoObra.destajos');
