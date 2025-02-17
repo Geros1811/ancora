@@ -165,6 +165,7 @@
         <div class="form-group">
             <label for="image">Subir Imagen:</label>
             <input type="file" name="image" class="form-control" accept="image/*" required>
+            <input type="hidden" name="destajo_id" value="{{ $detalle->id }}">
         </div>
         <button type="submit" class="btn btn-primary">Subir Imagen</button>
     </form>
@@ -184,8 +185,11 @@
                         </div>
                     </div>
                 @endforeach
+            @else
+                <p>No hay imágenes subidas para este destajo.</p>
             @endif
         </div>
+        <a href="{{ route('destajos.imagenes', $detalle->id) }}" class="btn btn-primary" style="margin-top: 20px;">Ver Todas las Imágenes</a>
     </div>
 </div>
 

@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class DestajoDetalle extends Model
 {
+    use HasFactory;
+
     protected $table = 'destajos_detalles';
 
     protected $fillable = [
@@ -16,8 +19,8 @@ class DestajoDetalle extends Model
         'pendiente',
         'estado',
         'monto_aprobado_total',
-        'destajo_id', // Add destajo_id here
-        'pagos', // Add pagos here
+        'destajo_id',
+        'pagos',
     ];
 
     protected $casts = [

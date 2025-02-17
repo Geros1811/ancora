@@ -34,7 +34,7 @@ class DestajosDetallesController extends Controller
         $destajoDetalles = DestajoDetalle::where('destajo_id', $detalle->id)->get();
 
         // Obtener imágenes asociadas al destajo
-        $imagenes = Imagen::where('destajo_detalle_id', $detalle->id)->get();
+        $imagenes = Imagen::where('destajo_id', $detalle->id)->get();
 
         $editable = !$detalle->locked;
 
@@ -121,7 +121,7 @@ class DestajosDetallesController extends Controller
 
             $imagen = new Imagen();
             $imagen->path = $imagePath;
-            $imagen->destajo_detalle_id = $destajoDetalle->id;
+            $imagen->destajo_id = $destajo->id;
             $imagen->save();
         }
 
@@ -274,17 +274,20 @@ class DestajosDetallesController extends Controller
 
         $imagePath = $request->file('image')->store('images', 'public');
 
-        $destajoDetalle = DestajoDetalle::where('obra_id', $obraId)
-            ->where('destajo_id', $destajoId)
-            ->first();
-
-        if ($destajoDetalle) {
-            $destajoDetalle->imagenes()->create([
-                'path' => $imagePath,
-            ]);
-        }
+        $imagen = new Imagen();
+        $imagen->path = $imagePath;
+        $imagen->destajo_id = $destajoId;
+        $imagen->save();
 
         return redirect()->back()->with('success', 'Imagen subida correctamente.');
+    }
+
+    public function showImages($id)
+    {
+        $detalle = $this->getDestajoDetailsById($id);
+        $imagenes = Imagen::where('destajo_id', $detalle->id)->get();
+
+        return view('destajo.imagenes', compact('detalle', 'imagenes'));
     }
 
 }

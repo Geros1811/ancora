@@ -35,4 +35,8 @@ public function detalles()
     return $this->hasMany(DestajoDetalle::class, 'destajo_id');
 }
 
+    public function imagenes()
+    {
+        return $this->hasMany(Imagen::class);
+    }
 }
