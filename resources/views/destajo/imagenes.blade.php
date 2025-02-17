@@ -15,7 +15,7 @@
                 @foreach($imagenes as $imagen)
                     <div class="col-md-3">
                         <div class="thumbnail">
-                            <img src="{{ asset('storage/' . $imagen->path) }}" alt="Imagen" style="width:100%">
+                            <img src="{{ asset('storage/' . $imagen->path) }}" alt="Imagen" style="width:50%">
                             <div class="caption">
                                 <p>{{ $imagen->created_at }}</p>
                             </div>

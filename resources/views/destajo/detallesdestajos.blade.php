@@ -145,53 +145,41 @@
             <button type="button" class="btn btn-primary" onclick="agregarFila('{{ $fecha_inicio }}', '{{ $fecha_fin }}')" {{ (!$detalle->locked) ? '' : 'disabled' }}>Agregar Fila</button>
         </div>
 
-        <button type="submit" class="btn btn-success" {{ (!$detalle->locked) ? '' : 'disabled' }}>Guardar Detalles</button>
+        <button type="submit" class="btn btn-success" {{ (!$detalle->locked) ? '' : 'disabled' }}><i class="fas fa-save"></i> Guardar Detalles</button>
         
         @if(isset($nombre_nomina))
             <a href="{{ route('destajos.detalles.pdf', $detalle->id) }}" class="btn btn-primary" target="_blank">
-                Generar PDF
+                <i class="fas fa-file-pdf"></i> Generar PDF
             </a>
         @else
             <a href="{{ route('destajos.detalles.pdfPendiente', $detalle->id) }}" class="btn btn-primary" target="_blank">
-                Generar PDF
+                <i class="fas fa-file-pdf"></i> Generar PDF
             </a>
         @endif
-        <button type="button" class="btn btn-secondary" onclick="exportarDetalles()" {{ (!$detalle->locked) ? '' : 'disabled' }}>Exportar</button>
+        <button type="button" class="btn btn-secondary" onclick="exportarDetalles()" {{ (!$detalle->locked) ? '' : 'disabled' }}><i class="fas fa-file-excel"></i> Exportar</button>
     </form>
 
-    {{-- Formulario para subir imágenes --}}
-    <form action="{{ route('detalles.destajos.uploadImage', ['obraId' => $obraId, 'destajoId' => $detalle->id]) }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <div class="form-group">
-            <label for="image">Subir Imagen:</label>
-            <input type="file" name="image" class="form-control" accept="image/*" required>
-            <input type="hidden" name="destajo_id" value="{{ $detalle->id }}">
-        </div>
-        <button type="submit" class="btn btn-primary">Subir Imagen</button>
-    </form>
-
-    {{-- Mostrar imágenes subidas --}}
-    <div class="image-gallery" style="margin-top: 20px;">
-        <h3>Imágenes Subidas:</h3>
-        <div class="row">
-            @if(isset($imagenes) && count($imagenes) > 0)
-                @foreach($imagenes as $imagen)
-                    <div class="col-md-3">
-                        <div class="thumbnail">
-                            <img src="{{ asset('storage/' . $imagen->path) }}" alt="Imagen" style="width:100%">
-                            <div class="caption">
-                                <p>{{ $imagen->created_at }}</p>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            @else
-                <p>No hay imágenes subidas para este destajo.</p>
-            @endif
-        </div>
-        <a href="{{ route('destajos.imagenes', $detalle->id) }}" class="btn btn-primary" style="margin-top: 20px;">Ver Todas las Imágenes</a>
+    <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <form action="{{ route('detalles.destajos.uploadImage', ['obraId' => $obraId, 'destajoId' => $detalle->id]) }}" method="POST" enctype="multipart/form-data" style="margin-right: 10px;">
+            @csrf
+            <div class="form-group">
+                <label for="image">Subir Imagen:</label>
+                <input type="file" name="image" class="form-control" accept="image/*" required>
+                <input type="hidden" name="destajo_id" value="{{ $detalle->id }}">
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-upload"></i> Subir Imagen</button>
+        </form>
+        <a href="{{ route('destajos.imagenes', $detalle->id) }}" class="btn btn-primary"><i class="fas fa-images"></i> Ver Todas las Imágenes</a>
     </div>
 </div>
+
+<style>
+    .btn {
+        border-radius: 5px;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+</style>
 
 <style>
     .obra-table {
