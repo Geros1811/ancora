@@ -278,52 +278,27 @@
     }
 
     function calcularPendiente(row) {
-        let montoInput = row.querySelector('input[name="monto_aprobado[]"]');
-        if (!montoInput) return;
-        let montoAprobado = Number(montoInput.value) || 0;
-        let totalPagos = 0;
-        let pagoInputs = row.querySelectorAll('input[name^="pago_numero"]');
-        let fechaInputs = row.querySelectorAll('input[name^="pago_fecha"]');
+    let montoInput = row.querySelector('input[name="monto_aprobado[]"]');
+    if (!montoInput) return;
+    let montoAprobado = Number(montoInput.value) || 0;
+    let totalPagos = 0;
+    let pagoInputs = row.querySelectorAll('input[name^="pago_numero"]');
 
-        for (let i = 0; i < pagoInputs.length; i++) {
-            let pago = Number(pagoInputs[i].value) || 0;
-            let fecha = fechaInputs[i].value;
+    for (let i = 0; i < pagoInputs.length; i++) {
+        let pago = Number(pagoInputs[i].value) || 0;
+        totalPagos += pago; // Se suman todos los pagos sin importar la fecha
+    }
 
-            if (fecha >= '{{ $fecha_inicio }}' && fecha <= '{{ $fecha_fin }}') {
-                totalPagos += pago;
-            }
-        }
-
-        let pendiente = montoAprobado - totalPagos;
-        let pendienteInput = row.querySelector('input[name="pendiente[]"]');
-        if (pendienteInput) {
-            pendienteInput.value = pendiente.toFixed(2);
-        }
-        let estadoSelect = row.querySelector('select[name="estado[]"]');
-        if (estadoSelect) {
-            estadoSelect.value = pendiente <= 0 ? 'Finalizado' : 'En Curso';
-        }
-
-        // Recalcular total de pagos
-        let totalCantidadPagada = 0;
-        document.querySelectorAll('tbody tr').forEach(function(r) {
-            let pagosRow = r.querySelectorAll('input[name^="pago_numero"]');
-            let fechasRow = r.querySelectorAll('input[name^="pago_fecha"]');
-
-            for (let i = 0; i < pagosRow.length; i++) {
-                let pago = Number(pagosRow[i].value) || 0;
-                let fecha = fechasRow[i].value;
-
-                if (fecha >= '{{ $fecha_inicio }}' && fecha <= '{{ $fecha_fin }}') {
-                    totalCantidadPagada += pago;
-                }
-            }
-        });
-
-        let totalPagadaElem = document.getElementById('cantidad_total_pagada');
-        if (totalPagadaElem) {
-            totalPagadaElem.innerText = totalCantidadPagada.toFixed(2);
-        }
+    let pendiente = montoAprobado - totalPagos;
+    let pendienteInput = row.querySelector('input[name="pendiente[]"]');
+    if (pendienteInput) {
+        pendienteInput.value = pendiente.toFixed(2);
+    }
+    
+    let estadoSelect = row.querySelector('select[name="estado[]"]');
+    if (estadoSelect) {
+        estadoSelect.value = pendiente <= 0 ? 'Finalizado' : 'En Curso';
+    }
     }
 
     function agregarColumnaPago(button, fechaInicio, fechaFin) {
