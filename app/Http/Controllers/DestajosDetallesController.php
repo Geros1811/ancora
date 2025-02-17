@@ -174,7 +174,7 @@ class DestajosDetallesController extends Controller
             $newDestajo->save();
 
             // Replicar los detalles del destajo
-            $destajoDetalles = DestajoDetalle::where('destajo_id', $destajo->id)->get();
+            $destajoDetalles = DestajoDetalle::where('destajo_id', $destajo->id)->where('estado', 'En Curso')->get();
             foreach ($destajoDetalles as $detalle) {
                 $newDetalle = $detalle->replicate();
                 $newDetalle->destajo_id = $newDestajo->id;
@@ -214,7 +214,7 @@ class DestajosDetallesController extends Controller
         $newDestajo->save();
 
         // Replicar los detalles del destajo
-        $destajoDetalles = DestajoDetalle::where('destajo_id', $destajo->id)->get();
+        $destajoDetalles = DestajoDetalle::where('destajo_id', $destajo->id)->where('estado', 'En Curso')->get();
         foreach ($destajoDetalles as $detalle) {
             $newDetalle = $detalle->replicate();
             $newDetalle->destajo_id = $newDestajo->id;
