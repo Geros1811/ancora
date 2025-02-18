@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Destajo;
 use Illuminate\Support\Facades\Log;
 use App\Models\Nomina; // Asegúrate de que este es el nombre correcto del modelo
+use App\Models\Obra;
 
 class DestajoController extends Controller
 {
@@ -17,8 +18,10 @@ class DestajoController extends Controller
         // Recuperar los destajos de la obra
         $detalles = Destajo::where('obra_id', $obraId)->get();
         
+        $obra = Obra::findOrFail($obraId);
+
         // Pasar los detalles y otras variables a la vista
-        return view('destajo.index', compact('detalles', 'obraId', 'nominas'));
+        return view('destajo.index', compact('detalles', 'obraId', 'nominas', 'obra'));
     }
 
     public function store(Request $request)

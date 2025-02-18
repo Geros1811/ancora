@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\DetalleGasolina;
 use App\Models\CostoIndirecto;
+use App\Models\Obra;
 
 class GasolinaController extends Controller
 {
@@ -12,7 +13,8 @@ class GasolinaController extends Controller
     {
         $detalles = DetalleGasolina::where('obra_id', $obraId)->get();
         $costoTotal = $detalles->sum('subtotal');
-        return view('gasolina.index', compact('detalles', 'obraId', 'costoTotal'));
+        $obra = Obra::findOrFail($obraId);
+        return view('gasolina.index', compact('detalles', 'obraId', 'costoTotal', 'obra'));
     }
 
     public function store(Request $request, $obraId)

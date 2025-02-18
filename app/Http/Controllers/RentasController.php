@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\DetalleRentas;
 use App\Models\CostoIndirecto;
+use App\Models\Obra;
 
 class RentasController extends Controller
 {
@@ -12,7 +13,8 @@ class RentasController extends Controller
     {
         $detalles = DetalleRentas::where('obra_id', $obraId)->get();
         $costoTotal = $detalles->sum('subtotal');
-        return view('rentas.index', compact('detalles', 'obraId', 'costoTotal'));
+        $obra = Obra::findOrFail($obraId);
+        return view('rentas.index', compact('detalles', 'obraId', 'costoTotal', 'obra'));
     }
 
     public function store(Request $request, $obraId)

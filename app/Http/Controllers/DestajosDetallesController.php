@@ -144,7 +144,7 @@ class DestajosDetallesController extends Controller
         $destajoDetalles = DestajoDetalle::where('destajo_id', $detalle->id)->get();
 
         $pdf = Pdf::loadView('destajo.pdf', compact(
-            'detalle', 'obra', 'fecha_inicio', 'fecha_fin', 
+            'detalle', 'obra', 'fecha_inicio', 'fecha_fin',
             'nombre_nomina', 'dia_inicio', 'dia_fin', 'obraId', 'destajoDetalles'
         ));
 

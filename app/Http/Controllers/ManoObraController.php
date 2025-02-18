@@ -24,8 +24,9 @@ class ManoObraController extends Controller
         $detalles = DetalleManoObra::where('obra_id', $obraId)->get();
         $costoTotal = $detalles->sum('subtotal');
         $destajos = Destajo::where('obra_id', $obraId)->get();
+        $obra = Obra::findOrFail($obraId);
 
-        return view('manoObra.index', compact('nominas', 'detalles', 'costoTotal', 'destajos', 'obraId'));
+        return view('manoObra.index', compact('nominas', 'detalles', 'costoTotal', 'destajos', 'obraId', 'obra'));
     }
 
     public function uploadImage(Request $request, $obraId, $nominaId)
@@ -144,6 +145,7 @@ class ManoObraController extends Controller
     public function resumen($obraId)
     {
         $nominas = Nomina::where('obra_id', $obraId)->orderBy('fecha_inicio', 'asc')->get();
+        $obra = Obra::findOrFail($obraId);
 
         foreach ($nominas as $nomina) {
             $nomina->destajos = Destajo::where('obra_id', $obraId)
@@ -151,7 +153,7 @@ class ManoObraController extends Controller
                 ->get();
         }
 
-        return view('manoObra.resumen', compact('nominas'));
+        return view('manoObra.resumen', compact('nominas', 'obra'));
     }
 
     public function actualizar(Request $request, $id) {

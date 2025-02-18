@@ -9,6 +9,7 @@ use App\Models\Cemento;
 use App\Models\Losa;
 use App\Models\CostoDirecto; // Importar la clase CostoDirecto
 use App\Models\General; // Importar la clase General
+use App\Models\Obra;
 
 class MaterialesController extends Controller
 {
@@ -19,6 +20,7 @@ class MaterialesController extends Controller
         $cemento = Cemento::where('obra_id', $obraId)->get();
         $losas = Losa::where('obra_id', $obraId)->get();
         $generales = General::where('obra_id', $obraId)->get(); // Definir la variable $generales
+        $obra = Obra::findOrFail($obraId);
 
         $costoTotal = $agregados->sum('subtotal') +
                       $aceros->sum('subtotal') +
@@ -26,7 +28,7 @@ class MaterialesController extends Controller
                       $losas->sum('subtotal') +
                       $generales->sum('subtotal'); // Incluir el costo total de generales
 
-        return view('materiales.index', compact('agregados', 'aceros', 'cemento', 'losas', 'generales', 'obraId', 'costoTotal'));
+        return view('materiales.index', compact('agregados', 'aceros', 'cemento', 'losas', 'generales', 'obraId', 'costoTotal', 'obra'));
     }
 
     public function storeAgregados(Request $request, $obraId)

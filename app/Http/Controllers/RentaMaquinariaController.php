@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\RentaMaquinaria;
 use App\Models\CostoDirecto;
+use App\Models\Obra;
 
 class RentaMaquinariaController extends Controller
 {
@@ -12,7 +13,8 @@ class RentaMaquinariaController extends Controller
     {
         $detalles = RentaMaquinaria::where('obra_id', $obraId)->get();
         $costoTotal = $detalles->sum('subtotal');
-        return view('rentaMaquinaria.index', compact('detalles', 'obraId', 'costoTotal'));
+        $obra = Obra::findOrFail($obraId);
+        return view('rentaMaquinaria.index', compact('detalles', 'obraId', 'costoTotal', 'obra'));
     }
 
     public function store(Request $request, $obraId)

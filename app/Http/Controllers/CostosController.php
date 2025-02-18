@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CostoIndirecto;
+use App\Models\Obra;
 
 class CostosController extends Controller
 {
@@ -12,9 +13,10 @@ class CostosController extends Controller
     {
         $costo = CostoIndirecto::findOrFail($id);
         $detalleCosto = $costo->detalles;
+        $obra = Obra::findOrFail($costo->obra_id);
 
         // Retornar la vista con los detalles del costo
-        return view('costos.show', compact('costo', 'detalleCosto'));
+        return view('costos.show', compact('costo', 'detalleCosto', 'obra'));
     }
 
     // Actualiza el costo indirecto

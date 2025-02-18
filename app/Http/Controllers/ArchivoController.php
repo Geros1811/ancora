@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CalendarioPago;
 use App\Models\CalendarioTicket;
+use App\Models\Obra;
 
 class ArchivoController extends Controller
 {
@@ -11,7 +12,8 @@ class ArchivoController extends Controller
     public function show($id)
 {
     $calendarioPagos = CalendarioPago::where('obra_id', $id)->get(); // Obtén todos los pagos de la obra
-    return view('nombre_de_tu_vista', compact('calendarioPagos'));
+    $obra = Obra::findOrFail($id);
+    return view('nombre_de_tu_vista', compact('calendarioPagos', 'obra'));
 }
 
 

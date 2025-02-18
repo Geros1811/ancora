@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\DetallePapeleria;
 use App\Models\CostoIndirecto;
+use App\Models\Obra;
 
 class PapeleriaController extends Controller
 {
@@ -12,7 +13,8 @@ class PapeleriaController extends Controller
     {
         $detalles = DetallePapeleria::where('obra_id', $obraId)->get();
         $costoTotal = $detalles->sum('subtotal');
-        return view('papeleria.index', compact('detalles', 'obraId', 'costoTotal'));
+        $obra = Obra::findOrFail($obraId);
+        return view('papeleria.index', compact('detalles', 'obraId', 'costoTotal', 'obra'));
     }
 
     public function store(Request $request, $obraId)

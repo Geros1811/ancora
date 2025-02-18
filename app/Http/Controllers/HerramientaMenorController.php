@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\DetalleHerramientaMenor;
 use App\Models\CostoDirecto;
+use App\Models\Obra;
 
 class HerramientaMenorController extends Controller
 {
@@ -12,7 +13,8 @@ class HerramientaMenorController extends Controller
     {
         $detalles = DetalleHerramientaMenor::where('obra_id', $obraId)->get();
         $costoTotal = $detalles->sum('subtotal');
-        return view('herramientaMenor.index', compact('detalles', 'obraId', 'costoTotal'));
+        $obra = Obra::findOrFail($obraId);
+        return view('herramientaMenor.index', compact('detalles', 'obraId', 'costoTotal', 'obra'));
     }
 
     public function store(Request $request, $obraId)
