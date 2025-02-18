@@ -121,132 +121,136 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainMenu" aria-controls="mainMenu" aria-expanded="false" aria-label="Toggle main menu">
-          &#9776;
-        </button>
+        @if(!request()->routeIs('dashboard') && !request()->routeIs('login'))
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainMenu" aria-controls="mainMenu" aria-expanded="false" aria-label="Toggle main menu">
+            &#9776;
+          </button>
+        @endif
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <!-- ...existing code... -->
         </div>
-        <div class="collapse" id="mainMenu">
-          <ul class="navbar-nav ml-auto">
-            @if(request()->routeIs('register') || request()->routeIs('obra.create'))
-              <li class="nav-item">
-                <a class="nav-link" href="{{ route('dashboard') }}">
-                  <i class="fas fa-tachometer-alt"></i>Dashboard
-                </a>
-              </li>
-            @else
-              {{-- Mostrar el enlace Home solo si NO estamos en la ruta "home" --}}
-              @if (!request()->routeIs('home'))
+        @if(!request()->routeIs('dashboard') && !request()->routeIs('login'))
+          <div class="collapse" id="mainMenu">
+            <ul class="navbar-nav ml-auto">
+              @if(request()->routeIs('register') || request()->routeIs('obra.create'))
                 <li class="nav-item">
-                  <a class="nav-link" href="{{ isset($obra) ? route('obra.show', ['id' => $obra->id]) : '#' }}">
-                    <i class="fas fa-home"></i>Home
+                  <a class="nav-link" href="{{ route('dashboard') }}">
+                    <i class="fas fa-tachometer-alt"></i>Dashboard
+                  </a>
+                </li>
+              @else
+                {{-- Mostrar el enlace Home solo si NO estamos en la ruta "home" --}}
+                @if (!request()->routeIs('home'))
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ isset($obra) ? route('obra.show', ['id' => $obra->id]) : '#' }}">
+                      <i class="fas fa-home"></i>Home
+                    </a>
+                  </li>
+                @endif
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ isset($obra) ? route('papeleria.index', ['obraId' => $obra->id]) : route('papeleria.index', ['obraId' => 1]) }}">
+                    <i class="fas fa-file"></i>Papelería
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ isset($obra) ? route('gasolina.index', ['obraId' => $obra->id]) : route('gasolina.index', ['obraId' => 1]) }}">
+                    <i class="fas fa-gas-pump"></i>Gasolina
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ isset($obra) ? route('rentas.index', ['obraId' => $obra->id]) : route('rentas.index', ['obraId' => 1]) }}">
+                    <i class="fas fa-hand-holding-usd"></i>Rentas
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ isset($obra) ? route('utilidades.index', ['obraId' => $obra->id]) : route('utilidades.index', ['obraId' => 1]) }}">
+                    <i class="fas fa-chart-line"></i>Utilidades
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ isset($obra) ? route('acarreos.index', ['obraId' => $obra->id]) : route('acarreos.index', ['obraId' => 1]) }}">
+                    <i class="fas fa-truck"></i>Acarreos
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ isset($obra) ? route('comidas.index', ['obraId' => $obra->id]) : route('comidas.index', ['obraId' => 1]) }}">
+                    <i class="fas fa-utensils"></i>Comidas
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ isset($obra) ? route('tramites.index', ['obraId' => $obra->id]) : route('tramites.index', ['obraId' => 1]) }}">
+                    <i class="fas fa-folder"></i>Trámites
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ isset($obra) ? route('cimbras.index', ['obraId' => $obra->id]) : route('cimbras.index', ['obraId' => 1]) }}">
+                    <i class="fas fa-building"></i>Cimbras
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ isset($obra) ? route('maquinariaMayor.index', ['obraId' => $obra->id]) : route('maquinariaMayor.index', ['obraId' => 1]) }}">
+                    <i class="fas fa-cogs"></i>Maquinaria Mayor
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ isset($obra) ? route('rentaMaquinaria.index', ['obraId' => $obra->id]) : route('rentaMaquinaria.index', ['obraId' => 1]) }}">
+                    <i class="fas fa-truck-loading"></i>Renta Maquinaria
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ isset($obra) ? route('maquinariaMenor.index', ['obraId' => $obra->id]) : route('maquinariaMenor.index', ['obraId' => 1]) }}">
+                    <i class="fas fa-tools"></i>Maquinaria Menor
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ isset($obra) ? route('limpieza.index', ['obraId' => $obra->id]) : route('limpieza.index', ['obraId' => 1]) }}">
+                    <i class="fas fa-broom"></i>Limpieza
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ isset($obra) ? route('herramientaMenor.index', ['obraId' => $obra->id]) : route('herramientaMenor.index', ['obraId' => 1]) }}">
+                    <i class="fas fa-hammer"></i>Herramienta Menor
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ isset($obra) ? route('equipoSeguridad.index', ['obraId' => $obra->id]) : route('equipoSeguridad.index', ['obraId' => 1]) }}">
+                    <i class="fas fa-hard-hat"></i>Equipo Seguridad
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ isset($obra) ? route('manoObra.index', ['obraId' => $obra->id]) : route('manoObra.index', ['obraId' => 1]) }}">
+                    <i class="fas fa-users"></i>Mano Obra
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ isset($obra) ? route('materiales.index', ['obraId' => $obra->id]) : route('materiales.index', ['obraId' => 1]) }}">
+                    <i class="fas fa-cubes"></i>Materiales
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ isset($obra) ? route('destajos.index', ['obraId' => $obra->id]) : route('destajos.index', ['obraId' => 1]) }}">
+                    <i class="fas fa-tasks"></i>Destajos
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('dashboard') }}">
+                    <i class="fas fa-tachometer-alt"></i>Dashboard
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('obra.create') }}">
+                    <i class="fas fa-plus"></i>Crear Obra
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('register') }}">
+                    <i class="fas fa-user-plus"></i>Registrar
                   </a>
                 </li>
               @endif
-              <li class="nav-item">
-                <a class="nav-link" href="{{ isset($obra) ? route('papeleria.index', ['obraId' => $obra->id]) : route('papeleria.index', ['obraId' => 1]) }}">
-                  <i class="fas fa-file"></i>Papelería
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ isset($obra) ? route('gasolina.index', ['obraId' => $obra->id]) : route('gasolina.index', ['obraId' => 1]) }}">
-                  <i class="fas fa-gas-pump"></i>Gasolina
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ isset($obra) ? route('rentas.index', ['obraId' => $obra->id]) : route('rentas.index', ['obraId' => 1]) }}">
-                  <i class="fas fa-hand-holding-usd"></i>Rentas
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ isset($obra) ? route('utilidades.index', ['obraId' => $obra->id]) : route('utilidades.index', ['obraId' => 1]) }}">
-                  <i class="fas fa-chart-line"></i>Utilidades
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ isset($obra) ? route('acarreos.index', ['obraId' => $obra->id]) : route('acarreos.index', ['obraId' => 1]) }}">
-                  <i class="fas fa-truck"></i>Acarreos
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ isset($obra) ? route('comidas.index', ['obraId' => $obra->id]) : route('comidas.index', ['obraId' => 1]) }}">
-                  <i class="fas fa-utensils"></i>Comidas
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ isset($obra) ? route('tramites.index', ['obraId' => $obra->id]) : route('tramites.index', ['obraId' => 1]) }}">
-                  <i class="fas fa-folder"></i>Trámites
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ isset($obra) ? route('cimbras.index', ['obraId' => $obra->id]) : route('cimbras.index', ['obraId' => 1]) }}">
-                  <i class="fas fa-building"></i>Cimbras
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ isset($obra) ? route('maquinariaMayor.index', ['obraId' => $obra->id]) : route('maquinariaMayor.index', ['obraId' => 1]) }}">
-                  <i class="fas fa-cogs"></i>Maquinaria Mayor
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ isset($obra) ? route('rentaMaquinaria.index', ['obraId' => $obra->id]) : route('rentaMaquinaria.index', ['obraId' => 1]) }}">
-                  <i class="fas fa-truck-loading"></i>Renta Maquinaria
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ isset($obra) ? route('maquinariaMenor.index', ['obraId' => $obra->id]) : route('maquinariaMenor.index', ['obraId' => 1]) }}">
-                  <i class="fas fa-tools"></i>Maquinaria Menor
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ isset($obra) ? route('limpieza.index', ['obraId' => $obra->id]) : route('limpieza.index', ['obraId' => 1]) }}">
-                  <i class="fas fa-broom"></i>Limpieza
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ isset($obra) ? route('herramientaMenor.index', ['obraId' => $obra->id]) : route('herramientaMenor.index', ['obraId' => 1]) }}">
-                  <i class="fas fa-hammer"></i>Herramienta Menor
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ isset($obra) ? route('equipoSeguridad.index', ['obraId' => $obra->id]) : route('equipoSeguridad.index', ['obraId' => 1]) }}">
-                  <i class="fas fa-hard-hat"></i>Equipo Seguridad
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ isset($obra) ? route('manoObra.index', ['obraId' => $obra->id]) : route('manoObra.index', ['obraId' => 1]) }}">
-                  <i class="fas fa-users"></i>Mano Obra
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ isset($obra) ? route('materiales.index', ['obraId' => $obra->id]) : route('materiales.index', ['obraId' => 1]) }}">
-                  <i class="fas fa-cubes"></i>Materiales
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ isset($obra) ? route('destajos.index', ['obraId' => $obra->id]) : route('destajos.index', ['obraId' => 1]) }}">
-                  <i class="fas fa-tasks"></i>Destajos
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ route('dashboard') }}">
-                  <i class="fas fa-tachometer-alt"></i>Dashboard
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ route('obra.create') }}">
-                  <i class="fas fa-plus"></i>Crear Obra
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ route('register') }}">
-                  <i class="fas fa-user-plus"></i>Registrar
-                </a>
-              </li>
-            @endif
-          </ul>
-        </div>
+            </ul>
+          </div>
+        @endif
       </div>
     </nav>
   </div>

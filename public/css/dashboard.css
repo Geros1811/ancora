@@ -80,7 +80,7 @@ body {
 .logout-container {
     position: absolute;
     top: 20px;
-    left: 20px;
+    right: 20px;
 }
 
 /* Estilo para el botón de logout */

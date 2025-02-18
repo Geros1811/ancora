@@ -6,7 +6,13 @@
 
 @section('content')
     <div class="dashboard-container">
-
+        <!-- Botón de logout en la parte superior izquierda -->
+        <div class="logout-container">
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit">Logout</button>
+            </form>
+        </div>
 
         <!-- Sección de bienvenida -->
         <div class="welcome-container">
