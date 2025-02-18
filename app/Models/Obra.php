@@ -18,7 +18,8 @@ class Obra extends Model
         'fecha_termino',
         'residente',
         'ubicacion',
-        'descripcion'
+        'descripcion',
+        'metros_cuadrados'
     ];
 
     // Relación con DetallesObra (uno a muchos)

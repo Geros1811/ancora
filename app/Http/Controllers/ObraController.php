@@ -33,6 +33,7 @@ class ObraController extends Controller
             'residente' => $request->residente,
             'ubicacion' => $request->ubicacion,
             'descripcion' => $request->descripcion,
+            'metros_cuadrados' => $request->metros_cuadrados,
         ]);
 
         // Insertar valores iniciales en la tabla de costos indirectos

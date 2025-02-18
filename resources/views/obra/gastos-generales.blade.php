@@ -33,6 +33,11 @@
                 <td>EFECTIVO EN CAJA</td>
                 <td>$<span id="efectivo-en-caja">{{ number_format($totalPagosCliente - ($costosDirectos->sum('costo') + $costosIndirectos->sum('costo')), 2) }}</span></td>
             </tr>
+            <tr>
+                <td>5</td>
+                <td>PRECIO POR M2</td>
+                <td>$<span id="precio-por-m2">{{ number_format(($costosDirectos->sum('costo') + $costosIndirectos->sum('costo')) / $obra->metros_cuadrados, 2) }}</span></td>
+            </tr>
         </tbody>
     </table>
 </div>
@@ -73,6 +78,11 @@
         let costosIndirectos = parseFloat("{{ $costosIndirectos->sum('costo') }}");
         let efectivoEnCaja = total - (costosDirectos + costosIndirectos);
         document.getElementById("efectivo-en-caja").textContent = formatCurrencyValue(efectivoEnCaja);
+
+        // Actualizar el valor de "Precio por M2" en la tabla de resumen
+        let metrosCuadrados = parseFloat("{{ $obra->metros_cuadrados }}");
+        let precioPorM2 = (costosDirectos + costosIndirectos) / metrosCuadrados;
+        document.getElementById("precio-por-m2").textContent = formatCurrencyValue(precioPorM2);
     }
     // ...existing code...
 </script>

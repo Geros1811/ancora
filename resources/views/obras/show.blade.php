@@ -13,6 +13,7 @@
         <!-- Sección de información general -->
         <div class="obra-info">
             <p><strong>Presupuesto:</strong> ${{ number_format($obra->presupuesto, 2) }}</p>
+            <p><strong>Metros Cuadrados:</strong> {{ $obra->metros_cuadrados }} MT2</p>
             <p><strong>Cliente:</strong> {{ $obra->cliente }}</p>
             <p><strong>Fecha de Inicio:</strong> {{ $obra->fecha_inicio }}</p>
             <p><strong>Fecha de Término:</strong> {{ $obra->fecha_termino }}</p>

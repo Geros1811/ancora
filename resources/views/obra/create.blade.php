@@ -8,7 +8,7 @@
     <div class="dashboard-container">
         <h1>Crear Nueva Obra</h1>
 
-        <form action="{{ route('obra.store') }}" method="POST">
+        <form action="{{ route('obra.store') }}" method="POST" id="obraForm">
             @csrf
 
             <!-- Nombre del Proyecto -->
@@ -17,7 +17,11 @@
 
             <!-- Presupuesto -->
             <label for="presupuesto">Presupuesto:</label>
-            <input type="number" name="presupuesto" id="presupuesto" step="0.01" required><br>
+            <input type="text" name="presupuesto" id="presupuesto" required><br>
+
+            <!-- Metros Cuadrados -->
+            <label for="metros_cuadrados">Metros Cuadrados (mt2):</label>
+            <input type="number" name="metros_cuadrados" id="metros_cuadrados" step="0.01"><br>
 
             <!-- Cliente -->
             <label for="cliente">Cliente:</label>
@@ -47,4 +51,23 @@
             <button type="submit">Crear Obra</button>
         </form>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const presupuestoInput = document.getElementById("presupuesto");
+            const obraForm = document.getElementById("obraForm");
+
+            presupuestoInput.addEventListener("input", function () {
+                let value = this.value.replace(/,/g, ""); // Eliminar comas previas
+                if (!isNaN(value) && value !== "") {
+                    this.value = new Intl.NumberFormat("es-MX").format(value);
+                }
+            });
+
+            // Antes de enviar, eliminamos las comas para evitar errores en el backend
+            obraForm.addEventListener("submit", function () {
+                presupuestoInput.value = presupuestoInput.value.replace(/,/g, "");
+            });
+        });
+    </script>
 @endsection
