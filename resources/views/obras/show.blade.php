@@ -297,6 +297,7 @@
                     'Maquinaria Menor': parseFloat("{{ optional($costosDirectos->where('nombre', 'Maquinaria Menor')->first())->costo ?? 0.00 }}"),
                     'Limpieza': parseFloat("{{ optional($costosDirectos->where('nombre', 'Limpieza')->first())->costo ?? 0.00 }}"),
                     'Maquinaria Mayor': parseFloat("{{ optional($costosDirectos->where('nombre', 'Maquinaria Mayor')->first())->costo ?? 0.00 }}"),
+                    'Renta de Maquinaria': parseFloat("{{ optional($costosDirectos->where('nombre', 'Renta de Maquinaria')->first())->costo ?? 0.00 }}"),
                     'Cimbras': parseFloat("{{ optional($costosDirectos->where('nombre', 'Cimbras')->first())->costo ?? 0.00 }}"),
                     'Acarreos': parseFloat("{{ optional($costosDirectos->where('nombre', 'Acarreos')->first())->costo ?? 0.00 }}"),
                     'Comidas': parseFloat("{{ optional($costosDirectos->where('nombre', 'Comidas')->first())->costo ?? 0.00 }}"),
@@ -317,7 +318,7 @@
                     labels: [...Object.keys(costosDirectos), ...Object.keys(costosIndirectos), 'Utilidad Remanente'],
                     datasets: [{
                         data: [...Object.values(costosDirectos), ...Object.values(costosIndirectos), utilidadRemanente],
-                        backgroundColor: ['#FF0000', '#0000FF', '#FFFF00', '#FFA500', '#FFC0CB', '#800080', '#A52A2A', '#FFFFFF', '#000000', '#808080', '#40E0D0', '#FFD700', '#C0C0C0', '#F5F5DC', '#FF00FF', '#4CAF50']
+                        backgroundColor: ['#FF0000', '#0000FF', '#FFFF00', '#FFA500', '#FFC0CB', '#800080', '#A52A2A', '#FFFFFF', '#000000', '#808080', '#40E0D0', '#FFD700', '#C0C0C0', '#F5F5DC', '#FF00FF', '#4CAF50', '#800000'] // Added wine color
                     }]
                 };
         

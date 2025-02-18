@@ -49,31 +49,37 @@
             </tr>
             <tr>
                 <td>6</td>
+                <td>Maquinaria Mayor</td>
+                <td><a href="{{ route('maquinariaMayor.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($costosDirectos->where('nombre', 'Maquinaria Mayor')->first())->costo ?? 0.00, 2) }}</a></td>
+              
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>Renta de Maquinaria</td>
+                <td><a href="{{ route('rentaMaquinaria.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($costosDirectos->where('nombre', 'Renta de Maquinaria')->first())->costo ?? 0.00, 2) }}</a></td>
+            </tr>
+            <tr>
+                <td>8</td>
                 <td>Limpieza</td>
                 <td><a href="{{ route('limpieza.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($costosDirectos->where('nombre', 'Limpieza')->first())->costo ?? 0.00, 2) }}</a></td>
             </tr>
             <tr>
-                <td>7</td>
-                <td>Maquinaria Mayor</td>
-                <td><a href="{{ route('maquinariaMayor.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($costosDirectos->where('nombre', 'Maquinaria Mayor')->first())->costo ?? 0.00, 2) }}</a></td>
-            </tr>
-            <tr>
-                <td>8</td>
+                <td>9</td>
                 <td>Cimbras</td>
                 <td><a href="{{ route('cimbras.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($costosDirectos->where('nombre', 'Cimbras')->first())->costo ?? 0.00, 2) }}</a></td>
             </tr>
             <tr>
-                <td>9</td>
+                <td>10</td>
                 <td>Acarreos</td>
                 <td><a href="{{ route('acarreos.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($costosDirectos->where('nombre', 'Acarreos')->first())->costo ?? 0.00, 2) }}</a></td>
             </tr>
             <tr>
-                <td>10</td>
+                <td>11</td>
                 <td>Comidas</td>
                 <td><a href="{{ route('comidas.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($costosDirectos->where('nombre', 'Comidas')->first())->costo ?? 0.00, 2) }}</a></td>
             </tr>
             <tr>
-                <td>11</td>
+                <td>12</td>
                 <td>Trámites</td>
                 <td><a href="{{ route('tramites.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($costosDirectos->where('nombre', 'Trámites')->first())->costo ?? 0.00, 2) }}</a></td>
             </tr>

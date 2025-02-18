@@ -24,7 +24,7 @@ use App\Http\Controllers\ManoObraController;
 use App\Http\Controllers\MaterialesController;
 use App\Http\Controllers\DestajoController;
 use App\Http\Controllers\DestajosDetallesController;
-
+use App\Http\Controllers\RentaMaquinariaController;
 
 Route::get('/costos/{id}', [CostosController::class, 'show'])->name('costos.show');
 
@@ -101,6 +101,10 @@ Route::post('/cimbras/{obraId}', [CimbrasController::class, 'store'])->name('cim
 // Rutas para maquinaria mayor
 Route::get('/maquinariaMayor/{obraId}', [MaquinariaMayorController::class, 'index'])->name('maquinariaMayor.index');
 Route::post('/maquinariaMayor/{obraId}', [MaquinariaMayorController::class, 'store'])->name('maquinariaMayor.store');
+
+// Rutas para renta de maquinaria
+Route::get('/rentaMaquinaria/{obraId}', [RentaMaquinariaController::class, 'index'])->name('rentaMaquinaria.index');
+Route::post('/rentaMaquinaria/{obraId}', [RentaMaquinariaController::class, 'store'])->name('rentaMaquinaria.store');
 
 // Rutas para maquinaria menor
 Route::get('/maquinariaMenor/{obraId}', [MaquinariaMenorController::class, 'index'])->name('maquinariaMenor.index');
