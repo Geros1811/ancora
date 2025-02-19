@@ -1,0 +1,78 @@
+.caja-chica-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+    text-align: center;
+}
+
+.section-header h1 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.table-container {
+    margin-top: 20px;
+}
+
+.table-details-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.table-title {
+    font-size: 20px;
+    color: #34495e;
+    margin-bottom: 5px;
+}
+
+.table-details-header p {
+    font-size: 16px;
+    color: #777;
+    margin-bottom: 5px;
+}
+
+.obra-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.obra-table th {
+    background-color: #2980b9;
+    color: white;
+    font-weight: bold;
+    border: 1px solid #ddd;
+    text-align: center;
+    padding: 10px;
+}
+
+.obra-table td {
+    border: 1px solid #ddd;
+    text-align: center;
+    padding: 10px;
+}
+
+.subtotal-section,
+.cambio-section {
+    margin-top: 10px;
+    text-align: right;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.button-and-totals {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

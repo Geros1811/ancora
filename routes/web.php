@@ -45,20 +45,9 @@ Route::post('/subir-archivo', [ArchivoController::class, 'store'])->name('archiv
 Route::post('/subir-archivo/{calendarioPagoId}', [ArchivoController::class, 'store'])->name('archivo.store');
 
 // Rutas para el dashboard y registro
-Route::middleware(['auth', 'role:arquitecto'])->group(function () {
-    Route::get('/dashboard', [ObraController::class, 'index'])->name('dashboard');
-    Route::get('/obra/crear', [ObraController::class, 'create'])->name('obra.create');
-    Route::post('/obra', [ObraController::class, 'store'])->name('obra.store');
-    // ...otras rutas para arquitectos...
-});
-
-Route::middleware(['auth', 'role:maestro_obra'])->group(function () {
-    // ...rutas para maestros de obra...
-});
-
-Route::middleware(['auth', 'role:cliente'])->group(function () {
-    // ...rutas para clientes...
-});
+Route::get('/dashboard', [ObraController::class, 'index'])->name('dashboard');
+Route::get('/obra/crear', [ObraController::class, 'create'])->name('obra.create');
+Route::post('/obra', [ObraController::class, 'store'])->name('obra.store');
 
 // Rutas de registro
 Route::middleware('auth')->group(function () {
@@ -149,6 +138,7 @@ Route::post('/manoObra/{obraId}/destajos', [DestajoController::class, 'store'])-
 Route::post('/destajos/{obraId}', [DestajoController::class, 'store'])
     ->name('destajos.store');
 Route::get('/cajaChica/{obraId}', [CajaChicaController::class, 'index'])->name('cajaChica.index');
+Route::post('/cajaChica', [CajaChicaController::class, 'store'])->name('cajaChica.store');
 Route::get('/destajos/{obraId}', [DestajoController::class, 'index'])->name('destajos.index');
 Route::get('/obra/{obraId}/destajo', [DestajoController::class, 'index'])->name('destajo.index');
 Route::post('/obra/{obraId}/destajo/store', [DestajoController::class, 'store'])->name('destajo.store');
