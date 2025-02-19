@@ -49,6 +49,10 @@
     .navbar-toggler.active .line3 {
       transform: translateY(-11px) rotate(-45deg);
     }
+    /* Regla para ocultar el botón de menú principal cuando está activo */
+    button[data-target="#mainMenu"].active {
+      display: none;
+    }
     /* Menú lateral utilizando Flexbox */
     #mainMenu {
       position: fixed;
@@ -89,12 +93,8 @@
     #mainMenu .nav-link i {
       margin-right: 10px;
     }
-    /* Enlace de registrar, ubicado al final del menú */
-    .register-link {
-      padding: 10px 20px;
-      background: #f8f9fa;
-      text-align: center;
-    }
+    /* Enlace de registrar, ubicado al final de la lista (dentro del menú) */
+    /* (Se integra dentro del <ul> en este ejemplo) */
     /* Estilo para el overlay */
     .menu-overlay {
       position: fixed;
@@ -118,16 +118,20 @@
     </div>
     <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
       <div class="container">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+        <!-- Botón para colapsar el contenido principal (si aplica) -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" 
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
           <span class="navbar-toggler-icon"></span>
         </button>
         @if(!request()->routeIs('login'))
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainMenu" aria-controls="mainMenu" aria-expanded="false" aria-label="Toggle main menu">
+          <!-- Botón de hamburguesa para el menú principal -->
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainMenu" 
+                  aria-controls="mainMenu" aria-expanded="false" aria-label="Toggle main menu">
             &#9776;
           </button>
         @endif
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <!-- ...existing code... -->
+          <!-- ...existing navbar content... -->
         </div>
         @if(!request()->routeIs('login'))
           <div class="collapse" id="mainMenu">
@@ -139,7 +143,7 @@
                   </a>
                 </li>
               @else
-                {{-- Mostrar el enlace Home solo si NO estamos en la ruta "home" --}}
+                {{-- Mostrar el enlace "Home" solo si NO estamos en la ruta "home" --}}
                 @if (!request()->routeIs('home'))
                   <li class="nav-item">
                     <a class="nav-link" href="{{ isset($obra) ? route('obra.show', ['id' => $obra->id]) : '#' }}">
@@ -254,7 +258,6 @@
       </div>
     </nav>
   </div>
-
   <!-- JavaScript para controlar la animación y el funcionamiento del menú -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -263,7 +266,6 @@
       const overlay = document.createElement('div');
       overlay.className = 'menu-overlay';
       document.body.appendChild(overlay);
-
       function toggleMenu() {
         menu.classList.toggle('show');
         overlay.classList.toggle('show');
@@ -271,21 +273,17 @@
         // Prevenir scroll en el body mientras el menú esté abierto
         document.body.style.overflow = menu.classList.contains('show') ? 'hidden' : '';
       }
-
       toggler.forEach(btn => btn.addEventListener('click', function(e) {
         e.stopPropagation();
         toggleMenu();
       }));
-
       overlay.addEventListener('click', toggleMenu);
-
       // Cierra el menú si se hace click fuera de él
       document.addEventListener('click', function(event) {
         if (!menu.contains(event.target) && menu.classList.contains('show')) {
           toggleMenu();
         }
       });
-
       // Previene que el scroll en el menú afecte al resto de la página
       menu.addEventListener('wheel', function(event) {
         event.stopPropagation();
