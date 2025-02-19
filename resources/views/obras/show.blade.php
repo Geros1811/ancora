@@ -289,39 +289,61 @@
             }
 
             function crearGrafica() {
-                let presupuesto = parseFloat("{{ $obra->presupuesto }}");
-                let costosDirectos = {
-                    'Materiales': parseFloat("{{ optional($costosDirectos->where('nombre', 'Materiales')->first())->costo ?? 0.00 }}"),
-                    'Mano de Obra': parseFloat("{{ $costosDirectos->where('nombre', 'Mano de Obra')->sum('costo') + $totalCantidadDestajos }}"),
-                    'Equipo de Seguridad': parseFloat("{{ optional($costosDirectos->where('nombre', 'Equipo de Seguridad')->first())->costo ?? 0.00 }}"),
-                    'Herramienta Menor': parseFloat("{{ optional($costosDirectos->where('nombre', 'Herramienta Menor')->first())->costo ?? 0.00 }}"),
-                    'Maquinaria Menor': parseFloat("{{ optional($costosDirectos->where('nombre', 'Maquinaria Menor')->first())->costo ?? 0.00 }}"),
-                    'Limpieza': parseFloat("{{ optional($costosDirectos->where('nombre', 'Limpieza')->first())->costo ?? 0.00 }}"),
-                    'Maquinaria Mayor': parseFloat("{{ optional($costosDirectos->where('nombre', 'Maquinaria Mayor')->first())->costo ?? 0.00 }}"),
-                    'Renta de Maquinaria': parseFloat("{{ optional($costosDirectos->where('nombre', 'Renta de Maquinaria')->first())->costo ?? 0.00 }}"),
-                    'Cimbras': parseFloat("{{ optional($costosDirectos->where('nombre', 'Cimbras')->first())->costo ?? 0.00 }}"),
-                    'Acarreos': parseFloat("{{ optional($costosDirectos->where('nombre', 'Acarreos')->first())->costo ?? 0.00 }}"),
-                    'Comidas': parseFloat("{{ optional($costosDirectos->where('nombre', 'Comidas')->first())->costo ?? 0.00 }}"),
-                    'Trámites': parseFloat("{{ optional($costosDirectos->where('nombre', 'Trámites')->first())->costo ?? 0.00 }}")
-                };
-                 let costosIndirectos = {
-                    'Papelería': parseFloat("{{ optional($costosIndirectos->where('nombre', 'Papelería')->first())->costo ?? 0.00 }}"),
-                    'Gasolina': parseFloat("{{ optional($costosIndirectos->where('nombre', 'Gasolina')->first())->costo ?? 0.00 }}"),
-                    'Rentas': parseFloat("{{ optional($costosIndirectos->where('nombre', 'Rentas')->first())->costo ?? 0.00 }}"),
-                    'Utilidades': parseFloat("{{ optional($costosIndirectos->where('nombre', 'Utilidades')->first())->costo ?? 0.00 }}")
-                };
-                let totalCostosDirectos = Object.values(costosDirectos).reduce((a, b) => a + b, 0);
-                let totalCostosIndirectos = Object.values(costosIndirectos).reduce((a, b) => a + b, 0);
-                let totalGastos = totalCostosDirectos + totalCostosIndirectos;
-                let utilidadRemanente = presupuesto - totalGastos;
-        
-                let data = {
-                    labels: [...Object.keys(costosDirectos), ...Object.keys(costosIndirectos), 'Utilidad Remanente'],
-                    datasets: [{
-                        data: [...Object.values(costosDirectos), ...Object.values(costosIndirectos), utilidadRemanente],
-                        backgroundColor: ['#FF0000', '#0000FF', '#FFFF00', '#FFA500', '#FFC0CB', '#800080', '#A52A2A', '#FFFFFF', '#000000', '#808080', '#40E0D0', '#FFD700', '#C0C0C0', '#F5F5DC', '#FF00FF', '#4CAF50', '#800000'] // Added wine color
-                    }]
-                };
+    let presupuesto = parseFloat("{{ $obra->presupuesto }}");
+    let costosDirectos = {
+        'Materiales': parseFloat("{{ optional($costosDirectos->where('nombre', 'Materiales')->first())->costo ?? 0.00 }}"),
+        'Mano de Obra': parseFloat("{{ $costosDirectos->where('nombre', 'Mano de Obra')->sum('costo') + $totalCantidadDestajos }}"),
+        'Equipo de Seguridad': parseFloat("{{ optional($costosDirectos->where('nombre', 'Equipo de Seguridad')->first())->costo ?? 0.00 }}"),
+        'Herramienta Menor': parseFloat("{{ optional($costosDirectos->where('nombre', 'Herramienta Menor')->first())->costo ?? 0.00 }}"),
+        'Maquinaria Menor': parseFloat("{{ optional($costosDirectos->where('nombre', 'Maquinaria Menor')->first())->costo ?? 0.00 }}"),
+        'Limpieza': parseFloat("{{ optional($costosDirectos->where('nombre', 'Limpieza')->first())->costo ?? 0.00 }}"),
+        'Maquinaria Mayor': parseFloat("{{ optional($costosDirectos->where('nombre', 'Maquinaria Mayor')->first())->costo ?? 0.00 }}"),
+        'Renta de Maquinaria': parseFloat("{{ optional($costosDirectos->where('nombre', 'Renta de Maquinaria')->first())->costo ?? 0.00 }}"),
+        'Cimbras': parseFloat("{{ optional($costosDirectos->where('nombre', 'Cimbras')->first())->costo ?? 0.00 }}"),
+        'Acarreos': parseFloat("{{ optional($costosDirectos->where('nombre', 'Acarreos')->first())->costo ?? 0.00 }}"),
+        'Comidas': parseFloat("{{ optional($costosDirectos->where('nombre', 'Comidas')->first())->costo ?? 0.00 }}"),
+        'Trámites': parseFloat("{{ optional($costosDirectos->where('nombre', 'Trámites')->first())->costo ?? 0.00 }}")
+    };
+    let costosIndirectos = {
+        'Papelería': parseFloat("{{ optional($costosIndirectos->where('nombre', 'Papelería')->first())->costo ?? 0.00 }}"),
+        'Gasolina': parseFloat("{{ optional($costosIndirectos->where('nombre', 'Gasolina')->first())->costo ?? 0.00 }}"),
+        'Rentas': parseFloat("{{ optional($costosIndirectos->where('nombre', 'Rentas')->first())->costo ?? 0.00 }}"),
+        'Utilidades': parseFloat("{{ optional($costosIndirectos->where('nombre', 'Utilidades')->first())->costo ?? 0.00 }}")
+    };
+    let totalCostosDirectos = Object.values(costosDirectos).reduce((a, b) => a + b, 0);
+    let totalCostosIndirectos = Object.values(costosIndirectos).reduce((a, b) => a + b, 0);
+    let totalGastos = totalCostosDirectos + totalCostosIndirectos;
+    let utilidadRemanente = presupuesto - totalGastos;
+
+    let data = {
+        labels: [...Object.keys(costosDirectos), ...Object.keys(costosIndirectos), 'Utilidad Remanente'],
+        datasets: [{
+            data: [...Object.values(costosDirectos), ...Object.values(costosIndirectos), utilidadRemanente],
+            backgroundColor: [
+                '#FF0000', // Materiales
+                '#0000FF', // Mano de Obra
+                '#FFFF00', // Equipo de Seguridad
+                '#FFA500', // Herramienta Menor
+                '#FFC0CB', // Maquinaria Menor
+                '#800080', // Limpieza
+                '#A52A2A', // Maquinaria Mayor
+                '#FFFFFF', // Renta de Maquinaria
+                '#000000', // Cimbras
+                '#808080', // Acarreos
+                '#40E0D0', // Comidas (o el color que desees)
+                '#FFD700', // Trámites
+                '#C0C0C0', // Papelería
+                '#F5F5DC', // Gasolina
+                '#FF00FF', // Rentas
+                '#00CED1', // Utilidades → color turquesa
+                '#008000'  // Utilidad Remanente → color verde
+            ]
+        }]
+    };
+
+    // Aquí seguiría el resto del código para crear la gráfica...
+
+
         
                 let config = {
                     type: 'pie',
