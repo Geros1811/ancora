@@ -121,7 +121,7 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
           <span class="navbar-toggler-icon"></span>
         </button>
-        @if(!request()->routeIs('dashboard') && !request()->routeIs('login'))
+        @if(!request()->routeIs('login'))
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainMenu" aria-controls="mainMenu" aria-expanded="false" aria-label="Toggle main menu">
             &#9776;
           </button>
@@ -129,7 +129,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <!-- ...existing code... -->
         </div>
-        @if(!request()->routeIs('dashboard') && !request()->routeIs('login'))
+        @if(!request()->routeIs('login'))
           <div class="collapse" id="mainMenu">
             <ul class="navbar-nav ml-auto">
               @if(request()->routeIs('register') || request()->routeIs('obra.create'))
