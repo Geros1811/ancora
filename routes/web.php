@@ -45,9 +45,20 @@ Route::post('/subir-archivo', [ArchivoController::class, 'store'])->name('archiv
 Route::post('/subir-archivo/{calendarioPagoId}', [ArchivoController::class, 'store'])->name('archivo.store');
 
 // Rutas para el dashboard y registro
-Route::get('/dashboard', [ObraController::class, 'index'])->name('dashboard');
-Route::get('/obra/crear', [ObraController::class, 'create'])->name('obra.create');
-Route::post('/obra', [ObraController::class, 'store'])->name('obra.store');
+Route::middleware(['auth', 'role:arquitecto'])->group(function () {
+    Route::get('/dashboard', [ObraController::class, 'index'])->name('dashboard');
+    Route::get('/obra/crear', [ObraController::class, 'create'])->name('obra.create');
+    Route::post('/obra', [ObraController::class, 'store'])->name('obra.store');
+    // ...otras rutas para arquitectos...
+});
+
+Route::middleware(['auth', 'role:maestro_obra'])->group(function () {
+    // ...rutas para maestros de obra...
+});
+
+Route::middleware(['auth', 'role:cliente'])->group(function () {
+    // ...rutas para clientes...
+});
 
 // Rutas de registro
 Route::middleware('auth')->group(function () {

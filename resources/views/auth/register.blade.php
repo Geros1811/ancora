@@ -26,6 +26,14 @@
                 <label for="password_confirmation">Confirm Password:</label>
                 <input type="password" name="password_confirmation" id="password_confirmation" required><br>
             </div>
+            <div>
+                <label for="role">Role:</label>
+                <select name="role" id="role" required>
+                    <option value="arquitecto">Arquitecto</option>
+                    <option value="maestro_obra">Maestro de Obra</option>
+                    <option value="cliente">Cliente</option>
+                </select><br>
+            </div>
             <button type="submit">Register</button>
         </form>
 

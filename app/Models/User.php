@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role', // Asegúrate de incluir el campo 'role'
     ];
 
     /**
@@ -42,4 +43,15 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    // Definir roles
+    const ROLE_ARQUITECTO = 'arquitecto';
+    const ROLE_MAESTRO_OBRA = 'maestro_obra';
+    const ROLE_CLIENTE = 'cliente';
+
+    // Verificar si el usuario tiene un rol específico
+    public function hasRole($role)
+    {
+        return $this->role === $role;
+    }
 }

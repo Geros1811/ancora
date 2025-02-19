@@ -53,12 +53,14 @@ class LoginController extends Controller
             'name' => 'required|string|max:100',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|confirmed',
+            'role' => 'required|string|in:arquitecto,maestro_obra,cliente', // Validar el rol
         ]);
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role, // Asignar el rol
         ]);
 
         return redirect()->route('dashboard')->with('success', 'User registered successfully.');
