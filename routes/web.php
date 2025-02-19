@@ -25,6 +25,7 @@ use App\Http\Controllers\MaterialesController;
 use App\Http\Controllers\DestajoController;
 use App\Http\Controllers\DestajosDetallesController;
 use App\Http\Controllers\RentaMaquinariaController;
+use App\Http\Controllers\CajaChicaController;
 
 Route::get('/costos/{id}', [CostosController::class, 'show'])->name('costos.show');
 
@@ -136,6 +137,7 @@ Route::get('/manoObra/{obraId}/destajos', [DestajoController::class, 'destajos']
 Route::post('/manoObra/{obraId}/destajos', [DestajoController::class, 'store'])->name('manoObra.storeDestajos');
 Route::post('/destajos/{obraId}', [DestajoController::class, 'store'])
     ->name('destajos.store');
+Route::get('/cajaChica/{obraId}', [CajaChicaController::class, 'index'])->name('cajaChica.index');
 Route::get('/destajos/{obraId}', [DestajoController::class, 'index'])->name('destajos.index');
 Route::get('/obra/{obraId}/destajo', [DestajoController::class, 'index'])->name('destajo.index');
 Route::post('/obra/{obraId}/destajo/store', [DestajoController::class, 'store'])->name('destajo.store');

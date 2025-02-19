@@ -237,6 +237,11 @@
                   </a>
                 </li>
                 <li class="nav-item">
+                  <a class="nav-link" href="{{ isset($obra) ? route('cajaChica.index', ['obraId' => $obra->id]) : route('cajaChica.index', ['obraId' => 1]) }}">
+                    <i class="fas fa-cash-register"></i>Caja Chica
+                  </a>
+                </li>
+                <li class="nav-item">
                   <a class="nav-link" href="{{ route('dashboard') }}">
                     <i class="fas fa-tachometer-alt"></i>Dashboard
                   </a>
