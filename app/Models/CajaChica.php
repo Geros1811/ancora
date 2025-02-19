@@ -13,15 +13,18 @@ class CajaChica extends Model
         'maestro_obra_id',
         'fecha',
         'cantidad',
-        'detalles',
     ];
 
     protected $casts = [
-        'detalles' => 'array',
     ];
 
     public function maestroObra()
     {
         return $this->belongsTo(User::class, 'maestro_obra_id');
+    }
+
+    public function detallesCajaChica()
+    {
+        return $this->hasMany(DetalleCajaChica::class);
     }
 }

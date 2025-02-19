@@ -70,9 +70,35 @@
     margin-right: 10px;
 }
 
+.detalle-caja-chica-form .form-control {
+    margin-bottom: 5px;
+}
+
+.detalle-caja-chica-form .obra-table td {
+    padding: 5px;
+}
+
+.detalle-caja-chica-form .obra-table .form-control {
+    margin-bottom: 0;
+}
+
 .button-and-totals {
     margin-top: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
+
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.totals-group {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+}
+
+
+

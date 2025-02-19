@@ -139,6 +139,7 @@ Route::post('/destajos/{obraId}', [DestajoController::class, 'store'])
     ->name('destajos.store');
 Route::get('/cajaChica/{obraId}', [CajaChicaController::class, 'index'])->name('cajaChica.index');
 Route::post('/cajaChica', [CajaChicaController::class, 'store'])->name('cajaChica.store');
+Route::post('/cajaChica/addDetail', [CajaChicaController::class, 'addDetail'])->name('cajaChica.addDetail');
 Route::get('/destajos/{obraId}', [DestajoController::class, 'index'])->name('destajos.index');
 Route::get('/obra/{obraId}/destajo', [DestajoController::class, 'index'])->name('destajo.index');
 Route::post('/obra/{obraId}/destajo/store', [DestajoController::class, 'store'])->name('destajo.store');
