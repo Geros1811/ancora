@@ -15,12 +15,13 @@ class CajaChicaController extends Controller
         $users = User::where('role', 'maestro_obra')->get();
         $cajaChicas = CajaChica::where('obra_id', $obraId)->get();
         $cajaChica = null;
+        $obra = \App\Models\Obra::find($obraId);
 
         if ($request->has('cajaChica')) {
             $cajaChica = CajaChica::find($request->cajaChica);
         }
 
-        return view('cajaChica.index', compact('obraId', 'users', 'cajaChicas', 'cajaChica'));
+        return view('cajaChica.index', compact('obraId', 'users', 'cajaChicas', 'cajaChica', 'obra'));
     }
 
     public function store(Request $request)
