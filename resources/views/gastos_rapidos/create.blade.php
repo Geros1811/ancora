@@ -40,30 +40,18 @@
                     <option value="herramientaMenor">HerramientaMenor</option>
                     <option value="equipoSeguridad">Equipo de Seguridad</option>
                     <option value="limpieza">Limpieza</option>
-                    <option value="materiales">Materiales</option>
+                    <optgroup label="Materiales">
+                        <option value="generales">Generales</option>
+                        <option value="agregados">Agregados</option>
+                        <option value="aceros">Aceros</option>
+                        <option value="cemento">Cemento</option>
+                        <option value="losas">Losas</option>
+                    </optgroup>
                     <option value="rentaMaquinaria">Renta de Maquinaria</option>
-                </select>
-                <select class="form-control" id="materialesSub" name="materialesSub" style="display:none;">
-                    <option value="generales">Generales</option>
-                    <option value="agregados">Agregados</option>
-                    <option value="aceros">Aceros</option>
-                    <option value="cemento">Cemento</option>
-                    <option value="losas">Losas</option>
                 </select>
                 <button type="button" class="btn btn-secondary" onclick="crearTabla()">Crear Tabla</button>
             </div>
         </div>
-
-        <script>
-            document.getElementById('tabla').addEventListener('change', function() {
-                var materialesSub = document.getElementById('materialesSub');
-                if (this.value === 'materiales') {
-                    materialesSub.style.display = 'inline-block';
-                } else {
-                    materialesSub.style.display = 'none';
-                }
-            });
-        </script>
 
         <script>
             function crearTabla() {
@@ -120,16 +108,16 @@
                 var dynamicFields = document.getElementById("dynamicFields");
                 dynamicFields.innerHTML = ''; // Clear previous content
 
-                // Get the selected sub-tabla
-                var materialesSubSeleccionada = document.getElementById("materialesSub").value;
-                if (tablaSeleccionada === 'materiales') {
-                    tablaSeleccionada = materialesSubSeleccionada;
-                }
-
                 // Create form element
                 var form = document.createElement("form");
                 form.action = "{{ route('gastos_rapidos.store') }}";
                 form.method = "POST";
+
+                var tablaInput = document.createElement("input");
+                tablaInput.type = "hidden";
+                tablaInput.name = "tabla";
+                tablaInput.value = tablaSeleccionada;
+                form.appendChild(tablaInput);
 
                 // Add CSRF token
                 var csrfToken = document.createElement("input");

@@ -22,7 +22,6 @@ class GastosRapidosController extends Controller
         $unidad = $request->input('unidad');
         $cantidad = $request->input('cantidad');
         $precio_unitario = $request->input('precio_unitario');
-        $materialesSub = $request->input('materialesSub');
 
         if ($tabla == 'gasolina') {
             $tableName = 'detalle_gasolinas';
@@ -38,16 +37,16 @@ class GastosRapidosController extends Controller
             $tableName = 'renta_maquinarias';
         } elseif ($tabla == 'limpieza') {
             $tableName = 'detalle_limpieza';
-        } elseif ($tabla == 'materiales' && $materialesSub == 'agregados') {
-            $tableName = 'agregados';
-        } elseif ($tabla == 'materiales' && $materialesSub == 'aceros') {
-             $tableName = 'aceros';
-        } elseif ($tabla == 'materiales' && $materialesSub == 'cemento') {
-             $tableName = 'cemento';
-        } elseif ($tabla == 'materiales' && $materialesSub == 'losas') {
-             $tableName = 'losas';
-        } elseif ($tabla == 'materiales') {
+        } elseif ($tabla == 'generales') {
             $tableName = 'generales';
+        } elseif ($tabla == 'agregados') {
+            $tableName = 'agregados';
+        } elseif ($tabla == 'aceros') {
+            $tableName = 'aceros';
+        } elseif ($tabla == 'cemento') {
+            $tableName = 'cemento';
+        } elseif ($tabla == 'losas') {
+            $tableName = 'losas';
         } else {
             $tableName = 'detalles_' . $tabla;
         }
