@@ -8,9 +8,12 @@ use Illuminate\Support\Facades\DB;
 class GastosRapidosController extends Controller
 {
     //
-    public function create()
+    public function create(Request $request)
     {
-        return view('gastos_rapidos.create');
+        $obraId = $request->input('obraId');
+        $obra = \App\Models\Obra::find($obraId);
+
+        return view('gastos_rapidos.create', compact('obra'));
     }
 
     public function store(Request $request)
@@ -37,33 +40,43 @@ class GastosRapidosController extends Controller
             $tableName = 'renta_maquinarias';
         } elseif ($tabla == 'limpieza') {
             $tableName = 'detalle_limpieza';
-        } elseif ($tabla == 'generales') {
-            $tableName = 'generales';
-        } elseif ($tabla == 'agregados') {
+        } elseif ($tabla == 'comida') {
+            $tableName = 'detalle_comidas';
+        } elseif ($tabla == 'materiales' && $request->input('materialesSub') == 'agregados') {
             $tableName = 'agregados';
-        } elseif ($tabla == 'aceros') {
+        } elseif ($tabla == 'materiales' && $request->input('materialesSub') == 'aceros') {
             $tableName = 'aceros';
-        } elseif ($tabla == 'cemento') {
+        } elseif ($tabla == 'materiales' && $request->input('materialesSub') == 'cemento') {
             $tableName = 'cemento';
-        } elseif ($tabla == 'losas') {
+        } elseif ($tabla == 'materiales' && $request->input('materialesSub') == 'losas') {
             $tableName = 'losas';
+        } elseif ($tabla == 'materiales') {
+            $tableName = 'generales';
         } else {
-            $tableName = 'detalles_' . $tabla;
+            $tableName = $tabla;
         }
 
         try {
             DB::table($tableName)->insert(
-                array_map(function ($fecha, $concepto, $unidad, $cantidad, $precio_unitario, $subtotal) use ($obraId) {
-                    return [
-                        'obra_id' => $obraId,
-                        'fecha' => $fecha,
-                        'concepto' => $concepto,
-                        'unidad' => $unidad,
-                        'cantidad' => $cantidad,
-                        'precio_unitario' => $precio_unitario,
-                        'subtotal' => $subtotal
-                    ];
-                }, $fecha, $concepto, $unidad, $cantidad, $precio_unitario, $request->input('subtotal'))
+                array_map(
+                    function ($fecha, $concepto, $unidad, $cantidad, $precio_unitario, $subtotal) use ($obraId) {
+                        return [
+                            'obra_id' => $obraId,
+                            'fecha' => $fecha,
+                            'concepto' => $concepto,
+                            'unidad' => $unidad,
+                            'cantidad' => $cantidad,
+                            'precio_unitario' => $precio_unitario,
+                            'subtotal' => $subtotal
+                        ];
+                    },
+                    $fecha,
+                    $concepto,
+                    $unidad,
+                    $cantidad,
+                    $precio_unitario,
+                    $request->input('subtotal')
+                )
             );
 
             return redirect()->back()->with('success', 'Gasto rápido guardado correctamente.');

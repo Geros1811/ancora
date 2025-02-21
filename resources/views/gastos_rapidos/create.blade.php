@@ -5,53 +5,54 @@
 @endsection
 
 @section('content')
-    <h1>Gastos Rápidos</h1>
+    <div class="container gastos-rapidos-container">
+        <h1 class="gastos-rapidos-title">Gastos Rápidos</h1>
 
-    @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
-    @endif
-
-    <form action="{{ route('gastos_rapidos.store') }}" method="POST">
-        @csrf
-        <input type="hidden" name="obraId" value="{{ request('obraId') }}">
-
-        <div class="form-group">
-            <label for="tabla">Seleccionar Tabla:</label>
-            <div style="display: flex; align-items: center;">
-                <select class="form-control" id="tabla" name="tabla">
-                    <option value="papeleria">Papelería</option>
-                    <option value="gasolina">Gasolina</option>
-                    <option value="rentas">Rentas</option>
-                    <option value="utilidades">Utilidades</option>
-                    <option value="acarreos">Acarreos</option>
-                    <option value="comidas">Comidas</option>
-                    <option value="tramites">Trámites</option>
-                    <option value="cimbras">Cimbras</option>
-                    <option value="maquinariaMayor">MaquinariaMayor</option>
-                    <option value="maquinariaMenor">MaquinariaMenor</option>
-                    <option value="herramientaMenor">HerramientaMenor</option>
-                    <option value="equipoSeguridad">Equipo de Seguridad</option>
-                    <option value="limpieza">Limpieza</option>
-                    <optgroup label="Materiales">
-                        <option value="generales">Generales</option>
-                        <option value="agregados">Agregados</option>
-                        <option value="aceros">Aceros</option>
-                        <option value="cemento">Cemento</option>
-                        <option value="losas">Losas</option>
-                    </optgroup>
-                    <option value="rentaMaquinaria">Renta de Maquinaria</option>
-                </select>
-                <button type="button" class="btn btn-secondary" onclick="crearTabla()">Crear Tabla</button>
+        @if (session('success'))
+            <div class="alert alert-success gastos-rapidos-alert-success">
+                {{ session('success') }}
             </div>
-        </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger gastos-rapidos-alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <form action="{{ route('gastos_rapidos.store') }}" method="POST" class="gastos-rapidos-form">
+            @csrf
+            <input type="hidden" name="obraId" value="{{ request('obraId') }}">
+
+            <div class="form-group">
+                <label for="tabla" class="gastos-rapidos-label">Seleccionar Tabla:</label>
+                <div style="display: flex; align-items: center;">
+                    <select class="form-control gastos-rapidos-select" id="tabla" name="tabla">
+                        <option value="papeleria">Papelería</option>
+                        <option value="gasolina">Gasolina</option>
+                        <option value="rentas">Rentas</option>
+                        <option value="utilidades">Utilidades</option>
+                        <option value="acarreos">Acarreos</option>
+                        <option value="comida">Comida</option>
+                        <option value="tramites">Trámites</option>
+                        <option value="cimbras">Cimbras</option>
+                        <option value="maquinariaMayor">Maquinaria Mayor</option>
+                        <option value="maquinariaMenor">Maquinaria Menor</option>
+                        <option value="herramientaMenor">Herramienta Menor</option>
+                        <option value="equipoSeguridad">Equipo de Seguridad</option>
+                        <option value="limpieza">Limpieza</option>
+                        <optgroup label="Materiales" class="gastos-rapidos-optgroup-label">
+                            <option value="generales">Generales</option>
+                            <option value="agregados">Agregados</option>
+                            <option value="aceros">Aceros</option>
+                            <option value="cemento">Cemento</option>
+                            <option value="losas">Losas</option>
+                        </optgroup>
+                        <option value="rentaMaquinaria">Renta de Maquinaria</option>
+                    </select>
+                    <button type="button" class="btn gastos-rapidos-button-primary" onclick="crearTabla()">Crear Tabla</button>
+                </div>
+            </div>
 
         <script>
             function crearTabla() {
@@ -71,9 +72,8 @@
                         <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Concepto</th>
                         <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Unidad</th>
                         <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Cantidad</th>
-                        <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Precio Unitario</th>
-                        <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Subtotal</th>
-                        <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Acciones</th>
+                        <th class="gastos-rapidos-th">Precio Unitario</th>
+                        <th class="gastos-rapidos-th">Subtotal</th>
                     </tr>
                 `;
                 table.appendChild(thead);
@@ -82,24 +82,23 @@
                 var tbody = document.createElement("tbody");
                 var newRow = document.createElement("tr");
                 newRow.innerHTML = `
-                    <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="date" name="fecha[]" class="form-control" style="border: none; background: transparent; text-align: center;"></td>
-                    <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="concepto[]" class="form-control" style="border: none; background: transparent; text-align: center;"></td>
-                    <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
-                        <select name="unidad[]" class="form-control" style="border: none; background: transparent; text-align: center;">
+                    <td class="gastos-rapidos-td"><input type="date" name="fecha[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;"></td>
+                    <td class="gastos-rapidos-td"><input type="text" name="concepto[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;"></td>
+                    <td class="gastos-rapidos-td">
+                        <select name="unidad[]" class="form-control gastos-rapidos-select" style="border: none; background: transparent; text-align: center;">
                             <option value="KG">KG</option>
                             <option value="LTS">LTS</option>
                             <option value="PZ">PZ</option>
                             <option value="LOTE">LOTE</option>
                         </select>
                     </td>
-                    <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="cantidad[]" class="form-control cantidad" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
-                    <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="precio_unitario[]" class="form-control precio-unitario" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)">
+                    <td class="gastos-rapidos-td"><input type="number" name="cantidad[]" class="form-control cantidad gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
+                    <td class="gastos-rapidos-td"><input type="number" name="precio_unitario[]" class="form-control precio-unitario gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)">
                     </td>
-                    <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
-                    <input type="text" class="form-control subtotal display-subtotal" style="border: none; background: transparent; text-align: center;" readonly>
+                    <td class="gastos-rapidos-td">
+                    <input type="text" class="form-control subtotal display-subtotal gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" readonly>
                     <input type="hidden" name="subtotal[]" class="subtotal-hidden">
                     </td>
-                    <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><button type="button" class="btn btn-success">Guardar</button></td>
                 `;
                 tbody.appendChild(newRow);
                 table.appendChild(tbody);
