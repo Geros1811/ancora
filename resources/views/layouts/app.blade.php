@@ -9,6 +9,7 @@
         integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" 
         crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+  <link href="{{ asset('css/gastos_rapidos.css') }}" rel="stylesheet">
   @yield('head')
   <!-- Estilos adicionales para el botón hamburguesa y el menú -->
   <style>
