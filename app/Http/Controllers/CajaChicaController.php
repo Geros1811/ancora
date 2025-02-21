@@ -27,22 +27,22 @@ class CajaChicaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            '*.obra_id' => 'required|exists:obras,id',
-            '*.maestro_obra_id' => 'required|exists:users,id',
-            '*.fecha' => 'required|date',
-            '*.cantidad' => 'required|numeric',
+            'obra_id' => 'required|exists:obras,id',
+            'maestro_obra_id' => 'required|exists:users,id',
+            'fecha' => 'required|date',
+            'cantidad' => 'required|numeric',
         ]);
 
-        foreach ($request->all() as $cajaChicaData) {
-            $cajaChica = CajaChica::create([
-                'obra_id' => $cajaChicaData['obra_id'],
-                'maestro_obra_id' => $cajaChicaData['maestro_obra_id'],
-                'fecha' => $cajaChicaData['fecha'],
-                'cantidad' => $cajaChicaData['cantidad'],
-            ]);
-        }
+        $cajaChica = CajaChica::create([
+            'obra_id' => $request->obra_id,
+            'maestro_obra_id' => $request->maestro_obra_id,
+            'fecha' => $request->fecha,
+            'cantidad' => $request->cantidad,
+            'subtotal' => 0, // Valor por defecto para subtotal
+            'cambio' => 0, // Valor por defecto para cambio
+        ]);
 
-        return redirect()->route('cajaChica.index', ['obraId' => $cajaChica->obra_id, 'cajaChica' => $cajaChica->id])
+        return redirect()->route('cajaChica.index', ['obraId' => $request->obra_id, 'cajaChica' => $cajaChica->id])
             ->with('success', 'Datos guardados exitosamente.');
     }
 

@@ -16,17 +16,17 @@
         
         <div class="form-group">
             <label for="fecha">Fecha:</label>
-            <input type="date" class="form-control" id="fecha" name="fecha">
+            <input type="date" class="form-control" id="fecha" name="fecha" required>
         </div>
 
         <div class="form-group">
             <label for="cantidad">Cantidad:</label>
-            <input type="number" class="form-control" id="cantidad" name="cantidad">
+            <input type="number" class="form-control" id="cantidad" name="cantidad" required>
         </div>
 
         <div class="form-group">
             <label for="maestro_obra">Maestro de Obra:</label>
-            <select class="form-control" id="maestro_obra" name="maestro_obra_id">
+            <select class="form-control" id="maestro_obra" name="maestro_obra_id" required>
                 <option value="">Seleccione un maestro de obra</option>
                 @foreach ($users as $user)
                     <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -152,7 +152,7 @@
                     <option value="materiales">Materiales</option>
                 </select>
             </td>
-            <td><input type="number" class="form-control gasto-input" name="detalles[${rowCount}][gasto]" onchange="updateSubtotal(cajaChicaId)"></td>
+            <td><input type="number" class="form-control gasto-input" name="detalles[${rowCount}][gasto]" onchange="updateSubtotal(${cajaChicaId})"></td>
             <td><input type="file" class="form-control" name="detalles[${rowCount}][foto]"></td>
         `;
         tableBody.appendChild(newRow);
