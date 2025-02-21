@@ -156,7 +156,7 @@
             <td><input type="file" class="form-control" name="detalles[${rowCount}][foto]"></td>
         `;
         tableBody.appendChild(newRow);
-        updateSubtotal(cajaChicaId);
+        setTimeout(() => updateSubtotal(cajaChicaId), 0);
     }
 
     function removeRow(button) {
