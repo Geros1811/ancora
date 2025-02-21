@@ -8,6 +8,34 @@
         @section('head')
         <link rel="stylesheet" href="{{ asset('css/obra-details.css') }}">
     @endsection
+
+  <a href="{{ route('gastos_rapidos.create', ['obraId' => $obra->id]) }}" class="btn-flotante">
+    +
+  </a>
+
+  <style>
+    .btn-flotante {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+    }
+
+    .btn-flotante:hover {
+      background-color: #0056b3;
+    }
+  </style>
     
 
         <!-- Sección de información general -->

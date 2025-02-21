@@ -26,6 +26,7 @@ use App\Http\Controllers\DestajoController;
 use App\Http\Controllers\DestajosDetallesController;
 use App\Http\Controllers\RentaMaquinariaController;
 use App\Http\Controllers\CajaChicaController;
+use App\Http\Controllers\GastosRapidosController;
 
 Route::get('/costos/{id}', [CostosController::class, 'show'])->name('costos.show');
 
@@ -54,6 +55,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/register', [LoginController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [LoginController::class, 'register'])->name('register');
 });
+
+// Rutas para gastos rápidos
+Route::get('/gastos_rapidos/create', [GastosRapidosController::class, 'create'])->name('gastos_rapidos.create');
+Route::post('/gastos_rapidos/store', [GastosRapidosController::class, 'store'])->name('gastos_rapidos.store');
 
 // Validación de contraseña
 Route::post('/validar-password', function (Illuminate\Http\Request $request) {
