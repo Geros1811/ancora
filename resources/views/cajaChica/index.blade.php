@@ -53,7 +53,7 @@
                     <h2 class="table-title" style="font-size: 20px; color: #34495e; margin: 0;">
                         Caja Chica: {{ $cajaChica->fecha }} - {{ $cajaChica->maestroObra->name }}
                         <span id="total-cajaChica-{{ $cajaChica->id }}" style="font-size: 16px; color: #e74c3c;" data-cajaChica-id="{{ $cajaChica->id }}">
-                            TOTAL: ${{ number_format($cajaChica->total, 2) }}
+                            Cantidad: ${{ number_format($cajaChica->cantidad, 2) }}
                         </span>
                     </h2>
                 </div>
@@ -63,6 +63,7 @@
                         @csrf
                         <input type="hidden" name="caja_chica_id" value="{{ $cajaChica->id }}">
                         <input type="hidden" name="obra_id" value="{{ $obraId }}">
+                        <input type="hidden" id="cantidad-{{ $cajaChica->id }}" value="{{ $cajaChica->cantidad }}">
                         <table class="obra-table" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
                             <thead>
                                 <tr>
@@ -71,34 +72,38 @@
                                     <th>Vista</th>
                                     <th>Gasto</th>
                                     <th>Foto</th>
-                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody class="detalle-costo-body">
                                 @foreach ($cajaChica->detallesCajaChica as $index => $detalle)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
-                                        <td><input type="text" class="form-control" name="detalles[{{ $index }}][descripcion]" value="{{ $detalle->descripcion }}" disabled></td>
+                                        <td><input type="text" class="form-control" name="detalles[{{ $index }}][descripcion]" value="{{ $detalle->descripcion }}"></td>
                                         <td>
-                                            <select class="form-control" name="detalles[{{ $index }}][vista]" disabled>
+                                            <select class="form-control" name="detalles[{{ $index }}][vista]">
                                                 @foreach(['papeleria', 'gasolina', 'rentas', 'utilidades', 'acarreos', 'comidas', 'tramites', 'cimbras', 'maquinariaMayor', 'rentaMaquinaria', 'maquinariaMenor', 'limpieza', 'herramientaMenor', 'equipoSeguridad', 'materiales'] as $vista)
                                                     <option value="{{ $vista }}" {{ $detalle->vista == $vista ? 'selected' : '' }}>{{ ucfirst($vista) }}</option>
                                                 @endforeach
                                             </select>
                                         </td>
-                                        <td><input type="number" class="form-control gasto-input" name="detalles[{{ $index }}][gasto]" value="{{ $detalle->gasto }}" disabled></td>
+                                        <td><input type="number" class="form-control gasto-input" name="detalles[{{ $index }}][gasto]" value="{{ $detalle->gasto }}" onchange="updateSubtotal({{ $cajaChica->id }})"></td>
                                         <td>
                                             @if (isset($detalle->foto))
                                                 <a href="{{ asset('storage/' . $detalle->foto) }}" target="_blank">Ver Foto</a>
                                             @endif
                                         </td>
-                                        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
-                        <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow(this)">Añadir Fila</button>
-                        <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar</button>
+                        <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 10px;">
+                            <button type="button" class="btn btn-success" onclick="addRow(this, {{ $cajaChica->id }})">Añadir Fila</button>
+                            <button type="submit" class="btn btn-primary" style="margin-left: 10px;">Guardar</button>
+                            <div style="margin-left: 20px; text-align: right;">
+                                <div>Subtotal: $<span id="subtotal-{{ $cajaChica->id }}">0.00</span></div>
+                                <div>Cambio: $<span id="cambio-{{ $cajaChica->id }}">0.00</span></div>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -120,7 +125,7 @@
         }
     }
 
-    function addRow(button) {
+    function addRow(button, cajaChicaId) {
         const tableBody = button.closest('form').querySelector('.detalle-costo-body');
         const newRow = document.createElement('tr');
         const rowCount = tableBody.querySelectorAll('tr').length;
@@ -147,24 +152,27 @@
                     <option value="materiales">Materiales</option>
                 </select>
             </td>
-            <td><input type="number" class="form-control gasto-input" name="detalles[${rowCount}][gasto]" onchange="updateSubtotal()"></td>
+            <td><input type="number" class="form-control gasto-input" name="detalles[${rowCount}][gasto]" onchange="updateSubtotal(${cajaChicaId})"></td>
             <td><input type="file" class="form-control" name="detalles[${rowCount}][foto]"></td>
-            <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
         `;
         tableBody.appendChild(newRow);
+        updateSubtotal(cajaChicaId);
     }
 
     function removeRow(button) {
         const row = button.closest('tr');
         row.remove();
-        updateTotal(row.closest('.table-container'));
+        updateSubtotal(row.closest('form').querySelector('input[name="caja_chica_id"]').value);
     }
 
-    function updateSubtotal() {
-        let subtotal = Array.from(document.querySelectorAll('.gasto-input')).reduce((acc, input) => acc + parseFloat(input.value || 0), 0);
-        let cantidad = parseFloat(document.getElementById('cantidad').value) || 0;
-        document.getElementById('subtotal').innerText = subtotal.toFixed(2);
-        document.getElementById('cambio').innerText = (cantidad - subtotal).toFixed(2);
+    function updateSubtotal(cajaChicaId) {
+        let subtotal = 0;
+        document.querySelectorAll(`#table-container-${cajaChicaId} .gasto-input`).forEach(input => {
+            subtotal += parseFloat(input.value || 0);
+        });
+        let cantidad = parseFloat(document.getElementById(`cantidad-${cajaChicaId}`).value) || 0;
+        document.getElementById(`subtotal-${cajaChicaId}`).innerText = subtotal.toFixed(2);
+        document.getElementById(`cambio-${cajaChicaId}`).innerText = (cantidad - subtotal).toFixed(2);
     }
 </script>
 @endsection
