@@ -123,11 +123,12 @@
     function addRow(button) {
         const tableBody = button.closest('form').querySelector('.detalle-costo-body');
         const newRow = document.createElement('tr');
+        const rowCount = tableBody.querySelectorAll('tr').length;
         newRow.innerHTML = `
-            <td>#</td>
-            <td><input type="text" class="form-control" name="descripcion"></td>
+            <td>${rowCount + 1}</td>
+            <td><input type="text" class="form-control" name="detalles[${rowCount}][descripcion]"></td>
             <td>
-                <select class="form-control" name="vista">
+                <select class="form-control" name="detalles[${rowCount}][vista]">
                     <option value="">Seleccione una vista</option>
                     <option value="papeleria">Papelería</option>
                     <option value="gasolina">Gasolina</option>
@@ -146,16 +147,16 @@
                     <option value="materiales">Materiales</option>
                 </select>
             </td>
-            <td><input type="number" class="form-control gasto-input" name="gasto" onchange="updateSubtotal()"></td>
-            <td><input type="file" class="form-control" name="foto"></td>
+            <td><input type="number" class="form-control gasto-input" name="detalles[${rowCount}][gasto]" onchange="updateSubtotal()"></td>
+            <td><input type="file" class="form-control" name="detalles[${rowCount}][foto]"></td>
             <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
         `;
         tableBody.appendChild(newRow);
     }
 
     function removeRow(button) {
-        const row = button.parentNode.parentNode;
-        row.parentNode.removeChild(row);
+        const row = button.closest('tr');
+        row.remove();
         updateTotal(row.closest('.table-container'));
     }
 

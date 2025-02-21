@@ -47,28 +47,36 @@ class CajaChicaController extends Controller
     {
         $request->validate([
             'caja_chica_id' => 'required|exists:caja_chicas,id',
-            'descripcion' => 'required|string',
-            'vista' => 'required|string',
-            'gasto' => 'required|numeric',
-            'foto' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'detalles.*.descripcion' => 'required|string',
+            'detalles.*.vista' => 'required|string',
+            'detalles.*.gasto' => 'required|numeric',
+            'detalles.*.foto' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $fotoPath = null;
-        if ($request->hasFile('foto')) {
-            $fotoPath = $request->file('foto')->store('fotos', 'public');
+        if ($request->has('detalles')) {
+            // Eliminar detalles existentes
+            DetalleCajaChica::where('caja_chica_id', $request->caja_chica_id)->delete();
+
+            // Agregar nuevos detalles
+            foreach ($request->detalles as $detalle) {
+                $fotoPath = null;
+                if (isset($detalle['foto'])) {
+                    $fotoPath = $detalle['foto']->store('fotos', 'public');
+                }
+
+                DetalleCajaChica::create([
+                    'caja_chica_id' => $request->caja_chica_id,
+                    'descripcion' => $detalle['descripcion'],
+                    'vista' => $detalle['vista'],
+                    'gasto' => $detalle['gasto'],
+                    'foto' => $fotoPath,
+                ]);
+            }
         }
-
-        DetalleCajaChica::create([
-            'caja_chica_id' => $request->caja_chica_id,
-            'descripcion' => $request->descripcion,
-            'vista' => $request->vista,
-            'gasto' => $request->gasto,
-            'foto' => $fotoPath,
-        ]);
 
         $obraId = $request->obra_id;
         $cajaChicaId = $request->caja_chica_id;
         return redirect()->route('cajaChica.index', ['obraId' => $obraId, 'cajaChica' => $cajaChicaId])
-                         ->with('success', 'Detalle guardado exitosamente.');
+                         ->with('success', 'Detalles guardados exitosamente.');
     }
 }
