@@ -95,21 +95,6 @@
                                         <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
                                     </tr>
                                 @endforeach
-                                <tr id="newDetailRow">
-                                    <td>#</td>
-                                    <td><input type="text" class="form-control" name="descripcion"></td>
-                                    <td>
-                                        <select class="form-control" name="vista">
-                                            <option value="">Seleccione una vista</option>
-                                            @foreach(['papeleria', 'gasolina', 'rentas', 'utilidades', 'acarreos', 'comidas', 'tramites', 'cimbras', 'maquinariaMayor', 'rentaMaquinaria', 'maquinariaMenor', 'limpieza', 'herramientaMenor', 'equipoSeguridad', 'materiales'] as $vista)
-                                                <option value="{{ $vista }}">{{ ucfirst($vista) }}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td><input type="number" class="form-control gasto-input" name="gasto" onchange="updateSubtotal()"></td>
-                                    <td><input type="file" class="form-control" name="foto"></td>
-                                    <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
-                                </tr>
                             </tbody>
                         </table>
                         <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow(this)">Añadir Fila</button>
