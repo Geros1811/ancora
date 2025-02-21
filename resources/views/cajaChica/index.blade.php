@@ -100,8 +100,8 @@
                             <button type="button" class="btn btn-success" onclick="addRow(this, {{ $cajaChica->id }})">Añadir Fila</button>
                             <button type="submit" class="btn btn-primary" style="margin-left: 10px;">Guardar</button>
                             <div style="margin-left: 20px; text-align: right;">
-                                <div>Subtotal: $<span id="subtotal-{{ $cajaChica->id }}">0.00</span></div>
-                                <div>Cambio: $<span id="cambio-{{ $cajaChica->id }}">0.00</span></div>
+                                <div>Subtotal: $<span id="subtotal-{{ $cajaChica->id }}">{{ number_format($cajaChica->subtotal, 2) }}</span></div>
+                                <div>Cambio: $<span id="cambio-{{ $cajaChica->id }}">{{ number_format($cajaChica->cambio, 2) }}</span></div>
                             </div>
                         </div>
                     </form>
@@ -152,7 +152,7 @@
                     <option value="materiales">Materiales</option>
                 </select>
             </td>
-            <td><input type="number" class="form-control gasto-input" name="detalles[${rowCount}][gasto]" onchange="updateSubtotal(${cajaChicaId})"></td>
+            <td><input type="number" class="form-control gasto-input" name="detalles[${rowCount}][gasto]" onchange="updateSubtotal(cajaChicaId)"></td>
             <td><input type="file" class="form-control" name="detalles[${rowCount}][foto]"></td>
         `;
         tableBody.appendChild(newRow);
@@ -161,8 +161,9 @@
 
     function removeRow(button) {
         const row = button.closest('tr');
+        const cajaChicaId = row.closest('form').querySelector('input[name="caja_chica_id"]').value;
         row.remove();
-        updateSubtotal(row.closest('form').querySelector('input[name="caja_chica_id"]').value);
+        updateSubtotal(cajaChicaId);
     }
 
     function updateSubtotal(cajaChicaId) {

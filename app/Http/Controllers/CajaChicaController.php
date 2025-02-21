@@ -26,20 +26,22 @@ class CajaChicaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'obra_id' => 'required|exists:obras,id',
-            'maestro_obra_id' => 'required|exists:users,id',
-            'fecha' => 'required|date',
-            'cantidad' => 'required|numeric',
+            '*.obra_id' => 'required|exists:obras,id',
+            '*.maestro_obra_id' => 'required|exists:users,id',
+            '*.fecha' => 'required|date',
+            '*.cantidad' => 'required|numeric',
         ]);
 
-        $cajaChica = CajaChica::create([
-            'obra_id' => $request->obra_id,
-            'maestro_obra_id' => $request->maestro_obra_id,
-            'fecha' => $request->fecha,
-            'cantidad' => $request->cantidad,
-        ]);
+        foreach ($request->all() as $cajaChicaData) {
+            $cajaChica = CajaChica::create([
+                'obra_id' => $cajaChicaData['obra_id'],
+                'maestro_obra_id' => $cajaChicaData['maestro_obra_id'],
+                'fecha' => $cajaChicaData['fecha'],
+                'cantidad' => $cajaChicaData['cantidad'],
+            ]);
+        }
 
-        return redirect()->route('cajaChica.index', ['obraId' => $request->obra_id, 'cajaChica' => $cajaChica->id])
+        return redirect()->route('cajaChica.index', ['obraId' => $cajaChica->obra_id, 'cajaChica' => $cajaChica->id])
             ->with('success', 'Datos guardados exitosamente.');
     }
 
@@ -53,11 +55,13 @@ class CajaChicaController extends Controller
             'detalles.*.foto' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        if ($request->has('detalles')) {
-            // Eliminar detalles existentes
-            DetalleCajaChica::where('caja_chica_id', $request->caja_chica_id)->delete();
+        $cajaChicaId = $request->input('caja_chica_id');
 
-            // Agregar nuevos detalles
+        if ($request->has('detalles')) {
+            // Delete existing details
+            DetalleCajaChica::where('caja_chica_id', $cajaChicaId)->delete();
+
+            // Add new details
             foreach ($request->detalles as $detalle) {
                 $fotoPath = null;
                 if (isset($detalle['foto'])) {
@@ -65,7 +69,7 @@ class CajaChicaController extends Controller
                 }
 
                 DetalleCajaChica::create([
-                    'caja_chica_id' => $request->caja_chica_id,
+                    'caja_chica_id' => $cajaChicaId,
                     'descripcion' => $detalle['descripcion'],
                     'vista' => $detalle['vista'],
                     'gasto' => $detalle['gasto'],
@@ -74,9 +78,23 @@ class CajaChicaController extends Controller
             }
         }
 
-        $obraId = $request->obra_id;
-        $cajaChicaId = $request->caja_chica_id;
+        // Calculate subtotal
+        $subtotal = DetalleCajaChica::where('caja_chica_id', $cajaChicaId)->sum('gasto');
+
+        // Get cantidad from CajaChica
+        $cajaChica = CajaChica::find($cajaChicaId);
+        $cantidad = $cajaChica->cantidad;
+
+        // Calculate cambio
+        $cambio = $cantidad - $subtotal;
+
+        // Update CajaChica
+        $cajaChica->subtotal = $subtotal;
+        $cajaChica->cambio = $cambio;
+        $cajaChica->save();
+
+        $obraId = $request->input('obra_id');
         return redirect()->route('cajaChica.index', ['obraId' => $obraId, 'cajaChica' => $cajaChicaId])
-                         ->with('success', 'Detalles guardados exitosamente.');
+            ->with('success', 'Detalles guardados exitosamente.');
     }
 }
