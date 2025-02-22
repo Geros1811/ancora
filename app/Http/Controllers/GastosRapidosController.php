@@ -40,8 +40,10 @@ class GastosRapidosController extends Controller
             $tableName = 'renta_maquinarias';
         } elseif ($tabla == 'limpieza') {
             $tableName = 'detalle_limpieza';
-        } elseif ($tabla == 'comida') {
+        } elseif ($tabla == 'comidas') {
             $tableName = 'detalle_comidas';
+        } elseif ($tabla == 'papeleria') {
+            $tableName = 'detalles_papeleria';
         } elseif ($tabla == 'materiales' && $request->input('materialesSub') == 'agregados') {
             $tableName = 'agregados';
         } elseif ($tabla == 'materiales' && $request->input('materialesSub') == 'aceros') {
@@ -52,7 +54,7 @@ class GastosRapidosController extends Controller
             $tableName = 'losas';
         } elseif ($tabla == 'materiales') {
             $tableName = 'generales';
-        } else {
+        }  else {
             $tableName = $tabla;
         }
 
@@ -67,7 +69,7 @@ class GastosRapidosController extends Controller
                             'unidad' => $unidad,
                             'cantidad' => $cantidad,
                             'precio_unitario' => $precio_unitario,
-                            'subtotal' => $subtotal
+                            'subtotal' => $subtotal,
                         ];
                     },
                     $fecha,
