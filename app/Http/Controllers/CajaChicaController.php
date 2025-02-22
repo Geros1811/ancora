@@ -17,6 +17,11 @@ class CajaChicaController extends Controller
         $cajaChica = null;
         $obra = \App\Models\Obra::find($obraId);
 
+        // Format the date for each CajaChica
+        foreach ($cajaChicas as $cajaChica) {
+            $cajaChica->formatted_created_at = $cajaChica->created_at->format('Y-m-d');
+        }
+
         if ($request->has('cajaChica')) {
             $cajaChica = CajaChica::find($request->cajaChica);
         }
@@ -50,44 +55,50 @@ class CajaChicaController extends Controller
     {
         $request->validate([
             'caja_chica_id' => 'required|exists:caja_chicas,id',
-            'detalles.*.descripcion' => 'required|string',
-            'detalles.*.vista' => 'required|string',
-            'detalles.*.gasto' => 'required|numeric',
-            'detalles.*.foto' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'fecha.*' => 'required|date',
+            'concepto.*' => 'required|string',
+            'unidad.*' => 'required|string',
+            'cantidad.*' => 'required|numeric',
+            'precio_unitario.*' => 'required|numeric',
+            'subtotal.*' => 'required|numeric',
+            'vista.*' => 'required|string',
         ]);
 
         $cajaChicaId = $request->input('caja_chica_id');
+        $fecha = $request->input('fecha');
+        $concepto = $request->input('concepto');
+        $unidad = $request->input('unidad');
+        $cantidad = $request->input('cantidad');
+        $precioUnitario = $request->input('precio_unitario');
+        $subtotal = $request->input('subtotal');
+        $vista = $request->input('vista');
 
-        if ($request->has('detalles')) {
-            // Delete existing details
-            DetalleCajaChica::where('caja_chica_id', $cajaChicaId)->delete();
+        // Delete existing details
+        DetalleCajaChica::where('caja_chica_id', $cajaChicaId)->delete();
 
-            // Add new details
-            foreach ($request->detalles as $detalle) {
-                $fotoPath = null;
-                if (isset($detalle['foto'])) {
-                    $fotoPath = $detalle['foto']->store('fotos', 'public');
-                }
-
-                DetalleCajaChica::create([
-                    'caja_chica_id' => $cajaChicaId,
-                    'descripcion' => $detalle['descripcion'],
-                    'vista' => $detalle['vista'],
-                    'gasto' => $detalle['gasto'],
-                    'foto' => $fotoPath,
-                ]);
-            }
+        // Add new details
+        foreach ($fecha as $index => $value) {
+            DetalleCajaChica::create([
+                'caja_chica_id' => $cajaChicaId,
+                'fecha' => $fecha[$index],
+                'concepto' => $concepto[$index],
+                'unidad' => $unidad[$index],
+                'cantidad' => $cantidad[$index],
+                'precio_unitario' => $precioUnitario[$index],
+                'subtotal' => $subtotal[$index],
+                'vista' => $vista[$index],
+            ]);
         }
 
         // Calculate subtotal
-        $subtotal = DetalleCajaChica::where('caja_chica_id', $cajaChicaId)->sum('gasto');
+        $subtotal = DetalleCajaChica::where('caja_chica_id', $cajaChicaId)->sum('subtotal');
 
         // Get cantidad from CajaChica
         $cajaChica = CajaChica::find($cajaChicaId);
-        $cantidad = $cajaChica->cantidad;
+        $cantidadCajaChica = $cajaChica->cantidad;
 
         // Calculate cambio
-        $cambio = $cantidad - $subtotal;
+        $cambio = $cantidadCajaChica - $subtotal;
 
         // Update CajaChica
         $cajaChica->subtotal = $subtotal;

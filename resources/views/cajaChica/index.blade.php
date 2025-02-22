@@ -37,12 +37,6 @@
         <button type="submit" class="btn btn-primary">Crear</button>
     </form>
 
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <div id="tablas-detalles-container" style="margin-top: 40px;">
         @foreach ($cajaChicas as $cajaChica)
             <div class="table-container" style="margin-top: 40px;">
@@ -51,7 +45,7 @@
                         <span class="toggle-button">+</span>
                     </button>
                     <h2 class="table-title" style="font-size: 20px; color: #34495e; margin: 0;">
-                        Caja Chica: {{ $cajaChica->fecha }} - {{ $cajaChica->maestroObra->name }}
+                        Caja Chica: {{ $cajaChica->formatted_created_at }} - {{ $cajaChica->maestroObra->name }}
                         <span id="total-cajaChica-{{ $cajaChica->id }}" style="font-size: 16px; color: #e74c3c;" data-cajaChica-id="{{ $cajaChica->id }}">
                             Cantidad: ${{ number_format($cajaChica->cantidad, 2) }}
                         </span>
@@ -66,34 +60,68 @@
                         <input type="hidden" id="cantidad-{{ $cajaChica->id }}" value="{{ $cajaChica->cantidad }}">
                         <table class="obra-table" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
                             <thead>
-                                <tr>
-                                    <th>No.</th>
-                                    <th>Descripción</th>
-                                    <th>Vista</th>
-                                    <th>Gasto</th>
-                                    <th>Foto</th>
-                                </tr>
-                            </thead>
-                            <tbody class="detalle-costo-body">
-                                @foreach ($cajaChica->detallesCajaChica as $index => $detalle)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td><input type="text" class="form-control" name="detalles[{{ $index }}][descripcion]" value="{{ $detalle->descripcion }}"></td>
-                                        <td>
-                                            <select class="form-control" name="detalles[{{ $index }}][vista]">
-                                                @foreach(['papeleria', 'gasolina', 'rentas', 'utilidades', 'acarreos', 'comidas', 'tramites', 'cimbras', 'maquinariaMayor', 'rentaMaquinaria', 'maquinariaMenor', 'limpieza', 'herramientaMenor', 'equipoSeguridad', 'materiales'] as $vista)
-                                                    <option value="{{ $vista }}" {{ $detalle->vista == $vista ? 'selected' : '' }}>{{ ucfirst($vista) }}</option>
-                                                @endforeach
-                                            </select>
-                                        </td>
-                                        <td><input type="number" class="form-control gasto-input" name="detalles[{{ $index }}][gasto]" value="{{ $detalle->gasto }}" onchange="updateSubtotal({{ $cajaChica->id }})"></td>
-                                        <td>
-                                            @if (isset($detalle->foto))
-                                                <a href="{{ asset('storage/' . $detalle->foto) }}" target="_blank">Ver Foto</a>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
+                                 <tr>
+                                     <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Fecha</th>
+                                     <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Concepto</th>
+                                     <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Unidad</th>
+                                     <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Cantidad</th>
+                                     <th class="gastos-rapidos-th">Precio Unitario</th>
+                                      <th class="gastos-rapidos-th">Subtotal</th>
+                                      <th class="gastos-rapidos-th">Vista</th>
+                                      <th class="gastos-rapidos-th">Enviar</th>
+                                  </tr>
+                              </thead>
+                              <tbody class="detalle-costo-body">
+                                  @foreach ($cajaChica->detallesCajaChica as $detalle)
+                                      <tr>
+                                          <td class="gastos-rapidos-td">
+                                              <input type="date" name="fecha[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $cajaChica->formatted_created_at }}" readonly>
+                                          </td>
+                                          <td class="gastos-rapidos-td"><input type="text" name="concepto[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->concepto }}"></td>
+                                          <td class="gastos-rapidos-td">
+                                              <select name="unidad[]" class="form-control gastos-rapidos-select" style="border: none; background: transparent; text-align: center;">
+                                                  <option value="KG" {{ $detalle->unidad == 'KG' ? 'selected' : '' }}>KG</option>
+                                                  <option value="LTS" {{ $detalle->unidad == 'LTS' ? 'selected' : '' }}>LTS</option>
+                                                  <option value="PZ" {{ $detalle->unidad == 'PZ' ? 'selected' : '' }}>PZ</option>
+                                                  <option value="LOTE" {{ $detalle->unidad == 'LOTE' ? 'selected' : '' }}>LOTE</option>
+                                              </select>
+                                          </td>
+                                          <td class="gastos-rapidos-td"><input type="number" name="cantidad[]" class="form-control cantidad gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->cantidad }}" oninput="updateSubtotal(this)"></td>
+                                          <td class="gastos-rapidos-td"><input type="number" name="precio_unitario[]" class="form-control precio-unitario gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->precio_unitario }}" oninput="updateSubtotal(this)"></td>
+                                          <td class="gastos-rapidos-td">
+                                              <input type="text" class="form-control subtotal display-subtotal gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" readonly value="{{ $detalle->subtotal }}">
+                                              <input type="hidden" name="subtotal[]" class="subtotal-hidden" value="{{ $detalle->subtotal }}">
+                                          </td>
+                                          <td class="gastos-rapidos-td">
+                                              <select name="vista[]" class="form-control gastos-rapidos-select" style="border: none; background: transparent; text-align: center;">
+                                                  <option value="papeleria" {{ $detalle->vista == 'papeleria' ? 'selected' : '' }}>Papelería</option>
+                                                  <option value="gasolina" {{ $detalle->vista == 'gasolina' ? 'selected' : '' }}>Gasolina</option>
+                                                  <option value="rentas" {{ $detalle->vista == 'rentas' ? 'selected' : '' }}>Rentas</option>
+                                                  <option value="utilidades" {{ $detalle->vista == 'utilidades' ? 'selected' : '' }}>Utilidades</option>
+                                                  <option value="acarreos" {{ $detalle->vista == 'acarreos' ? 'selected' : '' }}>Acarreos</option>
+                                                  <option value="comida" {{ $detalle->vista == 'comida' ? 'selected' : '' }}>Comida</option>
+                                                  <option value="tramites" {{ $detalle->vista == 'tramites' ? 'selected' : '' }}>Trámites</option>
+                                                  <option value="cimbras" {{ $detalle->vista == 'cimbras' ? 'selected' : '' }}>Cimbras</option>
+                                                  <option value="maquinariaMayor" {{ $detalle->vista == 'maquinariaMayor' ? 'selected' : '' }}>Maquinaria Mayor</option>
+                                                  <option value="maquinariaMenor" {{ $detalle->vista == 'maquinariaMenor' ? 'selected' : '' }}>Maquinaria Menor</option>
+                                                  <option value="herramientaMenor" {{ $detalle->vista == 'herramientaMenor' ? 'selected' : '' }}>Herramienta Menor</option>
+                                                  <option value="equipoSeguridad" {{ $detalle->vista == 'equipoSeguridad' ? 'selected' : '' }}>Equipo de Seguridad</option>
+                                                  <option value="limpieza" {{ $detalle->vista == 'limpieza' ? 'selected' : '' }}>Limpieza</option>
+                                                  <optgroup label="Materiales" class="gastos-rapidos-optgroup-label">
+                                                      <option value="generales" {{ $detalle->vista == 'generales' ? 'selected' : '' }}>Generales</option>
+                                                      <option value="agregados" {{ $detalle->vista == 'agregados' ? 'selected' : '' }}>Agregados</option>
+                                                      <option value="aceros" {{ $detalle->vista == 'aceros' ? 'selected' : '' }}>Aceros</option>
+                                                      <option value="cemento" {{ $detalle->vista == 'cemento' ? 'selected' : '' }}>Cemento</option>
+                                                      <option value="losas" {{ $detalle->vista == 'losas' ? 'selected' : '' }}>Losas</option>
+                                                  </optgroup>
+                                                  <option value="rentaMaquinaria" {{ $detalle->vista == 'rentaMaquinaria' ? 'selected' : '' }}>Renta de Maquinaria</option>
+                                              </select>
+                                          </td>
+                                          <td class="gastos-rapidos-td">
+                                              <button type="button" class="btn btn-primary" onclick="submitForm(this)">Enviar</button>
+                                          </td>
+                                      </tr>
+                                  @endforeach
                             </tbody>
                         </table>
                         <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 10px;">
@@ -114,8 +142,7 @@
 <script>
     function toggleTableVisibility(cajaChicaId) {
         const container = document.getElementById("table-container-" + cajaChicaId);
-        const button = event.target;
-        const toggleButton = button.querySelector('.toggle-button');
+        const toggleButton = container.previousElementSibling.querySelector('.toggle-button');
         if (container.style.display === "none") {
             container.style.display = "block";
             toggleButton.textContent = "-";
@@ -128,32 +155,51 @@
     function addRow(button, cajaChicaId) {
         const tableBody = button.closest('form').querySelector('.detalle-costo-body');
         const newRow = document.createElement('tr');
-        const rowCount = tableBody.querySelectorAll('tr').length;
         newRow.innerHTML = `
-            <td>${rowCount + 1}</td>
-            <td><input type="text" class="form-control" name="detalles[${rowCount}][descripcion]"></td>
-            <td>
-                <select class="form-control" name="detalles[${rowCount}][vista]">
-                    <option value="">Seleccione una vista</option>
+            <td class="gastos-rapidos-td"><input type="date" name="fecha[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;"></td>
+            <td class="gastos-rapidos-td"><input type="text" name="concepto[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;"></td>
+            <td class="gastos-rapidos-td">
+                <select name="unidad[]" class="form-control gastos-rapidos-select" style="border: none; background: transparent; text-align: center;">
+                    <option value="KG">KG</option>
+                    <option value="LTS">LTS</option>
+                    <option value="PZ">PZ</option>
+                    <option value="LOTE">LOTE</option>
+                </select>
+            </td>
+            <td class="gastos-rapidos-td"><input type="number" name="cantidad[]" class="form-control cantidad gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
+            <td class="gastos-rapidos-td"><input type="number" name="precio_unitario[]" class="form-control precio-unitario gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
+            <td class="gastos-rapidos-td">
+                <input type="text" class="form-control subtotal display-subtotal gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" readonly>
+                <input type="hidden" name="subtotal[]" class="subtotal-hidden">
+            </td>
+            <td class="gastos-rapidos-td">
+                <select name="vista[]" class="form-control gastos-rapidos-select" style="border: none; background: transparent; text-align: center;">
                     <option value="papeleria">Papelería</option>
                     <option value="gasolina">Gasolina</option>
                     <option value="rentas">Rentas</option>
                     <option value="utilidades">Utilidades</option>
                     <option value="acarreos">Acarreos</option>
-                    <option value="comidas">Comidas</option>
+                    <option value="comida">Comida</option>
                     <option value="tramites">Trámites</option>
                     <option value="cimbras">Cimbras</option>
                     <option value="maquinariaMayor">Maquinaria Mayor</option>
-                    <option value="rentaMaquinaria">Renta Maquinaria</option>
                     <option value="maquinariaMenor">Maquinaria Menor</option>
-                    <option value="limpieza">Limpieza</option>
                     <option value="herramientaMenor">Herramienta Menor</option>
-                    <option value="equipoSeguridad">Equipo Seguridad</option>
-                    <option value="materiales">Materiales</option>
+                    <option value="equipoSeguridad">Equipo de Seguridad</option>
+                    <option value="limpieza">Limpieza</option>
+                    <optgroup label="Materiales" class="gastos-rapidos-optgroup-label">
+                        <option value="generales">Generales</option>
+                        <option value="agregados">Agregados</option>
+                        <option value="aceros">Aceros</option>
+                        <option value="cemento">Cemento</option>
+                        <option value="losas">Losas</option>
+                    </optgroup>
+                    <option value="rentaMaquinaria">Renta de Maquinaria</option>
                 </select>
             </td>
-            <td><input type="number" class="form-control gasto-input" name="detalles[${rowCount}][gasto]" onchange="updateSubtotal(${cajaChicaId})"></td>
-            <td><input type="file" class="form-control" name="detalles[${rowCount}][foto]"></td>
+            <td class="gastos-rapidos-td">
+                <button type="button" class="btn btn-primary" onclick="submitForm(this)">Enviar</button>
+            </td>
         `;
         tableBody.appendChild(newRow);
         setTimeout(() => updateSubtotal(cajaChicaId), 0);
@@ -166,14 +212,105 @@
         updateSubtotal(cajaChicaId);
     }
 
-    function updateSubtotal(cajaChicaId) {
-        let subtotal = 0;
-        document.querySelectorAll(`#table-container-${cajaChicaId} .gasto-input`).forEach(input => {
-            subtotal += parseFloat(input.value || 0);
+    function updateSubtotal(input) {
+        const row = input.parentNode.parentNode;
+        const cantidad = parseFloat(row.querySelector('.cantidad').value) || 0;
+        const precioUnitario = parseFloat(row.querySelector('.precio-unitario').value) || 0;
+        const subtotal = cantidad * precioUnitario;
+        row.querySelector('.display-subtotal').value = subtotal.toFixed(2);
+        row.querySelector('.subtotal-hidden').value = subtotal.toFixed(2);
+    }
+
+    function submitForm(button) {
+        const form = button.closest('form');
+        const formData = new FormData(form);
+        const vista = formData.get('vista[]');
+
+        let tableName;
+        switch (vista) {
+            case 'papeleria':
+                tableName = 'detalles_papeleria';
+                break;
+            case 'gasolina':
+                tableName = 'detalle_gasolinas';
+                break;
+            case 'rentas':
+                tableName = 'detalle_rentas';
+                break;
+            case 'utilidades':
+                tableName = 'detalle_utilidades';
+                break;
+            case 'acarreos':
+                tableName = 'detalle_acarreos';
+                break;
+            case 'comida':
+                tableName = 'detalle_comidas';
+                break;
+            case 'tramites':
+                tableName = 'detalle_tramites';
+                break;
+            case 'cimbras':
+                tableName = 'detalle_cimbras';
+                break;
+            case 'maquinariaMayor':
+                tableName = 'detalle_maquinaria_mayor';
+                break;
+            case 'maquinariaMenor':
+                tableName = 'detalle_maquinaria_menor';
+                break;
+            case 'herramientaMenor':
+                tableName = 'detalle_herramienta_menor';
+                break;
+            case 'equipoSeguridad':
+                tableName = 'detalle_equipo_seguridad';
+                break;
+            case 'limpieza':
+                tableName = 'detalle_limpieza';
+                break;
+            case 'generales':
+                tableName = 'generales';
+                break;
+            case 'agregados':
+                tableName = 'agregados';
+                break;
+            case 'aceros':
+                tableName = 'aceros';
+                break;
+            case 'cemento':
+                tableName = 'cemento';
+                break;
+            case 'losas':
+                tableName = 'losas';
+                break;
+            case 'rentaMaquinaria':
+                tableName = 'renta_maquinarias';
+                break;
+            default:
+                tableName = 'detalles_generales';
+                break;
+        }
+
+        formData.append('tableName', tableName);
+
+        fetch('{{ route('gastos_rapidos.store') }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Datos enviados correctamente.');
+            } else {
+                alert('Error al enviar los datos.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al enviar los datos.');
         });
-        let cantidad = parseFloat(document.getElementById(`cantidad-${cajaChicaId}`).value) || 0;
-        document.getElementById(`subtotal-${cajaChicaId}`).innerText = subtotal.toFixed(2);
-        document.getElementById(`cambio-${cajaChicaId}`).innerText = (cantidad - subtotal).toFixed(2);
     }
 </script>
 @endsection

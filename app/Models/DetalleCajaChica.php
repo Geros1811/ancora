@@ -9,11 +9,16 @@ class DetalleCajaChica extends Model
 {
     use HasFactory;
 
+    protected $table = 'detalle_caja_chicas';
+
     protected $fillable = [
         'caja_chica_id',
-        'descripcion',
+        'concepto',
         'vista',
-        'gasto',
+        'unidad',
+        'cantidad',
+        'precio_unitario',
+        'subtotal',
         'foto',
     ];
 }
