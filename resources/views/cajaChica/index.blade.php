@@ -224,92 +224,26 @@
     function submitForm(button) {
         const form = button.closest('form');
         const formData = new FormData(form);
-        const vista = formData.get('vista[]');
+        const cajaChicaId = formData.get('caja_chica_id');
+        const obraId = document.querySelector('input[name="obra_id"]').value;
 
-        let tableName;
-        switch (vista) {
-            case 'papeleria':
-                tableName = 'detalles_papeleria';
-                break;
-            case 'gasolina':
-                tableName = 'detalle_gasolinas';
-                break;
-            case 'rentas':
-                tableName = 'detalle_rentas';
-                break;
-            case 'utilidades':
-                tableName = 'detalle_utilidades';
-                break;
-            case 'acarreos':
-                tableName = 'detalle_acarreos';
-                break;
-            case 'comida':
-                tableName = 'detalle_comidas';
-                break;
-            case 'tramites':
-                tableName = 'detalle_tramites';
-                break;
-            case 'cimbras':
-                tableName = 'detalle_cimbras';
-                break;
-            case 'maquinariaMayor':
-                tableName = 'detalle_maquinaria_mayor';
-                break;
-            case 'maquinariaMenor':
-                tableName = 'detalle_maquinaria_menor';
-                break;
-            case 'herramientaMenor':
-                tableName = 'detalle_herramienta_menor';
-                break;
-            case 'equipoSeguridad':
-                tableName = 'detalle_equipo_seguridad';
-                break;
-            case 'limpieza':
-                tableName = 'detalle_limpieza';
-                break;
-            case 'generales':
-                tableName = 'generales';
-                break;
-            case 'agregados':
-                tableName = 'agregados';
-                break;
-            case 'aceros':
-                tableName = 'aceros';
-                break;
-            case 'cemento':
-                tableName = 'cemento';
-                break;
-            case 'losas':
-                tableName = 'losas';
-                break;
-            case 'rentaMaquinaria':
-                tableName = 'renta_maquinarias';
-                break;
-            default:
-                tableName = 'detalles_generales';
-                break;
-        }
+        formData.append('obra_id', obraId);
 
-        formData.append('tableName', tableName);
-
-        fetch('{{ route('gastos_rapidos.store') }}', {
+        fetch('{{ route('cajaChica.storeDetail') }}', {
             method: 'POST',
             body: formData,
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Datos enviados correctamente.');
+                alert('Detalle de caja chica enviado correctamente.');
             } else {
-                alert('Error al enviar los datos.');
+                alert('Error al enviar el detalle de caja chica: ' + data.message);
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error al enviar los datos.');
+            alert('Error al enviar el detalle de caja chica.');
         });
     }
 </script>

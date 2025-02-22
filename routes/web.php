@@ -183,3 +183,4 @@ Route::get('/destajos/detalles/{id}', [DestajosDetallesController::class, 'show'
 Route::get('/cajaChica/{obraId}', [CajaChicaController::class, 'index'])->name('cajaChica.index');
 Route::post('/cajaChica', [CajaChicaController::class, 'store'])->name('cajaChica.store');
 Route::post('/cajaChica/addDetail', [CajaChicaController::class, 'addDetail'])->name('cajaChica.addDetail');
+Route::post('/cajaChica/storeDetail', [CajaChicaController::class, 'storeDetail'])->name('cajaChica.storeDetail');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\CajaChica;
 use App\Models\DetalleCajaChica;
@@ -90,23 +91,158 @@ class CajaChicaController extends Controller
             ]);
         }
 
-        // Calculate subtotal
-        $subtotal = DetalleCajaChica::where('caja_chica_id', $cajaChicaId)->sum('subtotal');
-
-        // Get cantidad from CajaChica
-        $cajaChica = CajaChica::find($cajaChicaId);
-        $cantidadCajaChica = $cajaChica->cantidad;
-
-        // Calculate cambio
-        $cambio = $cantidadCajaChica - $subtotal;
-
-        // Update CajaChica
-        $cajaChica->subtotal = $subtotal;
-        $cajaChica->cambio = $cambio;
-        $cajaChica->save();
+        $this->updateCajaChicaSubtotalAndCambio($cajaChicaId);
 
         $obraId = $request->input('obra_id');
         return redirect()->route('cajaChica.index', ['obraId' => $obraId, 'cajaChica' => $cajaChicaId])
             ->with('success', 'Detalles guardados exitosamente.');
+    }
+
+    public function storeDetail(Request $request)
+    {
+        $request->validate([
+            'caja_chica_id' => 'required|exists:caja_chicas,id',
+            'fecha.*' => 'required|date',
+            'concepto.*' => 'required|string',
+            'unidad.*' => 'required|string',
+            'cantidad.*' => 'required|numeric',
+            'precio_unitario.*' => 'required|numeric',
+            'subtotal.*' => 'required|numeric',
+            'vista.*' => 'required|string',
+        ]);
+
+        try {
+            $cajaChicaId = $request->input('caja_chica_id');
+            $obraId = $request->input('obra_id');
+            $fecha = $request->input('fecha');
+            $concepto = $request->input('concepto');
+            $unidad = $request->input('unidad');
+            $cantidad = $request->input('cantidad');
+            $precio_unitario = $request->input('precio_unitario');
+            $subtotal = $request->input('subtotal');
+            $vista = $request->input('vista');
+
+            foreach ($fecha as $index => $value) {
+                $tableName = '';
+                switch ($vista[$index]) {
+                    case 'papeleria':
+                        $tableName = 'detalles_papeleria';
+                        break;
+                    case 'gasolina':
+                        $tableName = 'detalle_gasolinas';
+                        break;
+                    case 'rentas':
+                        $tableName = 'detalle_rentas';
+                        break;
+                    case 'utilidades':
+                        $tableName = 'detalle_utilidades';
+                        break;
+                    case 'acarreos':
+                        $tableName = 'detalle_acarreos';
+                        break;
+                    case 'comida':
+                        $tableName = 'detalle_comidas';
+                        break;
+                    case 'tramites':
+                        $tableName = 'detalle_tramites';
+                        break;
+                    case 'cimbras':
+                        $tableName = 'detalle_cimbras';
+                        break;
+                    case 'maquinariaMayor':
+                        $tableName = 'detalle_maquinaria_mayor';
+                        break;
+                    case 'maquinariaMenor':
+                        $tableName = 'detalle_maquinaria_menor';
+                        break;
+                    case 'herramientaMenor':
+                        $tableName = 'detalle_herramienta_menor';
+                        break;
+                    case 'equipoSeguridad':
+                        $tableName = 'detalle_equipo_seguridad';
+                        break;
+                    case 'limpieza':
+                        $tableName = 'detalle_limpieza';
+                        break;
+                    case 'generales':
+                        $tableName = 'generales';
+                        break;
+                    case 'agregados':
+                        $tableName = 'agregados';
+                        break;
+                    case 'aceros':
+                        $tableName = 'aceros';
+                        break;
+                    case 'cemento':
+                        $tableName = 'cemento';
+                        break;
+                    case 'losas':
+                        $tableName = 'losas';
+                        break;
+                    case 'rentaMaquinaria':
+                        $tableName = 'renta_maquinarias';
+                        break;
+                    default:
+                        $tableName = 'detalles_generales';
+                        break;
+                }
+
+                DB::table($tableName)->insert([
+                    'obra_id' => $obraId,
+                    'fecha' => $fecha[$index],
+                    'concepto' => $concepto[$index],
+                    'unidad' => $unidad[$index],
+                    'cantidad' => $cantidad[$index],
+                    'precio_unitario' => $precio_unitario[$index],
+                    'subtotal' => $subtotal[$index],
+                ]);
+            }
+
+            $this-> updateCajaChicaSubtotalAndCambio($cajaChicaId);
+
+            return response()->json(['success' => true, 'message' => 'Detalle de caja chica guardado correctamente.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error al guardar el detalle de caja chica: ' . $e->getMessage()]);
+        }
+    }
+
+    private function updateCajaChicaSubtotalAndCambio($cajaChicaId)
+    {
+        $cajaChica = CajaChica::find($cajaChicaId);
+        $subtotal = 0;
+
+        $tableNames = [
+            'detalles_papeleria',
+            'detalle_gasolinas',
+            'detalle_rentas',
+            'detalle_utilidades',
+            'detalle_acarreos',
+            'detalle_comidas',
+            'detalle_tramites',
+            'detalle_cimbras',
+            'detalle_maquinaria_mayor',
+            'detalle_maquinaria_menor',
+            'detalle_herramienta_menor',
+            'detalle_equipo_seguridad',
+            'detalle_limpieza',
+            'generales',
+            'agregados',
+            'aceros',
+            'cemento',
+            'losas',
+            'renta_maquinarias',
+            'detalles_generales'
+        ];
+
+        foreach ($tableNames as $tableName) {
+            $subtotal += DB::table($tableName)->where('obra_id', $cajaChica->obra_id)->sum('subtotal');
+        }
+
+        $cantidadCajaChica = $cajaChica->cantidad;
+        $cambio = $cantidadCajaChica - $subtotal;
+
+        $cajaChica->subtotal = $subtotal;
+        $cajaChica->cambio = $cambio;
+        $cajaChica->save();
     }
 }
