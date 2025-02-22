@@ -183,7 +183,7 @@ class CajaChicaController extends Controller
                         $tableName = 'renta_maquinarias';
                         break;
                     default:
-                        $tableName = 'detalles_generales';
+                        $tableName = 'generales';
                         break;
                 }
 
@@ -230,8 +230,7 @@ class CajaChicaController extends Controller
             'aceros',
             'cemento',
             'losas',
-            'renta_maquinarias',
-            'detalles_generales'
+            'renta_maquinarias'
         ];
 
         foreach ($tableNames as $tableName) {
