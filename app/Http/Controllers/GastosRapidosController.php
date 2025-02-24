@@ -39,10 +39,20 @@ class GastosRapidosController extends Controller
             $tableName = 'detalle_equipo_seguridad';
         } elseif ($tabla == 'rentaMaquinaria') {
             $tableName = 'renta_maquinarias';
+        } elseif ($tabla == 'rentas') {
+            $tableName = 'detalle_rentas';
+        } elseif ($tabla == 'utilidades') {
+            $tableName = 'detalle_utilidades';
+        } elseif ($tabla == 'acarreos') {
+            $tableName = 'detalle_acarreos';
+        } elseif ($tabla == 'comida') {
+            $tableName = 'detalle_comidas';
+        } elseif ($tabla == 'tramites') {
+            $tableName = 'detalle_tramites';
+        } elseif ($tabla == 'cimbras') {
+            $tableName = 'detalle_cimbras';
         } elseif ($tabla == 'limpieza') {
             $tableName = 'detalle_limpieza';
-        } elseif ($tabla == 'comidas') {
-            $tableName = 'detalle_comidas';
         } elseif ($tabla == 'papeleria') {
             $tableName = 'detalles_papeleria';
         } elseif ($tabla == 'materiales' && $request->input('materialesSub') == 'agregados') {

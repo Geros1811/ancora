@@ -121,8 +121,6 @@ form.enctype = "multipart/form-data";  // Agrega esta línea
                 var tablaInput = document.createElement("input");
                 tablaInput.type = "hidden";
                 tablaInput.name = "tabla";
-                tablaInput.value = tablaSeleccionada;
-                form.appendChild(tablaInput);
 
                 // Add CSRF token
                 var csrfToken = document.createElement("input");
