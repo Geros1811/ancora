@@ -19,9 +19,6 @@ class PapeleriaController extends Controller
 
     public function store(Request $request, $obraId)
     {
-        // Eliminar los registros existentes para la obra antes de guardar los nuevos datos
-        DetallePapeleria::where('obra_id', $obraId)->delete();
-
         $costoTotal = 0;
 
         $fechas = $request->input('fecha', []);
@@ -29,13 +26,23 @@ class PapeleriaController extends Controller
         $unidades = $request->input('unidad', []);
         $cantidades = $request->input('cantidad', []);
         $precios_unitarios = $request->input('precio_unitario', []);
+        $ids = $request->input('id', []);
 
         foreach ($fechas as $index => $fecha) {
             $cantidad = $cantidades[$index];
             $precio_unitario = $precios_unitarios[$index];
             $subtotal = $cantidad * $precio_unitario;
 
-            $detalle = new DetallePapeleria();
+            // Check if an ID exists for this row, if so, update the existing record
+            if (isset($ids[$index])) {
+                $detalle = DetallePapeleria::find($ids[$index]);
+                if (!$detalle) {
+                    $detalle = new DetallePapeleria();
+                }
+            } else {
+                $detalle = new DetallePapeleria();
+            }
+
             $detalle->obra_id = $obraId;
             $detalle->fecha = $fecha;
             $detalle->concepto = $conceptos[$index];
@@ -43,6 +50,15 @@ class PapeleriaController extends Controller
             $detalle->cantidad = $cantidad;
             $detalle->precio_unitario = $precio_unitario;
             $detalle->subtotal = $subtotal;
+
+            // Handle image upload
+            if ($request->hasFile('fotos.' . $index)) {
+                $image = $request->file('fotos.' . $index);
+                $imageName = time() . '_' . $image->getClientOriginalName();
+$image->storeAs('public/tickets', $imageName);
+$detalle->foto = 'storage/tickets/' . $imageName;
+            }
+
             $detalle->save();
 
             $costoTotal += $subtotal;

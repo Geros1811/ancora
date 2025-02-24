@@ -21,7 +21,7 @@
     <!-- Tabla de detalles -->
     <div class="table-container" style="margin-top: 20px;">
         <h2 class="table-title" style="font-size: 20px; color: #34495e; margin-bottom: 10px;">Detalles Adicionales</h2>
-        <form action="{{ route('papeleria.store', ['obraId' => $obraId]) }}" method="POST">
+        <form action="{{ route('papeleria.store', ['obraId' => $obraId]) }}" method="POST" enctype="multipart/form-data">
             @csrf
             <table class="obra-table" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
                 <thead>
@@ -32,12 +32,14 @@
                         <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Cantidad</th>
                         <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Precio Unitario</th>
                         <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Subtotal</th>
+                        <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Fotos</th>
                         <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="detalle-costo-body">
-                    @foreach ($detalles as $detalle)
+                    @foreach ($detalles as $index => $detalle)
                         <tr>
+                            <input type="hidden" name="id[]" value="{{ $detalle->id }}">
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="date" name="fecha[]" value="{{ $detalle->fecha }}" class="form-control" style="border: none; background: transparent; text-align: center;"></td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="concepto[]" value="{{ $detalle->concepto }}" class="form-control" style="border: none; background: transparent; text-align: center;"></td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
@@ -51,6 +53,13 @@
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="cantidad[]" value="{{ $detalle->cantidad }}" class="form-control cantidad" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="precio_unitario[]" value="{{ $detalle->precio_unitario }}" class="form-control precio-unitario" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="subtotal[]" value="{{ $detalle->subtotal }}" class="form-control subtotal" style="border: none; background: transparent; text-align: center;" readonly></td>
+                            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
+                                @if($detalle->foto)
+                                    <a href="{{ asset('storage/tickets/' . basename($detalle->foto)) }}" target="_blank">Ver foto</a>
+                                @else
+                                    <input type="file" name="fotos[]" class="form-control" style="border: none; background: transparent; text-align: center;">
+                                @endif
+                            </td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
                         </tr>
                     @endforeach
@@ -85,6 +94,9 @@
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="cantidad[]" class="form-control cantidad" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="precio_unitario[]" class="form-control precio-unitario" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="subtotal[]" class="form-control subtotal" style="border: none; background: transparent; text-align: center;" readonly></td>
+            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
+                <input type="file" name="foto[]" class="form-control" style="border: none; background: transparent; text-align: center;">
+            </td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
         `;
         tableBody.appendChild(newRow);
