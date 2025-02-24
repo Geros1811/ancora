@@ -216,9 +216,29 @@
         const row = input.parentNode.parentNode;
         const cantidad = parseFloat(row.querySelector('.cantidad').value) || 0;
         const precioUnitario = parseFloat(row.querySelector('.precio-unitario').value) || 0;
-        const subtotal = cantidad * precioUnitario;
+        let subtotal = cantidad * precioUnitario;
         row.querySelector('.display-subtotal').value = subtotal.toFixed(2);
         row.querySelector('.subtotal-hidden').value = subtotal.toFixed(2);
+
+        // Get cajaChicaId from the row
+        let cajaChicaId = row.closest('form').querySelector('input[name="caja_chica_id"]').value;
+
+        // Calculate total subtotal for the table
+        let totalSubtotal = 0;
+        let subtotalInputs = document.querySelectorAll(`#table-container-${cajaChicaId} .subtotal-hidden`);
+        subtotalInputs.forEach(input => {
+            totalSubtotal += parseFloat(input.value) || 0;
+        });
+
+         // Get initial amount for the table
+        let initialAmount = parseFloat(document.getElementById(`cantidad-${cajaChicaId}`).value) || 0;
+
+        // Calculate cambio
+        let cambio = initialAmount - totalSubtotal;
+
+        // Update subtotal and cambio display
+        document.querySelector(`#subtotal-${cajaChicaId}`).textContent = totalSubtotal.toFixed(2);
+        document.querySelector(`#cambio-${cajaChicaId}`).textContent = cambio.toFixed(2);
     }
 
     function submitForm(button) {
@@ -256,5 +276,15 @@
             alert('Error al enviar el detalle de caja chica.');
         });
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.table-container').forEach(container => {
+            let cajaChicaId = container.querySelector('input[name="caja_chica_id"]').value;
+            let subtotalInputs = container.querySelectorAll(`#table-container-${cajaChicaId} .subtotal-hidden`);
+            subtotalInputs.forEach(input => {
+                updateSubtotal(input);
+            });
+        });
+    });
 </script>
 @endsection
