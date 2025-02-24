@@ -198,7 +198,7 @@ class CajaChicaController extends Controller
                 ]);
             }
 
-            $this-> updateCajaChicaSubtotalAndCambio($cajaChicaId);
+            $this->updateCajaChicaSubtotalAndCambio($cajaChicaId);
 
             return response()->json(['success' => true, 'message' => 'Detalle de caja chica guardado correctamente.']);
         } catch (\Exception $e) {
@@ -209,33 +209,7 @@ class CajaChicaController extends Controller
     private function updateCajaChicaSubtotalAndCambio($cajaChicaId)
     {
         $cajaChica = CajaChica::find($cajaChicaId);
-        $subtotal = 0;
-
-        $tableNames = [
-            'detalles_papeleria',
-            'detalle_gasolinas',
-            'detalle_rentas',
-            'detalle_utilidades',
-            'detalle_acarreos',
-            'detalle_comidas',
-            'detalle_tramites',
-            'detalle_cimbras',
-            'detalle_maquinaria_mayor',
-            'detalle_maquinaria_menor',
-            'detalle_herramienta_menor',
-            'detalle_equipo_seguridad',
-            'detalle_limpieza',
-            'generales',
-            'agregados',
-            'aceros',
-            'cemento',
-            'losas',
-            'renta_maquinarias'
-        ];
-
-        foreach ($tableNames as $tableName) {
-            $subtotal += DB::table($tableName)->where('obra_id', $cajaChica->obra_id)->sum('subtotal');
-        }
+        $subtotal = DetalleCajaChica::where('caja_chica_id', $cajaChicaId)->sum('subtotal');
 
         $cantidadCajaChica = $cajaChica->cantidad;
         $cambio = $cantidadCajaChica - $subtotal;
