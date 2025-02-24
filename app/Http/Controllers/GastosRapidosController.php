@@ -25,6 +25,7 @@ class GastosRapidosController extends Controller
         $unidad = $request->input('unidad');
         $cantidad = $request->input('cantidad');
         $precio_unitario = $request->input('precio_unitario');
+        $fotos = $request->file('fotos');
 
         if ($tabla == 'gasolina') {
             $tableName = 'detalle_gasolinas';
@@ -59,10 +60,20 @@ class GastosRapidosController extends Controller
         }
 
         try {
-            DB::table($tableName)->insert(
-                array_map(
-                    function ($fecha, $concepto, $unidad, $cantidad, $precio_unitario, $subtotal) use ($obraId) {
-                        return [
+            $data = array_map(
+                function ($fecha, $concepto, $unidad, $cantidad, $precio_unitario, $subtotal, $index) use ($obraId, $fotos, $tableName) {
+                    $record = [
+                        'obra_id' => $obraId,
+                        'fecha' => $fecha,
+                        'concepto' => $concepto,
+                        'unidad' => $unidad,
+                        'cantidad' => $cantidad,
+                        'precio_unitario' => $precio_unitario,
+                        'subtotal' => $subtotal,
+                    ];
+
+                    if ($tableName == 'detalles_papeleria') {
+                        $record = [
                             'obra_id' => $obraId,
                             'fecha' => $fecha,
                             'concepto' => $concepto,
@@ -71,15 +82,30 @@ class GastosRapidosController extends Controller
                             'precio_unitario' => $precio_unitario,
                             'subtotal' => $subtotal,
                         ];
-                    },
-                    $fecha,
-                    $concepto,
-                    $unidad,
-                    $cantidad,
-                    $precio_unitario,
-                    $request->input('subtotal')
-                )
+                    }
+
+                    // Handle image upload
+                    if (isset($fotos[$index])) {
+                        $image = $fotos[$index];
+                        if ($image->isValid()) {
+                            $imageName = time() . '_' . $image->getClientOriginalName();
+                            $image->storeAs('public/tickets', $imageName);
+                            $record['foto'] = 'storage/tickets/' . $imageName;
+                        }
+                    }
+
+                    return $record;
+                },
+                $fecha,
+                $concepto,
+                $unidad,
+                $cantidad,
+                $precio_unitario,
+                $request->input('subtotal'),
+                array_keys($fecha) // Use array keys as index
             );
+
+            DB::table($tableName)->insert($data);
 
             return redirect()->back()->with('success', 'Gasto rápido guardado correctamente.');
         } catch (\Exception $e) {

@@ -74,6 +74,7 @@
                         <th style="background-color: #2980b9; color: white; font-weight: bold; border: 1px solid #ddd; text-align: center; padding: 10px;">Cantidad</th>
                         <th class="gastos-rapidos-th">Precio Unitario</th>
                         <th class="gastos-rapidos-th">Subtotal</th>
+                        <th class="gastos-rapidos-th">Fotos</th>
                     </tr>
                 `;
                 table.appendChild(thead);
@@ -96,8 +97,11 @@
                     <td class="gastos-rapidos-td"><input type="number" name="precio_unitario[]" class="form-control precio-unitario gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)">
                     </td>
                     <td class="gastos-rapidos-td">
-                    <input type="text" class="form-control subtotal display-subtotal gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" readonly>
-                    <input type="hidden" name="subtotal[]" class="subtotal-hidden">
+                        <input type="text" class="form-control subtotal display-subtotal gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" readonly>
+                        <input type="hidden" name="subtotal[]" class="subtotal-hidden">
+                    </td>
+                    <td class="gastos-rapidos-td">
+                        <input type="file" name="fotos[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;">
                     </td>
                 `;
                 tbody.appendChild(newRow);
@@ -108,9 +112,11 @@
                 dynamicFields.innerHTML = ''; // Clear previous content
 
                 // Create form element
-                var form = document.createElement("form");
-                form.action = "{{ route('gastos_rapidos.store') }}";
-                form.method = "POST";
+var form = document.createElement("form");
+form.action = "{{ route('gastos_rapidos.store') }}";
+form.method = "POST";
+form.enctype = "multipart/form-data";  // Agrega esta línea
+
 
                 var tablaInput = document.createElement("input");
                 tablaInput.type = "hidden";
