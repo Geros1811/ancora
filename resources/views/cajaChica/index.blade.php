@@ -154,9 +154,14 @@
 
     function addRow(button, cajaChicaId) {
         const tableBody = button.closest('form').querySelector('.detalle-costo-body');
+        const tableTitle = button.closest('.table-container').querySelector('.table-title').textContent;
+        const dateRegex = /(\d{4}-\d{2}-\d{2})/;
+        const match = tableTitle.match(dateRegex);
+        const tableDate = match ? match[0] : '';
+
         const newRow = document.createElement('tr');
         newRow.innerHTML = `
-            <td class="gastos-rapidos-td"><input type="date" name="fecha[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;"></td>
+            <td class="gastos-rapidos-td"><input type="date" name="fecha[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="${tableDate}"></td>
             <td class="gastos-rapidos-td"><input type="text" name="concepto[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;"></td>
             <td class="gastos-rapidos-td">
                 <select name="unidad[]" class="form-control gastos-rapidos-select" style="border: none; background: transparent; text-align: center;">
