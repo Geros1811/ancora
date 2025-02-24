@@ -187,3 +187,23 @@ Route::post('/cajaChica/addDetail', [CajaChicaController::class, 'addDetail'])->
 Route::post('/cajaChica/storeDetail', [CajaChicaController::class, 'storeDetail'])->name('cajaChica.storeDetail');
 
 Route::delete('/papeleria/{obraId}/detalles/{detalleId}', [PapeleriaController::class, 'destroyDetalle'])->name('papeleria.destroyDetalle');
+
+Route::delete('/rentas/{id}', [RentasController::class, 'destroy'])->name('rentas.destroy');
+Route::delete('/utilidades/{id}', [UtilidadesController::class, 'destroy'])->name('utilidades.destroy');
+Route::delete('/acarreos/{id}', [AcarreosController::class, 'destroy'])->name('acarreos.destroy');
+Route::delete('/comidas/{id}', [ComidasController::class, 'destroy'])->name('comidas.destroy');
+Route::delete('/tramites/{id}', [TramitesController::class, 'destroy'])->name('tramites.destroy');
+Route::delete('/cimbras/{id}', [CimbrasController::class, 'destroy'])->name('cimbras.destroy');
+Route::delete('/maquinariaMayor/{id}', [MaquinariaMayorController::class, 'destroy'])->name('maquinariaMayor.destroy');
+Route::delete('/herramientaMenor/{id}', [HerramientaMenorController::class, 'destroy'])->name('herramientaMenor.destroy');
+Route::delete('/equipoSeguridad/{id}', [EquipoSeguridadController::class, 'destroy'])->name('equipoSeguridad.destroy');
+Route::delete('/limpieza/{id}', [LimpiezaController::class, 'destroy'])->name('limpieza.destroy');
+Route::delete('/rentaMaquinaria/{id}', [RentaMaquinariaController::class, 'destroy'])->name('rentaMaquinaria.destroy');
+
+Route::delete('/materiales/agregados/{id}', [MaterialesController::class, 'destroyAgregados'])->name('materiales.destroyAgregados');
+Route::delete('/materiales/aceros/{id}', [MaterialesController::class, 'destroyAceros'])->name('materiales.destroyAceros');
+Route::delete('/materiales/cemento/{id}', [MaterialesController::class, 'destroyCemento'])->name('materiales.destroyCemento');
+Route::delete('/materiales/losas/{id}', [MaterialesController::class, 'destroyLosas'])->name('materiales.destroyLosas');
+Route::delete('/materiales/generales/{id}', [MaterialesController::class, 'destroyGenerales'])->name('materiales.destroyGenerales');
+
+Route::delete('/maquinariaMenor/{id}', [MaquinariaMenorController::class, 'destroy'])->name('maquinariaMenor.destroy');

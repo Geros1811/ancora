@@ -33,9 +33,6 @@ class MaterialesController extends Controller
 
     public function storeAgregados(Request $request, $obraId)
     {
-        // Eliminar los registros existentes para la obra antes de guardar los nuevos datos
-        Agregado::where('obra_id', $obraId)->delete();
-
         $costoTotal = 0;
 
         // Guardar agregados
@@ -44,13 +41,24 @@ class MaterialesController extends Controller
         $unidades = $request->input('unidad_agregados', []);
         $cantidades = $request->input('cantidad_agregados', []);
         $precios_unitarios = $request->input('precio_unitario_agregados', []);
+        $ids = $request->input('id_agregados', []);
 
-        foreach ($fechas as $index => $fecha) {
+        foreach ($fechas as $index => $fechaInput) {
+            $fecha = $fechaInput ?? date('Y-m-d');
             $cantidad = $cantidades[$index];
             $precio_unitario = $precios_unitarios[$index];
             $subtotal = $cantidad * $precio_unitario;
 
-            $detalle = new Agregado();
+            // Check if an ID exists for this row, if so, update the existing record
+            if (isset($ids[$index])) {
+                $detalle = Agregado::find($ids[$index]);
+                if (!$detalle) {
+                    $detalle = new Agregado();
+                }
+            } else {
+                $detalle = new Agregado();
+            }
+
             $detalle->obra_id = $obraId;
             $detalle->fecha = $fecha;
             $detalle->concepto = $conceptos[$index];
@@ -58,6 +66,26 @@ class MaterialesController extends Controller
             $detalle->cantidad = $cantidad;
             $detalle->precio_unitario = $precio_unitario;
             $detalle->subtotal = $subtotal;
+
+            // Handle image upload
+            if ($request->hasFile('fotos_agregados.' . $index)) {
+                $image = $request->file('fotos_agregados.' . $index);
+                $imageName = time() . '_' . $image->getClientOriginalName();
+
+                // Delete old image if it exists
+                if ($detalle->foto) {
+                    $oldImagePath = public_path($detalle->foto);
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+
+                $image->storeAs('public/tickets', $imageName);
+                $detalle->foto = 'storage/tickets/' . $imageName;
+            } elseif (!$detalle->foto) {
+                $detalle->foto = null;
+            }
+
             $detalle->save();
 
             $costoTotal += $subtotal;
@@ -71,9 +99,6 @@ class MaterialesController extends Controller
 
     public function storeAceros(Request $request, $obraId)
     {
-        // Eliminar los registros existentes para la obra antes de guardar los nuevos datos
-        Acero::where('obra_id', $obraId)->delete();
-
         $costoTotal = 0;
 
         // Guardar aceros
@@ -82,13 +107,24 @@ class MaterialesController extends Controller
         $unidades = $request->input('unidad_aceros', []);
         $cantidades = $request->input('cantidad_aceros', []);
         $precios_unitarios = $request->input('precio_unitario_aceros', []);
+        $ids = $request->input('id_aceros', []);
 
-        foreach ($fechas as $index => $fecha) {
+        foreach ($fechas as $index => $fechaInput) {
+            $fecha = $fechaInput ?? date('Y-m-d');
             $cantidad = $cantidades[$index];
             $precio_unitario = $precios_unitarios[$index];
             $subtotal = $cantidad * $precio_unitario;
 
-            $detalle = new Acero();
+            // Check if an ID exists for this row, if so, update the existing record
+            if (isset($ids[$index])) {
+                $detalle = Acero::find($ids[$index]);
+                if (!$detalle) {
+                    $detalle = new Acero();
+                }
+            } else {
+                $detalle = new Acero();
+            }
+
             $detalle->obra_id = $obraId;
             $detalle->fecha = $fecha;
             $detalle->concepto = $conceptos[$index];
@@ -96,6 +132,26 @@ class MaterialesController extends Controller
             $detalle->cantidad = $cantidad;
             $detalle->precio_unitario = $precio_unitario;
             $detalle->subtotal = $subtotal;
+
+            // Handle image upload
+            if ($request->hasFile('fotos_aceros.' . $index)) {
+                $image = $request->file('fotos_aceros.' . $index);
+                $imageName = time() . '_' . $image->getClientOriginalName();
+
+                // Delete old image if it exists
+                if ($detalle->foto) {
+                    $oldImagePath = public_path($detalle->foto);
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+
+                $image->storeAs('public/tickets', $imageName);
+                $detalle->foto = 'storage/tickets/' . $imageName;
+            } elseif (!$detalle->foto) {
+                $detalle->foto = null;
+            }
+
             $detalle->save();
 
             $costoTotal += $subtotal;
@@ -109,9 +165,6 @@ class MaterialesController extends Controller
 
     public function storeCemento(Request $request, $obraId)
     {
-        // Eliminar los registros existentes para la obra antes de guardar los nuevos datos
-        Cemento::where('obra_id', $obraId)->delete();
-
         $costoTotal = 0;
 
         // Guardar cemento
@@ -120,13 +173,24 @@ class MaterialesController extends Controller
         $unidades = $request->input('unidad_cemento', []);
         $cantidades = $request->input('cantidad_cemento', []);
         $precios_unitarios = $request->input('precio_unitario_cemento', []);
+        $ids = $request->input('id_cemento', []);
 
-        foreach ($fechas as $index => $fecha) {
+        foreach ($fechas as $index => $fechaInput) {
+            $fecha = $fechaInput ?? date('Y-m-d');
             $cantidad = $cantidades[$index];
             $precio_unitario = $precios_unitarios[$index];
             $subtotal = $cantidad * $precio_unitario;
 
-            $detalle = new Cemento();
+            // Check if an ID exists for this row, if so, update the existing record
+            if (isset($ids[$index])) {
+                $detalle = Cemento::find($ids[$index]);
+                if (!$detalle) {
+                    $detalle = new Cemento();
+                }
+            } else {
+                $detalle = new Cemento();
+            }
+
             $detalle->obra_id = $obraId;
             $detalle->fecha = $fecha;
             $detalle->concepto = $conceptos[$index];
@@ -134,6 +198,26 @@ class MaterialesController extends Controller
             $detalle->cantidad = $cantidad;
             $detalle->precio_unitario = $precio_unitario;
             $detalle->subtotal = $subtotal;
+
+            // Handle image upload
+            if ($request->hasFile('fotos_cemento.' . $index)) {
+                $image = $request->file('fotos_cemento.' . $index);
+                $imageName = time() . '_' . $image->getClientOriginalName();
+
+                // Delete old image if it exists
+                if ($detalle->foto) {
+                    $oldImagePath = public_path($detalle->foto);
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+
+                $image->storeAs('public/tickets', $imageName);
+                $detalle->foto = 'storage/tickets/' . $imageName;
+            } elseif (!$detalle->foto) {
+                $detalle->foto = null;
+            }
+
             $detalle->save();
 
             $costoTotal += $subtotal;
@@ -147,9 +231,6 @@ class MaterialesController extends Controller
 
     public function storeLosas(Request $request, $obraId)
     {
-        // Eliminar los registros existentes para la obra antes de guardar los nuevos datos
-        Losa::where('obra_id', $obraId)->delete();
-
         $costoTotal = 0;
 
         // Guardar losas
@@ -158,13 +239,24 @@ class MaterialesController extends Controller
         $unidades = $request->input('unidad_losas', []);
         $cantidades = $request->input('cantidad_losas', []);
         $precios_unitarios = $request->input('precio_unitario_losas', []);
+        $ids = $request->input('id_losas', []);
 
-        foreach ($fechas as $index => $fecha) {
+        foreach ($fechas as $index => $fechaInput) {
+            $fecha = $fechaInput ?? date('Y-m-d');
             $cantidad = $cantidades[$index];
             $precio_unitario = $precios_unitarios[$index];
             $subtotal = $cantidad * $precio_unitario;
 
-            $detalle = new Losa();
+            // Check if an ID exists for this row, if so, update the existing record
+            if (isset($ids[$index])) {
+                $detalle = Losa::find($ids[$index]);
+                if (!$detalle) {
+                    $detalle = new Losa();
+                }
+            } else {
+                $detalle = new Losa();
+            }
+
             $detalle->obra_id = $obraId;
             $detalle->fecha = $fecha;
             $detalle->concepto = $conceptos[$index];
@@ -172,6 +264,26 @@ class MaterialesController extends Controller
             $detalle->cantidad = $cantidad;
             $detalle->precio_unitario = $precio_unitario;
             $detalle->subtotal = $subtotal;
+
+            // Handle image upload
+            if ($request->hasFile('fotos_losas.' . $index)) {
+                $image = $request->file('fotos_losas.' . $index);
+                $imageName = time() . '_' . $image->getClientOriginalName();
+
+                // Delete old image if it exists
+                if ($detalle->foto) {
+                    $oldImagePath = public_path($detalle->foto);
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+
+                $image->storeAs('public/tickets', $imageName);
+                $detalle->foto = 'storage/tickets/' . $imageName;
+            } elseif (!$detalle->foto) {
+                $detalle->foto = null;
+            }
+
             $detalle->save();
 
             $costoTotal += $subtotal;
@@ -185,9 +297,6 @@ class MaterialesController extends Controller
 
     public function storeGenerales(Request $request, $obraId)
     {
-        // Eliminar los registros existentes para la obra antes de guardar los nuevos datos
-        General::where('obra_id', $obraId)->delete();
-
         $costoTotal = 0;
 
         // Guardar generales
@@ -196,13 +305,24 @@ class MaterialesController extends Controller
         $unidades = $request->input('unidad_generales', []);
         $cantidades = $request->input('cantidad_generales', []);
         $precios_unitarios = $request->input('precio_unitario_generales', []);
+        $ids = $request->input('id_generales', []);
 
-        foreach ($fechas as $index => $fecha) {
+        foreach ($fechas as $index => $fechaInput) {
+            $fecha = $fechaInput ?? date('Y-m-d');
             $cantidad = $cantidades[$index];
             $precio_unitario = $precios_unitarios[$index];
             $subtotal = $cantidad * $precio_unitario;
 
-            $detalle = new General();
+            // Check if an ID exists for this row, if so, update the existing record
+            if (isset($ids[$index])) {
+                $detalle = General::find($ids[$index]);
+                if (!$detalle) {
+                    $detalle = new General();
+                }
+            } else {
+                $detalle = new General();
+            }
+
             $detalle->obra_id = $obraId;
             $detalle->fecha = $fecha;
             $detalle->concepto = $conceptos[$index];
@@ -210,6 +330,26 @@ class MaterialesController extends Controller
             $detalle->cantidad = $cantidad;
             $detalle->precio_unitario = $precio_unitario;
             $detalle->subtotal = $subtotal;
+
+            // Handle image upload
+            if ($request->hasFile('fotos_generales.' . $index)) {
+                $image = $request->file('fotos_generales.' . $index);
+                $imageName = time() . '_' . $image->getClientOriginalName();
+
+                // Delete old image if it exists
+                if ($detalle->foto) {
+                    $oldImagePath = public_path($detalle->foto);
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+
+                $image->storeAs('public/tickets', $imageName);
+                $detalle->foto = 'storage/tickets/' . $imageName;
+            } elseif (!$detalle->foto) {
+                $detalle->foto = null;
+            }
+
             $detalle->save();
 
             $costoTotal += $subtotal;
@@ -233,5 +373,45 @@ class MaterialesController extends Controller
             ['obra_id' => $obraId, 'nombre' => 'Materiales'],
             ['costo' => $costoTotal]
         );
+    }
+
+    public function destroyAgregados($id)
+    {
+        $detalle = Agregado::findOrFail($id);
+        $detalle->delete();
+
+        return response()->json(['success' => 'Registro eliminado correctamente.']);
+    }
+
+    public function destroyAceros($id)
+    {
+        $detalle = Acero::findOrFail($id);
+        $detalle->delete();
+
+        return response()->json(['success' => 'Registro eliminado correctamente.']);
+    }
+
+    public function destroyCemento($id)
+    {
+        $detalle = Cemento::findOrFail($id);
+        $detalle->delete();
+
+        return response()->json(['success' => 'Registro eliminado correctamente.']);
+    }
+
+    public function destroyLosas($id)
+    {
+        $detalle = Losa::findOrFail($id);
+        $detalle->delete();
+
+        return response()->json(['success' => 'Registro eliminado correctamente.']);
+    }
+
+    public function destroyGenerales($id)
+    {
+        $detalle = General::findOrFail($id);
+        $detalle->delete();
+
+        return response()->json(['success' => 'Registro eliminado correctamente.']);
     }
 }

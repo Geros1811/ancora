@@ -19,9 +19,6 @@ class MaquinariaMenorController extends Controller
 
     public function store(Request $request, $obraId)
     {
-        // Eliminar los registros existentes para la obra antes de guardar los nuevos datos
-        DetalleMaquinariaMenor::where('obra_id', $obraId)->delete();
-
         $costoTotal = 0;
 
         $fechas = $request->input('fecha', []);
@@ -29,13 +26,24 @@ class MaquinariaMenorController extends Controller
         $unidades = $request->input('unidad', []);
         $cantidades = $request->input('cantidad', []);
         $precios_unitarios = $request->input('precio_unitario', []);
+        $ids = $request->input('id', []);
 
-        foreach ($fechas as $index => $fecha) {
+        foreach ($fechas as $index => $fechaInput) {
+            $fecha = $fechaInput ?? date('Y-m-d');
             $cantidad = $cantidades[$index];
             $precio_unitario = $precios_unitarios[$index];
             $subtotal = $cantidad * $precio_unitario;
 
-            $detalle = new DetalleMaquinariaMenor();
+            // Check if an ID exists for this row, if so, update the existing record
+            if (isset($ids[$index])) {
+                $detalle = DetalleMaquinariaMenor::find($ids[$index]);
+                if (!$detalle) {
+                    $detalle = new DetalleMaquinariaMenor();
+                }
+            } else {
+                $detalle = new DetalleMaquinariaMenor();
+            }
+
             $detalle->obra_id = $obraId;
             $detalle->fecha = $fecha;
             $detalle->concepto = $conceptos[$index];
@@ -43,6 +51,26 @@ class MaquinariaMenorController extends Controller
             $detalle->cantidad = $cantidad;
             $detalle->precio_unitario = $precio_unitario;
             $detalle->subtotal = $subtotal;
+
+            // Handle image upload
+            if ($request->hasFile('fotos.' . $index)) {
+                $image = $request->file('fotos.' . $index);
+                $imageName = time() . '_' . $image->getClientOriginalName();
+
+                // Delete old image if it exists
+                if ($detalle->foto) {
+                    $oldImagePath = public_path($detalle->foto);
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+
+                $image->storeAs('public/tickets', $imageName);
+                $detalle->foto = 'storage/tickets/' . $imageName;
+            } elseif (!$detalle->foto) {
+                $detalle->foto = null;
+            }
+
             $detalle->save();
 
             $costoTotal += $subtotal;
@@ -55,5 +83,13 @@ class MaquinariaMenorController extends Controller
         );
 
         return redirect()->route('maquinariaMenor.index', ['obraId' => $obraId]);
+    }
+
+    public function destroy($id)
+    {
+        $detalle = DetalleMaquinariaMenor::findOrFail($id);
+        $detalle->delete();
+
+        return response()->json(['success' => 'Registro eliminado correctamente.']);
     }
 }
