@@ -184,3 +184,5 @@ Route::get('/cajaChica/{obraId}', [CajaChicaController::class, 'index'])->name('
 Route::post('/cajaChica', [CajaChicaController::class, 'store'])->name('cajaChica.store');
 Route::post('/cajaChica/addDetail', [CajaChicaController::class, 'addDetail'])->name('cajaChica.addDetail');
 Route::post('/cajaChica/storeDetail', [CajaChicaController::class, 'storeDetail'])->name('cajaChica.storeDetail');
+
+Route::delete('/papeleria/{obraId}/detalles/{detalleId}', [PapeleriaController::class, 'destroyDetalle'])->name('papeleria.destroyDetalle');

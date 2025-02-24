@@ -56,8 +56,10 @@
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
                                 @if($detalle->foto)
                                     <a href="{{ asset('storage/tickets/' . basename($detalle->foto)) }}" target="_blank">Ver foto</a>
+                                    <br>
+                                    
                                 @else
-                                    <input type="file" name="fotos[]" class="form-control" style="border: none; background: transparent; text-align: center;">
+                                    <span>Imagen no Subida</span>
                                 @endif
                             </td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
@@ -104,8 +106,23 @@
 
     function removeRow(button) {
         const row = button.parentNode.parentNode;
-        row.parentNode.removeChild(row);
-        updateTotal();
+        const detalleId = row.querySelector('input[name="id[]"]').value;
+
+        fetch(`/papeleria/{{ $obraId }}/detalles/${detalleId}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: '_method=DELETE'
+        }).then(response => {
+            if (response.ok) {
+                row.parentNode.removeChild(row);
+                updateTotal();
+            } else {
+                alert('Error al eliminar el detalle.');
+            }
+        });
     }
 
     function updateSubtotal(input) {

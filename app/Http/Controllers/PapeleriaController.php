@@ -28,7 +28,8 @@ class PapeleriaController extends Controller
         $precios_unitarios = $request->input('precio_unitario', []);
         $ids = $request->input('id', []);
 
-        foreach ($fechas as $index => $fecha) {
+        foreach ($fechas as $index => $fechaInput) {
+            $fecha = $fechaInput ?? date('Y-m-d');
             $cantidad = $cantidades[$index];
             $precio_unitario = $precios_unitarios[$index];
             $subtotal = $cantidad * $precio_unitario;
@@ -55,8 +56,19 @@ class PapeleriaController extends Controller
             if ($request->hasFile('fotos.' . $index)) {
                 $image = $request->file('fotos.' . $index);
                 $imageName = time() . '_' . $image->getClientOriginalName();
-$image->storeAs('public/tickets', $imageName);
-$detalle->foto = 'storage/tickets/' . $imageName;
+
+                // Delete old image if it exists
+                if ($detalle->foto) {
+                    $oldImagePath = public_path($detalle->foto);
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+
+                $image->storeAs('public/tickets', $imageName);
+                $detalle->foto = 'storage/tickets/' . $imageName;
+            } elseif (!$detalle->foto) {
+                $detalle->foto = null;
             }
 
             $detalle->save();
@@ -65,6 +77,22 @@ $detalle->foto = 'storage/tickets/' . $imageName;
         }
 
         // Actualizar el costo total en la tabla de costos indirectos
+        CostoIndirecto::updateOrCreate(
+            ['obra_id' => $obraId, 'nombre' => 'Papelería'],
+            ['costo' => $costoTotal]
+        );
+
+        return redirect()->route('papeleria.index', ['obraId' => $obraId]);
+    }
+
+    public function destroyDetalle($obraId, $detalleId)
+    {
+        $detalle = DetallePapeleria::findOrFail($detalleId);
+        $detalle->delete();
+
+        // Actualizar el costo total en la tabla de costos indirectos
+        $detalles = DetallePapeleria::where('obra_id', $obraId)->get();
+        $costoTotal = $detalles->sum('subtotal');
         CostoIndirecto::updateOrCreate(
             ['obra_id' => $obraId, 'nombre' => 'Papelería'],
             ['costo' => $costoTotal]
