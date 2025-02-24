@@ -54,6 +54,7 @@
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="precio_unitario[]" value="{{ $detalle->precio_unitario }}" class="form-control precio-unitario" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="subtotal[]" value="{{ $detalle->subtotal }}" class="form-control subtotal" style="border: none; background: transparent; text-align: center;" readonly></td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
+                                <input type="file" name="fotos[]" class="form-control" style="border: none; background: transparent; text-align: center;">
                                 @if($detalle->foto)
                                     <a href="{{ asset('storage/tickets/' . basename($detalle->foto)) }}" target="_blank">Ver foto</a>
                                     <br>

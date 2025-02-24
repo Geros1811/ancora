@@ -81,6 +81,7 @@ Route::get('/papeleria/{obraId}', [PapeleriaController::class, 'index'])->name('
 Route::post('/papeleria/{obraId}', [PapeleriaController::class, 'store'])->name('papeleria.store');
 Route::get('/gasolina/{obraId}', [GasolinaController::class, 'index'])->name('gasolina.index');
 Route::post('/gasolina/{obraId}', [GasolinaController::class, 'store'])->name('gasolina.store');
+Route::delete('/gasolina/{id}', [GasolinaController::class, 'destroy'])->name('gasolina.destroy');
 
 // Rutas para rentas y utilidades
 Route::get('/rentas/{obraId}', [RentasController::class, 'index'])->name('rentas.index');
