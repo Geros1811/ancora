@@ -222,12 +222,22 @@
     }
 
     function submitForm(button) {
-        const form = button.closest('form');
-        const formData = new FormData(form);
-        const cajaChicaId = formData.get('caja_chica_id');
+        const row = button.closest('tr');
+        const formData = new FormData();
+        const cajaChicaId = row.closest('form').querySelector('input[name="caja_chica_id"]').value;
         const obraId = document.querySelector('input[name="obra_id"]').value;
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+        formData.append('_token', csrfToken);
+        formData.append('caja_chica_id', cajaChicaId);
         formData.append('obra_id', obraId);
+        formData.append('fecha[]', row.querySelector('input[name="fecha[]"]').value);
+        formData.append('concepto[]', row.querySelector('input[name="concepto[]"]').value);
+        formData.append('unidad[]', row.querySelector('select[name="unidad[]"]').value);
+        formData.append('cantidad[]', row.querySelector('input[name="cantidad[]"]').value);
+        formData.append('precio_unitario[]', row.querySelector('input[name="precio_unitario[]"]').value);
+        formData.append('subtotal[]', row.querySelector('input[name="subtotal[]"]').value);
+        formData.append('vista[]', row.querySelector('select[name="vista[]"]').value);
 
         fetch('{{ route('cajaChica.storeDetail') }}', {
             method: 'POST',
