@@ -197,6 +197,26 @@ class CajaChicaController extends Controller
                         break;
                 }
 
+                // Retrieve the image link from detalle_caja_chicas table
+                $detalleCajaChica = DetalleCajaChica::where('caja_chica_id', $cajaChicaId)
+                    ->where('fecha', $fecha[$index])
+                    ->where('concepto', $concepto[$index])
+                    ->first();
+
+                $fotoPath = $detalleCajaChica ? $detalleCajaChica->foto : null;
+
+                if ($request->hasFile('foto') && isset($request->file('foto')[$index])) {
+                    // A new file was uploaded, handle it
+                    $image = $request->file('foto')[$index];
+                    $imageName = time() . '_' . $image->getClientOriginalName();
+                    $fotoPath = 'storage/tickets/' . $imageName;
+                    $image->storeAs('public/tickets', $imageName);
+                } else {
+                    // No new file was uploaded, use the existing link
+                    $fotoLink = $request->input('foto_link');
+                    $fotoPath = $fotoLink;
+                }
+
                 DB::table($tableName)->insert([
                     'obra_id' => $obraId,
                     'fecha' => $fecha[$index],
@@ -205,6 +225,7 @@ class CajaChicaController extends Controller
                     'cantidad' => $cantidad[$index],
                     'precio_unitario' => $precio_unitario[$index],
                     'subtotal' => $subtotal[$index],
+                    'foto' => $fotoPath, // Add the image link to the other table
                 ]);
             }
 

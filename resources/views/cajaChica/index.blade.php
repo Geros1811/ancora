@@ -121,7 +121,7 @@
                                           <td class="gastos-rapidos-td">
                                               <input type="file" name="foto[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;">
                                               @if($detalle->foto)
-                                                  <a href="{{ asset($detalle->foto) }}" target="_blank">Ver Foto</a>
+                                                  <a href="{{ asset('storage/tickets/' . basename($detalle->foto)) }}" target="_blank">Ver Foto</a>
                                               @endif
                                           </td>
                                           <td class="gastos-rapidos-td">
@@ -275,8 +275,17 @@
         formData.append('vista[]', row.querySelector('select[name="vista[]"]').value);
 
         const fotoInput = row.querySelector('input[name="foto[]"]');
+        let fotoLink = null;
         if (fotoInput.files.length > 0) {
             formData.append('foto[]', fotoInput.files[0]);
+        } else {
+            // Get the existing image link from the "Ver Foto" link
+            const verFotoLink = row.querySelector('a[target="_blank"]');
+            if (verFotoLink) {
+                const url = new URL(verFotoLink.href);
+                fotoLink = url.pathname;
+            }
+            formData.append('foto_link', fotoLink);
         }
 
         fetch('{{ route('cajaChica.storeDetail') }}', {
