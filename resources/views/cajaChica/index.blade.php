@@ -121,7 +121,7 @@
                                           <td class="gastos-rapidos-td">
                                               <input type="file" name="foto[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;">
                                               @if($detalle->foto)
-                                                  <img src="{{ asset($detalle->foto) }}" alt="Foto" style="max-width: 50px; max-height: 50px;">
+                                                  <a href="{{ asset($detalle->foto) }}" target="_blank">Ver Foto</a>
                                               @endif
                                           </td>
                                           <td class="gastos-rapidos-td">
