@@ -69,7 +69,7 @@ class ObraController extends Controller
         // Calculate total cantidad from destajos
         $totalCantidadDestajos = \App\Models\Destajo::where('obra_id', $id)->sum('cantidad');
 
-        return view('obras.show', compact('obra', 'costosDirectos', 'costosIndirectos', 'totalPagosCliente', 'totalCantidadDestajos'));
+        return view('obras.show', compact('obra', 'costosDirectos', 'costosIndirectos', 'totalPagosCliente', 'totalCantidadDestajos'))->with('obra', $obra);
     }
 
     public function guardarCalendario(Request $request)

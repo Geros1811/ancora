@@ -27,6 +27,7 @@ use App\Http\Controllers\DestajosDetallesController;
 use App\Http\Controllers\RentaMaquinariaController;
 use App\Http\Controllers\CajaChicaController;
 use App\Http\Controllers\GastosRapidosController;
+use App\Http\Controllers\PagosAdministrativosController;
 
 Route::get('/costos/{id}', [CostosController::class, 'show'])->name('costos.show');
 
@@ -207,3 +208,13 @@ Route::delete('/materiales/losas/{id}', [MaterialesController::class, 'destroyLo
 Route::delete('/materiales/generales/{id}', [MaterialesController::class, 'destroyGenerales'])->name('materiales.destroyGenerales');
 
 Route::delete('/maquinariaMenor/{id}', [MaquinariaMenorController::class, 'destroy'])->name('maquinariaMenor.destroy');
+
+Route::get('/obras/{obraId}/pagos-administrativos', [PagosAdministrativosController::class, 'index'])->name('pagos-administrativos');
+
+Route::get('/sueldo-residente/{obraId}', [SueldoResidenteController::class, 'index'])->name('sueldo-residente.index');
+
+Route::get('/imss/{obraId}', [ImssController::class, 'index'])->name('imss.index');
+
+Route::get('/contador/{obraId}', [ContadorController::class, 'index'])->name('contador.index');
+
+Route::get('/iva/{obraId}', [IvaController::class, 'index'])->name('iva.index');
