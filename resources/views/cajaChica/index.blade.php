@@ -75,6 +75,7 @@
                               <tbody class="detalle-costo-body">
                                   @foreach ($cajaChica->detallesCajaChica as $detalle)
                                       <tr>
+                                          <input type="hidden" name="id[]" value="{{ $detalle->id }}">
                                           <td class="gastos-rapidos-td">
                                               <input type="date" name="fecha[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $cajaChica->formatted_created_at }}" readonly>
                                           </td>

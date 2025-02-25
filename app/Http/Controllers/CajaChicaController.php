@@ -55,6 +55,7 @@ class CajaChicaController extends Controller
     public function addDetail(Request $request)
     {
         $request->validate([
+            'id.*' => 'nullable|exists:detalle_caja_chicas,id',
             'caja_chica_id' => 'required|exists:caja_chicas,id',
             'fecha.*' => 'required|date',
             'concepto.*' => 'required|string',
@@ -67,6 +68,7 @@ class CajaChicaController extends Controller
         ]);
 
         $cajaChicaId = $request->input('caja_chica_id');
+        $ids = $request->input('id');
         $fecha = $request->input('fecha');
         $concepto = $request->input('concepto');
         $unidad = $request->input('unidad');
@@ -75,15 +77,22 @@ class CajaChicaController extends Controller
         $subtotal = $request->input('subtotal');
         $vista = $request->input('vista');
         $fotos = $request->file('foto');
-         // Delete existing details
-         DetalleCajaChica::where('caja_chica_id', $cajaChicaId)->delete();
-        foreach ($fecha as $index => $value) {
-            $detalle = DetalleCajaChica::firstOrNew([
-                'caja_chica_id' => $cajaChicaId,
-                'fecha' => $fecha[$index],
-                'concepto' => $concepto[$index],
-            ]);
 
+        foreach ($fecha as $index => $value) {
+            $detalleId = $ids[$index] ?? null;
+
+            if ($detalleId) {
+                $detalle = DetalleCajaChica::find($detalleId);
+                if (!$detalle) {
+                    $detalle = new DetalleCajaChica();
+                }
+            } else {
+                $detalle = new DetalleCajaChica();
+            }
+
+            $detalle->caja_chica_id = $cajaChicaId;
+            $detalle->fecha = $fecha[$index];
+            $detalle->concepto = $concepto[$index];
             $detalle->unidad = $unidad[$index];
             $detalle->cantidad = $cantidad[$index];
             $detalle->precio_unitario = $precioUnitario[$index];
@@ -111,6 +120,7 @@ class CajaChicaController extends Controller
     public function storeDetail(Request $request)
     {
         $request->validate([
+            'id.*' => 'nullable|exists:detalle_caja_chicas,id',
             'caja_chica_id' => 'required|exists:caja_chicas,id',
             'fecha.*' => 'required|date',
             'concepto.*' => 'required|string',
@@ -217,7 +227,9 @@ class CajaChicaController extends Controller
                     $fotoPath = $fotoLink;
                 }
 
-                DB::table($tableName)->insert([
+                $detalleId = $request->input('id')[$index] ?? null;
+
+                $data = [
                     'obra_id' => $obraId,
                     'fecha' => $fecha[$index],
                     'concepto' => $concepto[$index],
@@ -226,10 +238,20 @@ class CajaChicaController extends Controller
                     'precio_unitario' => $precio_unitario[$index],
                     'subtotal' => $subtotal[$index],
                     'foto' => $fotoPath, // Add the image link to the other table
-                ]);
+                ];
+
+                if ($detalleId) {
+                    // Update existing record
+                    DB::table($tableName)
+                        ->where('id', $detalleId)
+                        ->update($data);
+                } else {
+                    // Insert new record
+                    DB::table($tableName)->insert($data);
+                }
             }
 
-            $this->updateCajaChicaSubtotalAndCambio($cajaChicaId);
+             $this->updateCajaChicaSubtotalAndCambio($cajaChicaId);
 
             return response()->json(['success' => true, 'message' => 'Detalle de caja chica guardado correctamente.']);
         } catch (\Exception $e) {
