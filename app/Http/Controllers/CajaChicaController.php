@@ -63,6 +63,7 @@ class CajaChicaController extends Controller
             'precio_unitario.*' => 'required|numeric',
             'subtotal.*' => 'required|numeric',
             'vista.*' => 'required|string',
+            'foto.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $cajaChicaId = $request->input('caja_chica_id');
@@ -73,22 +74,32 @@ class CajaChicaController extends Controller
         $precioUnitario = $request->input('precio_unitario');
         $subtotal = $request->input('subtotal');
         $vista = $request->input('vista');
-
-        // Delete existing details
-        DetalleCajaChica::where('caja_chica_id', $cajaChicaId)->delete();
-
-        // Add new details
+        $fotos = $request->file('foto');
+         // Delete existing details
+         DetalleCajaChica::where('caja_chica_id', $cajaChicaId)->delete();
         foreach ($fecha as $index => $value) {
-            DetalleCajaChica::create([
+            $detalle = DetalleCajaChica::firstOrNew([
                 'caja_chica_id' => $cajaChicaId,
                 'fecha' => $fecha[$index],
                 'concepto' => $concepto[$index],
-                'unidad' => $unidad[$index],
-                'cantidad' => $cantidad[$index],
-                'precio_unitario' => $precioUnitario[$index],
-                'subtotal' => $subtotal[$index],
-                'vista' => $vista[$index],
             ]);
+
+            $detalle->unidad = $unidad[$index];
+            $detalle->cantidad = $cantidad[$index];
+            $detalle->precio_unitario = $precioUnitario[$index];
+            $detalle->subtotal = $subtotal[$index];
+            $detalle->vista = $vista[$index];
+
+            // Handle image upload
+            if (isset($fotos[$index])) {
+                $image = $fotos[$index];
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $fotoPath = 'storage/tickets/' . $imageName;
+                $image->storeAs('public/tickets', $imageName);
+                $detalle->foto = $fotoPath;
+            }
+
+            $detalle->save();
         }
 
         $this->updateCajaChicaSubtotalAndCambio($cajaChicaId);
@@ -97,7 +108,6 @@ class CajaChicaController extends Controller
         return redirect()->route('cajaChica.index', ['obraId' => $obraId, 'cajaChica' => $cajaChicaId])
             ->with('success', 'Detalles guardados exitosamente.');
     }
-
     public function storeDetail(Request $request)
     {
         $request->validate([
@@ -205,7 +215,6 @@ class CajaChicaController extends Controller
             return response()->json(['success' => false, 'message' => 'Error al guardar el detalle de caja chica: ' . $e->getMessage()]);
         }
     }
-
     private function updateCajaChicaSubtotalAndCambio($cajaChicaId)
     {
         $cajaChica = CajaChica::find($cajaChicaId);

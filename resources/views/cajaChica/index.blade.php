@@ -68,6 +68,7 @@
                                      <th class="gastos-rapidos-th">Precio Unitario</th>
                                       <th class="gastos-rapidos-th">Subtotal</th>
                                       <th class="gastos-rapidos-th">Vista</th>
+                                      <th class="gastos-rapidos-th">Foto</th>
                                       <th class="gastos-rapidos-th">Enviar</th>
                                   </tr>
                               </thead>
@@ -116,6 +117,12 @@
                                                   </optgroup>
                                                   <option value="rentaMaquinaria" {{ $detalle->vista == 'rentaMaquinaria' ? 'selected' : '' }}>Renta de Maquinaria</option>
                                               </select>
+                                          </td>
+                                          <td class="gastos-rapidos-td">
+                                              <input type="file" name="foto[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;">
+                                              @if($detalle->foto)
+                                                  <img src="{{ asset($detalle->foto) }}" alt="Foto" style="max-width: 50px; max-height: 50px;">
+                                              @endif
                                           </td>
                                           <td class="gastos-rapidos-td">
                                               <button type="button" class="btn btn-primary" onclick="submitForm(this)">Enviar</button>
@@ -203,6 +210,9 @@
                 </select>
             </td>
             <td class="gastos-rapidos-td">
+                <input type="file" name="foto[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;">
+            </td>
+            <td class="gastos-rapidos-td">
                 <button type="button" class="btn btn-primary" onclick="submitForm(this)">Enviar</button>
             </td>
         `;
@@ -263,6 +273,11 @@
         formData.append('precio_unitario[]', row.querySelector('input[name="precio_unitario[]"]').value);
         formData.append('subtotal[]', row.querySelector('input[name="subtotal[]"]').value);
         formData.append('vista[]', row.querySelector('select[name="vista[]"]').value);
+
+        const fotoInput = row.querySelector('input[name="foto[]"]');
+        if (fotoInput.files.length > 0) {
+            formData.append('foto[]', fotoInput.files[0]);
+        }
 
         fetch('{{ route('cajaChica.storeDetail') }}', {
             method: 'POST',
