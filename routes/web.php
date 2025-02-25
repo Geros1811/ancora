@@ -28,6 +28,10 @@ use App\Http\Controllers\RentaMaquinariaController;
 use App\Http\Controllers\CajaChicaController;
 use App\Http\Controllers\GastosRapidosController;
 use App\Http\Controllers\PagosAdministrativosController;
+use App\Http\Controllers\SueldoResidenteController;
+use App\Http\Controllers\ImssController;
+use App\Http\Controllers\ContadorController;
+use App\Http\Controllers\IvaController;
 
 Route::get('/costos/{id}', [CostosController::class, 'show'])->name('costos.show');
 
