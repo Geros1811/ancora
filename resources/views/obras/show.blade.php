@@ -55,7 +55,8 @@
                 @include('obra.gastos-generales')
                 @include('obra.costos-directos', ['costosDirectos' => $costosDirectos])
                 @include('obra.costos-indirectos', ['costosIndirectos' => $costosIndirectos])
-                @include('obra.pagos-administrativos', ['obra' => $obra])
+                @include('obra.pagos-administrativos', ['pagosAdministrativos' => $pagosAdministrativos])
+
             </div>
 
         <!-- Botón para crear gráfica -->

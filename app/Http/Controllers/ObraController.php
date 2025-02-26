@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\CostoIndirecto;
 use App\Models\CostoDirecto;
 use App\Models\CalendarioPago;
+use App\Models\PagosAdministrativos;
 
 class ObraController extends Controller
 {
@@ -65,11 +66,12 @@ class ObraController extends Controller
         $costosDirectos = CostoDirecto::where('obra_id', $id)->get();
         $costosIndirectos = CostoIndirecto::where('obra_id', $id)->get();
         $totalPagosCliente = CalendarioPago::where('obra_id', $id)->sum('pago');
+        $pagosAdministrativos = PagosAdministrativos::where('obra_id', $id)->get();
 
         // Calculate total cantidad from destajos
         $totalCantidadDestajos = \App\Models\Destajo::where('obra_id', $id)->sum('cantidad');
 
-        return view('obras.show', compact('obra', 'costosDirectos', 'costosIndirectos', 'totalPagosCliente', 'totalCantidadDestajos'))->with('obra', $obra);
+        return view('obras.show', compact('obra', 'costosDirectos', 'costosIndirectos', 'totalPagosCliente', 'totalCantidadDestajos', 'pagosAdministrativos'))->with('obra', $obra);
     }
 
     public function guardarCalendario(Request $request)
