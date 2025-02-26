@@ -32,6 +32,11 @@
                 <td>IVA</td>
                 <td><a href="{{ route('iva.index', ['obraId' => $obra->id]) }}"> $0.00</a></td>
             </tr>
+            <tr>
+                <td>5</td>
+                <td>Otros</td>
+                <td><a href="{{ route('otros_pagos_administrativos.index', ['obraId' => $obra->id]) }}"> $0.00</a></td>
+            </tr>
         </tbody>
     </table>
 </div>
