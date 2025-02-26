@@ -203,7 +203,7 @@ Route::delete('/maquinariaMayor/{id}', [MaquinariaMayorController::class, 'destr
 Route::delete('/herramientaMenor/{id}', [HerramientaMenorController::class, 'destroy'])->name('herramientaMenor.destroy');
 Route::delete('/equipoSeguridad/{id}', [EquipoSeguridadController::class, 'destroy'])->name('equipoSeguridad.destroy');
 Route::delete('/limpieza/{id}', [LimpiezaController::class, 'destroy'])->name('limpieza.destroy');
-Route::delete('/rentaMaquinaria/{id}', [RentaMaquinariaController::class, 'destroy'])->name('rentaMaquinaria.destroy');
+Route::delete('/sueldoResidente/{id}', [SueldoResidenteController::class, 'destroy'])->name('sueldoResidente.destroy');
 
 Route::delete('/materiales/agregados/{id}', [MaterialesController::class, 'destroyAgregados'])->name('materiales.destroyAgregados');
 Route::delete('/materiales/aceros/{id}', [MaterialesController::class, 'destroyAceros'])->name('materiales.destroyAceros');
@@ -216,9 +216,19 @@ Route::delete('/maquinariaMenor/{id}', [MaquinariaMenorController::class, 'destr
 Route::get('/obras/{obraId}/pagos-administrativos', [PagosAdministrativosController::class, 'index'])->name('pagos-administrativos');
 
 Route::get('/sueldo-residente/{obraId}', [SueldoResidenteController::class, 'index'])->name('sueldo-residente.index');
+Route::post('/sueldo-residente/{obraId}', [SueldoResidenteController::class, 'store'])->name('store');
 
 Route::get('/imss/{obraId}', [ImssController::class, 'index'])->name('imss.index');
 
 Route::get('/contador/{obraId}', [ContadorController::class, 'index'])->name('contador.index');
 
 Route::get('/iva/{obraId}', [IvaController::class, 'index'])->name('iva.index');
+Route::post('/iva/{obraId}', [IvaController::class, 'store'])->name('iva.store');
+
+Route::get('/contador/{obraId}', [ContadorController::class, 'index'])->name('contador.index');
+Route::post('/contador/{obraId}', [ContadorController::class, 'store'])->name('contador.store');
+Route::delete('/contador/{id}', [ContadorController::class, 'destroy'])->name('contador.destroy');
+
+Route::get('/imss/{obraId}', [ImssController::class, 'index'])->name('imss.index');
+Route::post('/imss/{obraId}', [ImssController::class, 'store'])->name('imss.store');
+Route::delete('/imss/{id}', [ImssController::class, 'destroy'])->name('imss.destroy');
