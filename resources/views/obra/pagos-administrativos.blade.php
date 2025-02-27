@@ -1,6 +1,6 @@
 <h2>
     <span class="toggle-button" onclick="toggleSection('pagos-administrativos')">+</span>
-    Pagos Administrativos (Total: ${{ number_format($pagosAdministrativos->sum('costo'), 2) }})
+    Pagos Administrativos (Total: $<span id="total-pagos">{{ number_format($pagosAdministrativos->sum('costo'), 2) }}</span>)
 </h2>
 <div id="pagos-administrativos" class="hidden-section">
     <table class="obra-table">
@@ -9,6 +9,7 @@
                 <th>No.</th>
                 <th>Nombre</th>
                 <th>Costo</th>
+                <th>Incluir</th>
             </tr>
         </thead>
         <tbody>
@@ -16,26 +17,31 @@
                 <td>1</td>
                 <td>Sueldo Residente</td>
                 <td><a href="{{ route('sueldo-residente.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($pagosAdministrativos->where('nombre', 'Sueldo Residente')->first())->costo ?? 0.00, 2) }}</a></td>
+                <td><span class="toggle-eye" onclick="togglePago(this, {{ optional($pagosAdministrativos->where('nombre', 'Sueldo Residente')->first())->costo ?? 0.00 }})" data-active="true">👁️</span></td>
             </tr>
             <tr>
                 <td>2</td>
                 <td>IMSS</td>
                 <td><a href="{{ route('imss.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($pagosAdministrativos->where('nombre', 'IMSS')->first())->costo ?? 0.00, 2) }}</a></td>
+                <td><span class="toggle-eye" onclick="togglePago(this, {{ optional($pagosAdministrativos->where('nombre', 'IMSS')->first())->costo ?? 0.00 }})" data-active="true">👁️</span></td>
             </tr>
             <tr>
                 <td>3</td>
                 <td>Contador</td>
                 <td><a href="{{ route('contador.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($pagosAdministrativos->where('nombre', 'Contador')->first())->costo ?? 0.00, 2) }}</a></td>
+                <td><span class="toggle-eye" onclick="togglePago(this, {{ optional($pagosAdministrativos->where('nombre', 'Contador')->first())->costo ?? 0.00 }})" data-active="true">👁️</span></td>
             </tr>
             <tr>
                 <td>4</td>
                 <td>IVA</td>
                 <td><a href="{{ route('iva.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($pagosAdministrativos->where('nombre', 'IVA')->first())->costo ?? 0.00, 2) }}</a></td>
+                <td><span class="toggle-eye" onclick="togglePago(this, {{ optional($pagosAdministrativos->where('nombre', 'IVA')->first())->costo ?? 0.00 }})" data-active="true">👁️</span></td>
             </tr>
             <tr>
                 <td>5</td>
                 <td>Otros Pagos Administrativos</td>
                 <td><a href="{{ route('otros_pagos_administrativos.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($pagosAdministrativos->where('nombre', 'Otros Pagos Administrativos')->first())->costo ?? 0.00, 2) }}</a></td>
+                <td><span class="toggle-eye" onclick="togglePago(this, {{ optional($pagosAdministrativos->where('nombre', 'Otros Pagos Administrativos')->first())->costo ?? 0.00 }})" data-active="true">👁️</span></td>
             </tr>
         </tbody>
     </table>
@@ -48,6 +54,23 @@
             section.classList.toggle('hidden-section');
         }
     }
+
+    function togglePago(element, costo) {
+        let totalElement = document.getElementById("total-pagos");
+        let total = parseFloat(totalElement.innerText.replace(/,/g, ''));
+        let isActive = element.getAttribute("data-active") === "true";
+
+        if (isActive) {
+            total -= costo;
+            element.innerText = "🚫";
+        } else {
+            total += costo;
+            element.innerText = "👁️";
+        }
+
+        element.setAttribute("data-active", !isActive);
+        totalElement.innerText = total.toFixed(2);
+    }
 </script>
 
 <style>
@@ -58,5 +81,9 @@
         cursor: pointer;
         font-weight: bold;
         margin-right: 5px;
+    }
+    .toggle-eye {
+        cursor: pointer;
+        font-size: 1.2em;
     }
 </style>
