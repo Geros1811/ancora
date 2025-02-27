@@ -9,6 +9,7 @@ use App\Models\CostoIndirecto;
 use App\Models\CostoDirecto;
 use App\Models\CalendarioPago;
 use App\Models\PagosAdministrativos;
+use Illuminate\Support\Facades\Session;
 
 class ObraController extends Controller
 {
@@ -69,10 +70,21 @@ class ObraController extends Controller
         $pagosAdministrativos = PagosAdministrativos::where('obra_id', $id)->where('nombre', '!=', 'Ingresos')->get();
         $ingresos = \App\Models\Ingreso::where('obra_id', $id)->get();
 
+        $pagosAdministrativosOcultos = 0;
+        $pagosBD = DB::table('pagos_administrativos')
+            ->where('obra_id', $id)
+            ->pluck('costo', 'nombre');
+
+        foreach ($pagosBD as $nombre => $costo) {
+            if (Session::get('pagos_administrativos.' . $nombre) === false) {
+                $pagosAdministrativosOcultos += $costo;
+            }
+        }
+
         // Calculate total cantidad from destajos
         $totalCantidadDestajos = \App\Models\Destajo::where('obra_id', $id)->sum('cantidad');
 
-        return view('obras.show', compact('obra', 'costosDirectos', 'costosIndirectos', 'totalPagosCliente', 'totalCantidadDestajos', 'pagosAdministrativos', 'ingresos'))->with('obra', $obra);
+        return view('obras.show', compact('obra', 'costosDirectos', 'costosIndirectos', 'totalPagosCliente', 'totalCantidadDestajos', 'pagosAdministrativos', 'ingresos', 'pagosAdministrativosOcultos'));
     }
 
     public function guardarCalendario(Request $request)

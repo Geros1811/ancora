@@ -243,3 +243,5 @@ Route::delete('/otros-pagos-administrativos/{id}', [OtrosPagosAdministrativosCon
 Route::get('/ingresos/{obraId}', [IngresoController::class, 'index'])->name('ingresos.index');
 Route::post('/ingresos/{obraId}', [IngresoController::class, 'store'])->name('ingresos.store');
 Route::delete('/ingresos/{id}', [IngresoController::class, 'destroy'])->name('ingresos.destroy');
+
+Route::post('/pagos-administrativos/toggle-pago', [App\Http\Controllers\PagosAdministrativosController::class, 'togglePago'])->name('pagos-administrativos.toggle-pago');
