@@ -13,7 +13,7 @@
             <span class="info-value" style="color: #2c3e50;">Ingresos</span>
         </div>
         <div class="info-item" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-            <span class="info-label" style="font-weight: bold; color: #34495e;">Costo Total:</span>
+            <span class="info-label" style="font-weight: bold; color: #34495e;">Ingreso Total:</span>
             <span class="info-value" id="costo-total" style="color: #2c3e50;">${{ number_format($costoTotal, 2) }}</span>
         </div>
     </div>
