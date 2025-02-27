@@ -119,6 +119,7 @@ Route::post('/maquinariaMayor/{obraId}', [MaquinariaMayorController::class, 'sto
 // Rutas para renta de maquinaria
 Route::get('/rentaMaquinaria/{obraId}', [RentaMaquinariaController::class, 'index'])->name('rentaMaquinaria.index');
 Route::post('/rentaMaquinaria/{obraId}', [RentaMaquinariaController::class, 'store'])->name('rentaMaquinaria.store');
+Route::delete('/rentaMaquinaria/{id}', [RentaMaquinariaController::class, 'destroy'])->name('rentaMaquinaria.destroy');
 
 // Rutas para maquinaria menor
 Route::get('/maquinariaMenor/{obraId}', [MaquinariaMenorController::class, 'index'])->name('maquinariaMenor.index');
