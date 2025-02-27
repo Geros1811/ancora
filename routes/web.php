@@ -33,6 +33,7 @@ use App\Http\Controllers\ImssController;
 use App\Http\Controllers\ContadorController;
 use App\Http\Controllers\IvaController;
 use App\Http\Controllers\OtrosPagosAdministrativosController;
+use App\Http\Controllers\IngresoController;
 
 Route::get('/costos/{id}', [CostosController::class, 'show'])->name('costos.show');
 
@@ -237,3 +238,7 @@ Route::delete('/imss/{id}', [ImssController::class, 'destroy'])->name('imss.dest
 Route::get('/otros-pagos-administrativos/{obraId}', [OtrosPagosAdministrativosController::class, 'index'])->name('otros_pagos_administrativos.index');
 Route::post('/otros-pagos-administrativos/{obraId}', [OtrosPagosAdministrativosController::class, 'store'])->name('otros_pagos_administrativos.store');
 Route::delete('/otros-pagos-administrativos/{id}', [OtrosPagosAdministrativosController::class, 'destroy'])->name('otros_pagos_administrativos.destroy');
+
+Route::get('/ingresos/{obraId}', [IngresoController::class, 'index'])->name('ingresos.index');
+Route::post('/ingresos/{obraId}', [IngresoController::class, 'store'])->name('ingresos.store');
+Route::delete('/ingresos/{id}', [IngresoController::class, 'destroy'])->name('ingresos.destroy');
