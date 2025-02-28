@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Obra;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\CostoIndirecto;
@@ -10,23 +11,26 @@ use App\Models\CostoDirecto;
 use App\Models\CalendarioPago;
 use App\Models\PagosAdministrativos;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 
 class ObraController extends Controller
 {
     public function index()
     {
-        $obras = Obra::all();
+        $obras = Obra::where('user_id', Auth::id())->get();
         return view('dashboard', compact('obras'));
     }
 
     public function create()
     {
-        return view('obra.create');
+        $architects = User::where('role', 'architect')->get();
+        $maestroObras = User::where('role', 'maestro_obra')->get();
+        return view('obra.create', compact('architects', 'maestroObras'));
     }
 
     public function store(Request $request)
     {
-        $obraId = DB::table('obras')->insertGetId([
+        $obra = new Obra([
             'nombre' => $request->nombre,
             'presupuesto' => $request->presupuesto,
             'cliente' => $request->cliente,
@@ -36,13 +40,22 @@ class ObraController extends Controller
             'ubicacion' => $request->ubicacion,
             'descripcion' => $request->descripcion,
             'metros_cuadrados' => $request->metros_cuadrados,
+            'user_id' => Auth::id(),
         ]);
+
+        $obra->save();
+
+        $architects = $request->input('architects', []);
+        $maestroObras = $request->input('maestro_obras', []);
+
+        $obra->architects()->attach(array_fill_keys($architects, ['added_by' => Auth::id()]));
+        $obra->maestroObras()->attach(array_fill_keys($maestroObras, ['added_by' => Auth::id()]));
 
         // Insertar valores iniciales en la tabla de costos indirectos
         $costosIndirectos = ['Papelería', 'Gasolina', 'Renta', 'Utilidades'];
         foreach ($costosIndirectos as $costo) {
             CostoIndirecto::create([
-                'obra_id' => $obraId,
+                'obra_id' => $obra->id,
                 'nombre' => $costo,
                 'costo' => 0,
             ]);
@@ -52,7 +65,7 @@ class ObraController extends Controller
         $costosDirectos = ['Materiales', 'Mano de Obra', 'Equipo de Seguridad', 'Herramienta Menor', 'Maquinaria Menor', 'Limpieza', 'Maquinaria Mayor', 'Cimbras', 'Acarreos', 'Comidas', 'Trámites'];
         foreach ($costosDirectos as $costo) {
             CostoDirecto::create([
-                'obra_id' => $obraId,
+                'obra_id' => $obra->id,
                 'nombre' => $costo,
                 'costo' => 0,
             ]);

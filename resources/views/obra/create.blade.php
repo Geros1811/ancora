@@ -47,6 +47,22 @@
             <label for="descripcion">Descripción del Proyecto:</label>
             <textarea name="descripcion" id="descripcion"></textarea><br>
 
+            <!-- Architects -->
+            <label for="architects">Architects:</label>
+            <select name="architects[]" id="architects" multiple>
+                @foreach($architects as $architect)
+                    <option value="{{ $architect->id }}">{{ $architect->name }}</option>
+                @endforeach
+            </select><br>
+
+            <!-- Maestro Obras -->
+            <label for="maestro_obras">Maestro Obras:</label>
+            <select name="maestro_obras[]" id="maestro_obras" multiple>
+                @foreach($maestroObras as $maestroObra)
+                    <option value="{{ $maestroObra->id }}">{{ $maestroObra->name }}</option>
+                @endforeach
+            </select><br>
+
             <!-- Botón de envío -->
             <button type="submit">Crear Obra</button>
         </form>

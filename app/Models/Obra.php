@@ -9,7 +9,6 @@ class Obra extends Model
 {
     use HasFactory;
 
-    // Define los atributos que se pueden asignar masivamente
     protected $fillable = [
         'nombre',
         'presupuesto',
@@ -19,12 +18,31 @@ class Obra extends Model
         'residente',
         'ubicacion',
         'descripcion',
-        'metros_cuadrados'
+        'metros_cuadrados',
+        'user_id'
     ];
 
-    // Relación con DetallesObra (uno a muchos)
     public function detalles()
     {
         return $this->hasMany(DetallesObra::class, 'obra_id');
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function architects()
+    {
+        return $this->belongsToMany(User::class, 'obra_user', 'obra_id', 'user_id')
+            ->withPivot('added_by')
+            ->withTimestamps();
+    }
+
+    public function maestroObras()
+    {
+        return $this->belongsToMany(User::class, 'obra_user', 'obra_id', 'user_id')
+            ->withPivot('added_by')
+            ->withTimestamps();
     }
 }
