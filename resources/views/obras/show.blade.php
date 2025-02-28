@@ -337,38 +337,56 @@
         'Papelería': parseFloat("{{ optional($costosIndirectos->where('nombre', 'Papelería')->first())->costo ?? 0.00 }}"),
         'Gasolina': parseFloat("{{ optional($costosIndirectos->where('nombre', 'Gasolina')->first())->costo ?? 0.00 }}"),
         'Rentas': parseFloat("{{ optional($costosIndirectos->where('nombre', 'Rentas')->first())->costo ?? 0.00 }}"),
-        'Utilidades': parseFloat("{{ optional($costosIndirectos->where('nombre', 'Utilidades')->first())->costo ?? 0.00 }}")
+        'Utilidades': parseFloat("{{ optional($costosIndirectos->where('nombre', 'Utilidades')->first())->costo ?? 0.00 }}"),
+        'Sueldo Residente': parseFloat("{{ optional($costosIndirectos->where('nombre', 'Sueldo Residente')->first())->costo ?? 0.00 }}")
     };
+
+    let pagosAdministrativosData = {};
+    @php
+        $pagosAdministrativosNombres = ['IMSS', 'Contador', 'IVA', 'Otros Pagos Administrativos'];
+        foreach ($pagosAdministrativosNombres as $nombre) {
+            $sessionKey = 'pagos_administrativos.' . $nombre;
+            $costo = optional($pagosAdministrativos->where('nombre', $nombre)->first())->costo ?? 0.00;
+            echo "pagosAdministrativosData['$nombre'] = " . (Session::get($sessionKey) !== false ? "parseFloat('$costo')" : "0.00") . ";\n";
+        }
+    @endphp
+
     let totalCostosDirectos = Object.values(costosDirectos).reduce((a, b) => a + b, 0);
     let totalCostosIndirectos = Object.values(costosIndirectos).reduce((a, b) => a + b, 0);
-    let totalGastos = totalCostosDirectos + totalCostosIndirectos;
+    let totalPagosAdministrativos = Object.values(pagosAdministrativosData).reduce((a, b) => a + b, 0);
+    let totalGastos = totalCostosDirectos + totalCostosIndirectos + totalPagosAdministrativos;
     let utilidadRemanente = presupuesto - totalGastos;
 
     let data = {
-        labels: [...Object.keys(costosDirectos), ...Object.keys(costosIndirectos), 'Utilidad Remanente'],
-        datasets: [{
-            data: [...Object.values(costosDirectos), ...Object.values(costosIndirectos), utilidadRemanente],
-            backgroundColor: [
-                '#FF0000', // Materiales
-                '#0000FF', // Mano de Obra
-                '#FFFF00', // Equipo de Seguridad
-                '#FFA500', // Herramienta Menor
-                '#FFC0CB', // Maquinaria Menor
-                '#800080', // Limpieza
-                '#A52A2A', // Maquinaria Mayor
-                '#FFFFFF', // Renta de Maquinaria
-                '#000000', // Cimbras
-                '#808080', // Acarreos
-                '#40E0D0', // Comidas (o el color que desees)
-                '#FFD700', // Trámites
-                '#C0C0C0', // Papelería
-                '#F5F5DC', // Gasolina
-                '#FF00FF', // Rentas
-                '#00CED1', // Utilidades → color turquesa
-                '#008000'  // Utilidad Remanente → color verde
-            ]
-        }]
-    };
+    labels: [...Object.keys(costosDirectos), ...Object.keys(costosIndirectos), ...Object.keys(pagosAdministrativosData), 'Utilidad Remanente'],
+    datasets: [{
+        data: [...Object.values(costosDirectos), ...Object.values(costosIndirectos), ...Object.values(pagosAdministrativosData), utilidadRemanente],
+        backgroundColor: [
+            '#FF0000', // Materiales → Rojo
+            '#0000FF', // Mano de Obra → Azul
+            '#FFFF00', // Equipo de Seguridad → Amarillo
+            '#FF7F00', // Herramienta Menor → Naranja fuerte
+            '#FF69B4', // Maquinaria Menor → Rosa fuerte
+            '#800080', // Limpieza → Morado oscuro
+            '#8B4513', // Maquinaria Mayor → Marrón oscuro
+            '#FFFFFF', // Renta de Maquinaria → Blanco
+            '#000000', // Cimbras → Negro
+            '#808080', // Acarreos → Gris
+            '#00FFFF', // Comidas → Cian
+            '#FFD700', // Trámites → Dorado
+            '#C0C0C0', // Papelería → Plata
+            '#008080', // Gasolina → Verde azulado
+            '#FF1493', // Rentas → Rosa fuerte neón
+            '#20B2AA', // Utilidades → Verde agua
+            '#006400', // Sueldo Residente → Verde oscuro
+            '#4682B4', // IMSS → Azul acero
+            '#DC143C', // Contador → Rojo carmesí
+            '#1E90FF', // IVA → Azul neón
+            '#9400D3', // Otros Pagos Administrativos → Púrpura intenso
+            '#008000'  // Utilidad Remanente → Verde puro ✅ (aquí está el cambio)
+        ]
+    }]
+};
 
     // Aquí seguiría el resto del código para crear la gráfica...
 
