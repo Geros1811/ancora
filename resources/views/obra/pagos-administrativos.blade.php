@@ -13,36 +13,31 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>1</td>
-                <td>Sueldo Residente</td>
-                <td><a href="{{ route('sueldo-residente.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($pagosAdministrativos->where('nombre', 'Sueldo Residente')->first())->costo ?? 0.00, 2) }}</a></td>
-                <td><span class="toggle-eye" onclick="togglePago(this, {{ optional($pagosAdministrativos->where('nombre', 'Sueldo Residente')->first())->costo ?? 0.00 }})" data-active="{{ Session::get('pagos_administrativos.Sueldo Residente') !== false ? 'true' : 'false' }}">{{ Session::get('pagos_administrativos.Sueldo Residente') !== false ? '👁️' : '🚫' }}</span></td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>IMSS</td>
-                <td><a href="{{ route('imss.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($pagosAdministrativos->where('nombre', 'IMSS')->first())->costo ?? 0.00, 2) }}</a></td>
-                <td><span class="toggle-eye" onclick="togglePago(this, {{ optional($pagosAdministrativos->where('nombre', 'IMSS')->first())->costo ?? 0.00 }})" data-active="{{ Session::get('pagos_administrativos.IMSS') !== false ? 'true' : 'false' }}">{{ Session::get('pagos_administrativos.IMSS') !== false ? '👁️' : '🚫' }}</span></td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>Contador</td>
-                <td><a href="{{ route('contador.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($pagosAdministrativos->where('nombre', 'Contador')->first())->costo ?? 0.00, 2) }}</a></td>
-                <td><span class="toggle-eye" onclick="togglePago(this, {{ optional($pagosAdministrativos->where('nombre', 'Contador')->first())->costo ?? 0.00 }})" data-active="{{ Session::get('pagos_administrativos.Contador') !== false ? 'true' : 'false' }}">{{ Session::get('pagos_administrativos.Contador') !== false ? '👁️' : '🚫' }}</span></td>
-            </tr>
-            <tr>
-                <td>4</td>
-                <td>IVA</td>
-                <td><a href="{{ route('iva.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($pagosAdministrativos->where('nombre', 'IVA')->first())->costo ?? 0.00, 2) }}</a></td>
-                <td><span class="toggle-eye" onclick="togglePago(this, {{ optional($pagosAdministrativos->where('nombre', 'IVA')->first())->costo ?? 0.00 }})" data-active="{{ Session::get('pagos_administrativos.IVA') !== false ? 'true' : 'false' }}">{{ Session::get('pagos_administrativos.IVA') !== false ? '👁️' : '🚫' }}</span></td>
-            </tr>
-            <tr>
-                <td>5</td>
-                <td>Otros Pagos Administrativos</td>
-                <td><a href="{{ route('otros_pagos_administrativos.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($pagosAdministrativos->where('nombre', 'Otros Pagos Administrativos')->first())->costo ?? 0.00, 2) }}</a></td>
-                <td><span class="toggle-eye" onclick="togglePago(this, {{ optional($pagosAdministrativos->where('nombre', 'Otros Pagos Administrativos')->first())->costo ?? 0.00 }})" data-active="{{ Session::get('pagos_administrativos.Otros Pagos Administrativos') !== false ? 'true' : 'false' }}">{{ Session::get('pagos_administrativos.Otros Pagos Administrativos') !== false ? '👁️' : '🚫' }}</span></td>
-            </tr>
+
+<tr>
+    <td>1</td>
+    <td>IMSS</td>
+    <td><a href="{{ route('imss.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($pagosAdministrativos->where('nombre', 'IMSS')->first())->costo ?? 0.00, 2) }}</a></td>
+    <td><span class="toggle-eye" onclick="togglePago(this, {{ optional($pagosAdministrativos->where('nombre', 'IMSS')->first())->costo ?? 0.00 }})" data-active="{{ Session::get('pagos_administrativos.IMSS') !== false ? 'true' : 'false' }}">{{ Session::get('pagos_administrativos.IMSS') !== false ? '👁️' : '🚫' }}</span></td>
+</tr>
+<tr>
+    <td>2</td>
+    <td>Contador</td>
+    <td><a href="{{ route('contador.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($pagosAdministrativos->where('nombre', 'Contador')->first())->costo ?? 0.00, 2) }}</a></td>
+    <td><span class="toggle-eye" onclick="togglePago(this, {{ optional($pagosAdministrativos->where('nombre', 'Contador')->first())->costo ?? 0.00 }})" data-active="{{ Session::get('pagos_administrativos.Contador') !== false ? 'true' : 'false' }}">{{ Session::get('pagos_administrativos.Contador') !== false ? '👁️' : '🚫' }}</span></td>
+</tr>
+<tr>
+    <td>3</td>
+    <td>IVA</td>
+    <td><a href="{{ route('iva.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($pagosAdministrativos->where('nombre', 'IVA')->first())->costo ?? 0.00, 2) }}</a></td>
+    <td><span class="toggle-eye" onclick="togglePago(this, {{ optional($pagosAdministrativos->where('nombre', 'IVA')->first())->costo ?? 0.00 }})" data-active="{{ Session::get('pagos_administrativos.IVA') !== false ? 'true' : 'false' }}">{{ Session::get('pagos_administrativos.IVA') !== false ? '👁️' : '🚫' }}</span></td>
+</tr>
+<tr>
+    <td>4</td>
+    <td>Otros Pagos Administrativos</td>
+    <td><a href="{{ route('otros_pagos_administrativos.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($pagosAdministrativos->where('nombre', 'Otros Pagos Administrativos')->first())->costo ?? 0.00, 2) }}</a></td>
+    <td><span class="toggle-eye" onclick="togglePago(this, {{ optional($pagosAdministrativos->where('nombre', 'Otros Pagos Administrativos')->first())->costo ?? 0.00 }})" data-active="{{ Session::get('pagos_administrativos.Otros Pagos Administrativos') !== false ? 'true' : 'false' }}">{{ Session::get('pagos_administrativos.Otros Pagos Administrativos') !== false ? '👁️' : '🚫' }}</span></td>
+</tr>
         </tbody>
     </table>
 </div>

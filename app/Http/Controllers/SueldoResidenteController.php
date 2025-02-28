@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SueldoResidente;
-use App\Models\PagosAdministrativos;
+use App\Models\CostoIndirecto;
 use App\Models\Obra;
 
 class SueldoResidenteController extends Controller
@@ -54,7 +54,7 @@ class SueldoResidenteController extends Controller
         }
 
         // Actualizar el costo total en la tabla de costos indirectos
-        PagosAdministrativos::updateOrCreate(
+        CostoIndirecto::updateOrCreate(
             ['obra_id' => $obraId, 'nombre' => 'Sueldo Residente'],
             ['costo' => $costoTotal]
         );

@@ -52,8 +52,9 @@
             <tr style="background-color: #90EE90;">
                 <td style="background-color: #90EE90;">7</td>
                 <td style="background-color: #90EE90;">PRECIO POR M2</td>
-                <td style="background-color: #90EE90;">$<span id="precio-por-m2">{{ number_format(($costosDirectos->sum('costo') + $costosIndirectos->sum('costo') + $pagosAdministrativos->sum('costo') - $pagosAdministrativosOcultos) / $obra->metros_cuadrados, 2) }}</span></td>
+                <td style="background-color: #90EE90;">$<span id="precio-por-m2">{{ number_format(($costosDirectos->sum('costo') + $costosIndirectos->sum('costo') ) / $obra->metros_cuadrados, 2) }}</span></td>
             </tr>
+            
         </tbody>
     </table>
 </div>
@@ -99,8 +100,7 @@
 
         // Actualizar el valor de "Precio por M2" en la tabla de resumen
         let metrosCuadrados = parseFloat("{{ $obra->metros_cuadrados }}");
-        let precioPorM2 = (costosDirectos + costosIndirectos + pagosAdministrativos) / metrosCuadrados;
+        let precioPorM2 = (costosDirectos + costosIndirectos) / metrosCuadrados;
         document.getElementById("precio-por-m2").textContent = formatCurrencyValue(precioPorM2);
     }
-    // ...existing code...
 </script>

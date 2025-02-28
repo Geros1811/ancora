@@ -36,6 +36,11 @@
                 <td>Utilidades</td>
                 <td><a href="{{ route('utilidades.index', ['obraId' => $obra->id]) }}">${{ number_format(optional($costosIndirectos->where('nombre', 'Utilidades')->first())->costo ?? 0.00, 2) }}</a></td>
             </tr>
+<tr>
+                <td>5</td>
+                <td>Sueldo Residente</td>
+                <td><a href="{{ route('sueldo-residente.index', ['obraId' => $obra->id]) }}">${{ number_format($costosIndirectos->where('nombre', 'Sueldo Residente')->first()->costo ?? 0.00, 2) }}</a></td>
+            </tr>
         </tbody>
     </table>
 </div>
