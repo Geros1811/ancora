@@ -1,6 +1,6 @@
 <h2>
     <span class="toggle-button" onclick="toggleSection('pagos-administrativos')">+</span>
-    Pagos Administrativos (Total: $<span id="total-pagos">{{ number_format($pagosAdministrativos->sum('costo'), 2) }}</span>)
+    Pagos Administrativos (Total Real: $<span id="total-pagos">{{ number_format($pagosAdministrativos->sum('costo'), 2) }}</span>)
 </h2>
 <div id="pagos-administrativos" class="hidden-section">
     <table class="obra-table">
