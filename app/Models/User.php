@@ -21,7 +21,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role', // Asegúrate de incluir el campo 'role'
+        'role',
+         'created_by'// Asegúrate de incluir el campo 'role'
+         // Asegúrate de incluir el campo 'role'
     ];
 
     /**
