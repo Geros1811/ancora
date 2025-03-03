@@ -25,7 +25,11 @@
 
             <!-- Cliente -->
             <label for="cliente">Cliente:</label>
-            <input type="text" name="cliente" id="cliente" required><br>
+            <select name="cliente" id="cliente" required>
+                @foreach($clientes as $cliente)
+                    <option value="{{ $cliente->id }}">{{ $cliente->name }}</option>
+                @endforeach
+            </select><br>
 
             <!-- Fecha de Inicio -->
             <label for="fecha_inicio">Fecha de Inicio:</label>
@@ -35,9 +39,13 @@
             <label for="fecha_termino">Fecha de Término:</label>
             <input type="date" name="fecha_termino" id="fecha_termino" required><br>
 
-            <!-- Residente de Obra -->
-            <label for="residente">Residente de Obra:</label>
-            <input type="text" name="residente" id="residente" required><br>
+            <!-- Maestro de Obra -->
+            <label for="residente">Maestro de Obra:</label>
+            <select name="residente" id="residente" required>
+                @foreach($maestroObras as $maestroObra)
+                    <option value="{{ $maestroObra->id }}">{{ $maestroObra->name }}</option>
+                @endforeach
+            </select><br>
 
             <!-- Ubicación -->
             <label for="ubicacion">Ubicación:</label>
@@ -52,14 +60,6 @@
             <select name="architects[]" id="architects" multiple>
                 @foreach($architects as $architect)
                     <option value="{{ $architect->id }}">{{ $architect->name }}</option>
-                @endforeach
-            </select><br>
-
-            <!-- Maestro Obras -->
-            <label for="maestro_obras">Maestro Obras:</label>
-            <select name="maestro_obras[]" id="maestro_obras" multiple>
-                @foreach($maestroObras as $maestroObra)
-                    <option value="{{ $maestroObra->id }}">{{ $maestroObra->name }}</option>
                 @endforeach
             </select><br>
 

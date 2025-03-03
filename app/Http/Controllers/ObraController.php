@@ -23,9 +23,11 @@ class ObraController extends Controller
 
     public function create()
     {
-        $architects = User::where('role', 'architect')->get();
-        $maestroObras = User::where('role', 'maestro_obra')->get();
-        return view('obra.create', compact('architects', 'maestroObras'));
+        $userId = Auth::id();
+        $architects = User::where('role', 'arquitecto')->where('created_by', $userId)->get();
+        $maestroObras = User::where('role', 'maestro_obra')->where('created_by', $userId)->get();
+        $clientes = User::where('role', 'cliente')->where('created_by', $userId)->get();
+        return view('obra.create', compact('architects', 'maestroObras', 'clientes'));
     }
 
     public function store(Request $request)
@@ -46,10 +48,8 @@ class ObraController extends Controller
         $obra->save();
 
         $architects = $request->input('architects', []);
-        $maestroObras = $request->input('maestro_obras', []);
 
         $obra->architects()->attach(array_fill_keys($architects, ['added_by' => Auth::id()]));
-        $obra->maestroObras()->attach(array_fill_keys($maestroObras, ['added_by' => Auth::id()]));
 
         // Insertar valores iniciales en la tabla de costos indirectos
         $costosIndirectos = ['Papelería', 'Gasolina', 'Renta', 'Utilidades'];
