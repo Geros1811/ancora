@@ -39,11 +39,18 @@ class ClienteFotoController extends Controller
             ->whereMonth('fecha', $month)
             ->get();
 
-    // Share the $obra variable with all views
-    view()->share('obra', $obra);
+        // Share the $obra variable with all views
+        view()->share('obra', $obra);
 
-    return view('cliente_fotos.index', compact('obra', 'mesActual', 'mesAnterior', 'mesSiguiente', 'diasEnMes', 'diaInicioSemana', 'fotos', 'primerDia'));
-}
+        return view('cliente_fotos.index', compact('obra', 'mesActual', 'mesAnterior', 'mesSiguiente', 'diasEnMes', 'diaInicioSemana', 'fotos', 'primerDia'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request, $obraId)
     {
         $request->validate([
@@ -69,4 +76,17 @@ class ClienteFotoController extends Controller
         return redirect()->route('cliente_fotos.index', ['obraId' => $obraId])->with('success', 'Foto subida correctamente.');
     }
 
+    public function updateComment(Request $request)
+    {
+        $request->validate([
+            'foto_id' => 'required|integer',
+            'comentario' => 'nullable|string',
+        ]);
+
+        DB::table('fotos_cliente')
+            ->where('id', $request->foto_id)
+            ->update(['comentario' => $request->comentario]);
+
+        return redirect()->back()->with('success', 'Comentario actualizado correctamente.');
+    }
 }

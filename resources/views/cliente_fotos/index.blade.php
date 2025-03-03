@@ -43,9 +43,8 @@
                                 echo '<div class="add-photo" onclick="openAddPhotoModal(\'' . $fechaDia . '\')">Agregar Foto</div>';
                             } else {
                                 foreach ($fotoDelDia as $foto) {
-                                    echo '<img src="' . asset('storage/' . $foto->imagen) . '" width="50" onclick="openModal(\'' . asset('storage/' . $foto->imagen) . '\')">
-                                          <p>' . $foto->titulo . '</p>
-                                          <p>' . $foto->comentario . '</p>';
+                                    echo '<img src="' . asset('storage/' . $foto->imagen) . '" width="50" onclick="openModal(\'' . asset('storage/' . $foto->imagen) . '\', \'' . $foto->id . '\', \'' . htmlspecialchars($foto->comentario, ENT_QUOTES) . '\')">
+                                          <p>' . $foto->titulo . '</p>';
                                 }
                             }
 
@@ -66,19 +65,19 @@
             @csrf
             <input type="hidden" name="obra_id" value="{{ $obra->id }}">
             <input type="hidden" name="fecha" id="fechaSeleccionada">
-            <div>
+            <div class="form-group">
                 <label for="titulo">Título:</label>
-                <input type="text" id="titulo" name="titulo">
+                <input type="text" id="titulo" name="titulo" class="form-control">
             </div>
-            <div>
+            <div class="form-group">
                 <label for="imagen">Imagen:</label>
-                <input type="file" id="imagen" name="imagen">
+                <input type="file" id="imagen" name="imagen" class="form-control">
             </div>
-            <div>
+            <div class="form-group">
                 <label for="comentario">Observación:</label>
-                <textarea id="comentario" name="comentario"></textarea>
+                <textarea id="comentario" name="comentario" class="form-control"></textarea>
             </div>
-            <button type="submit">Guardar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
         </form>
     </div>
 </div>
@@ -87,6 +86,15 @@
 <div id="enlargeImgModal" class="modal">
     <span class="close" onclick="closeModal()">&times;</span>
     <img class="modal-content" id="img01">
+    <div style="text-align: center;">
+        <form action="{{ route('cliente_fotos.updateComment') }}" method="POST">
+            @csrf
+            @method('PUT')
+            <input type="hidden" name="foto_id" id="fotoId">
+            <textarea id="editComentario" name="comentario" class="form-control"></textarea>
+            <button type="submit" class="btn btn-primary">Guardar Comentario</button>
+        </form>
+    </div>
 </div>
 
 @endsection
@@ -97,9 +105,11 @@ function openAddPhotoModal(fecha) {
     document.getElementById('modalFoto').style.display = "block";
 }
 
-function openModal(imgSrc) {
+function openModal(imgSrc, fotoId, comentario) {
     document.getElementById('enlargeImgModal').style.display = "block";
     document.getElementById('img01').src = imgSrc;
+    document.getElementById('editComentario').value = comentario;
+    document.getElementById('fotoId').value = fotoId;
 }
 
 function closeModal() {
