@@ -39,12 +39,16 @@
                             echo '<td class="day" data-fecha="' . $fechaDia . '">
                                     <span class="day-number">' . $dia . '</span>';
                             
-                            foreach ($fotoDelDia as $foto) {
-                                echo '<img src="' . asset('storage/' . $foto->imagen) . '" width="50">
-                                      <p>' . $foto->titulo . '</p>
-                                      <p>' . $foto->comentario . '</p>';
+                            if ($fotoDelDia->isEmpty()) {
+                                echo '<div class="add-photo" onclick="openAddPhotoModal(\'' . $fechaDia . '\')">Agregar Foto</div>';
+                            } else {
+                                foreach ($fotoDelDia as $foto) {
+                                    echo '<img src="' . asset('storage/' . $foto->imagen) . '" width="50" onclick="openModal(\'' . asset('storage/' . $foto->imagen) . '\')">
+                                          <p>' . $foto->titulo . '</p>
+                                          <p>' . $foto->comentario . '</p>';
+                                }
                             }
-                            
+
                             echo '</td>';
                             $dia++;
                         }
@@ -79,22 +83,32 @@
     </div>
 </div>
 
+<!-- Modal for Enlarge Image -->
+<div id="enlargeImgModal" class="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <img class="modal-content" id="img01">
+</div>
+
 @endsection
+
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+function openAddPhotoModal(fecha) {
+    document.getElementById('fechaSeleccionada').value = fecha;
+    document.getElementById('modalFoto').style.display = "block";
+}
+
+function openModal(imgSrc) {
+    document.getElementById('enlargeImgModal').style.display = "block";
+    document.getElementById('img01').src = imgSrc;
+}
+
+function closeModal() {
+    document.getElementById('enlargeImgModal').style.display = "none";
+}
+
+document.addEventListener("DOMContentLoaded", function () {
     let modal = document.getElementById("modalFoto");
     let closeBtn = document.querySelector(".close");
-    let fechaInput = document.getElementById("fechaSeleccionada");
-
-    document.querySelectorAll(".day").forEach(day => {
-        day.addEventListener("click", function () {
-            let dayNumber = this.querySelector(".day-number").textContent;
-            let currentDate = new Date();
-            let selectedDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(dayNumber).padStart(2, '0')}`;
-            fechaInput.value = selectedDate;
-            modal.style.display = "block";
-        });
-    });
 
     closeBtn.addEventListener("click", function () {
         modal.style.display = "none";

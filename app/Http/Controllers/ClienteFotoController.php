@@ -34,9 +34,10 @@ class ClienteFotoController extends Controller
         $diaInicioSemana = $primerDia->dayOfWeek;
 
         $fotos = DB::table('fotos_cliente')
+            ->where('obra_id', $obraId)
             ->whereYear('fecha', $year)
-        ->whereMonth('fecha', $month)
-        ->get();
+            ->whereMonth('fecha', $month)
+            ->get();
 
     // Share the $obra variable with all views
     view()->share('obra', $obra);
