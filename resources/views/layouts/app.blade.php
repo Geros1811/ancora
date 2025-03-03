@@ -153,7 +153,7 @@
                   </li>
                 @endif
                 <li class="nav-item">
-                  <a class="nav-link" href="{{ route('cliente_fotos.index') }}">
+                  <a class="nav-link" href="{{ isset($obra) ? route('cliente_fotos.index', ['obraId' => $obra->id]) : route('cliente_fotos.index', ['obraId' => 1]) }}">
                     <i class="fas fa-image"></i>Fotos cliente
                   </a>
                 </li>

@@ -57,30 +57,29 @@
             </table>
     </div>
 
-<div id="modalFoto" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Agregar Foto</h2>
-        <form action="{{ route('cliente_fotos.store', ['obraId' => $obra->id]) }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <input type="hidden" name="obra_id" value="{{ $obra->id }}">
-            <input type="hidden" name="fecha" id="fechaSeleccionada">
-            <div class="form-group">
-                <label for="titulo">Título:</label>
-                <input type="text" id="titulo" name="titulo" class="form-control">
+    @if(Auth::check() && Auth::user()->role != 'cliente')
+        <div id="modalFoto" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Agregar Foto</h2>
+                <form action="{{ route('cliente_fotos.store', ['obraId' => $obra->id]) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name="obra_id" value="{{ $obra->id }}">
+                    <input type="hidden" name="fecha" id="fechaSeleccionada">
+                    <div class="form-group">
+                        <label for="titulo">Título:</label>
+                        <input type="text" id="titulo" name="titulo" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="imagen">Imagen:</label>
+                        <input type="file" id="imagen" name="imagen" class="form-control">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="imagen">Imagen:</label>
-                <input type="file" id="imagen" name="imagen" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="comentario">Observación:</label>
-                <textarea id="comentario" name="comentario" class="form-control"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Guardar</button>
-        </form>
-    </div>
-</div>
+        </div>
+    @endif
 
 <!-- Modal for Enlarge Image -->
 <div id="enlargeImgModal" class="modal">
