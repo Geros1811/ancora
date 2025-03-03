@@ -15,9 +15,25 @@ use Illuminate\Support\Facades\Auth;
 
 class ObraController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (Auth::check() && Auth::user()->role == 'cliente') {
+                if (in_array($request->route()->getActionMethod(), ['create', 'store'])) {
+                    return redirect()->route('dashboard')->with('error', 'No tienes permiso para crear obras.');
+                }
+            }
+            return $next($request);
+        });
+    }
+
     public function index()
     {
-        $obras = Obra::where('user_id', Auth::id())->get();
+        if (Auth::user()->role == 'arquitecto') {
+            $obras = Obra::where('user_id', Auth::id())->get();
+        } else {
+            $obras = Obra::where('cliente', Auth::id())->get();
+        }
         return view('dashboard', compact('obras'));
     }
 
@@ -77,6 +93,12 @@ class ObraController extends Controller
     public function show($id)
     {
         $obra = Obra::findOrFail($id);
+
+        // Check if the user is a client and is linked to the obra
+        if (Auth::check() && Auth::user()->role == 'cliente') {
+            $obra = Obra::where('id', $id)->where('cliente', Auth::id())->firstOrFail();
+        }
+
         $costosDirectos = CostoDirecto::where('obra_id', $id)->get();
         $costosIndirectos = CostoIndirecto::where('obra_id', $id)->get();
         $totalPagosCliente = CalendarioPago::where('obra_id', $id)->sum('pago');
@@ -113,6 +135,11 @@ class ObraController extends Controller
 
             // Asegúrate de que el ID de la obra se pase correctamente
             $obraId = $request->input('obra_id'); // Asegúrate de enviar el id de la obra desde el formulario si es necesario
+
+            // Check if the user is a client and is linked to the obra
+            if (Auth::check() && Auth::user()->role == 'cliente') {
+                $obra = Obra::where('id', $obraId)->where('cliente', Auth::id())->firstOrFail();
+            }
 
             // Eliminar los registros existentes para la obra
             DB::table('calendario_pagos')->where('obra_id', $obraId)->delete();

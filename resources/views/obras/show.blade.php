@@ -9,9 +9,11 @@
         <link rel="stylesheet" href="{{ asset('css/obra-details.css') }}">
     @endsection
 
-  <a href="{{ route('gastos_rapidos.create', ['obraId' => $obra->id]) }}" class="btn-flotante">
-    +
-  </a>
+  @if(Auth::user()->role != 'cliente')
+    <a href="{{ route('gastos_rapidos.create', ['obraId' => $obra->id]) }}" class="btn-flotante">
+      +
+    </a>
+  @endif
 
   <style>
     .btn-flotante {
@@ -53,16 +55,20 @@
                 <!-- Incluir las vistas parciales -->
                 @include('obra.calendario-pagos')
                 @include('obra.gastos-generales')
-                @include('obra.costos-directos', ['costosDirectos' => $costosDirectos])
-                @include('obra.costos-indirectos', ['costosIndirectos' => $costosIndirectos])
-                @include('obra.pagos-administrativos', ['pagosAdministrativos' => $pagosAdministrativos])
+                @if(Auth::user()->role != 'cliente')
+                    @include('obra.costos-directos', ['costosDirectos' => $costosDirectos])
+                    @include('obra.costos-indirectos', ['costosIndirectos' => $costosIndirectos])
+                    @include('obra.pagos-administrativos', ['pagosAdministrativos' => $pagosAdministrativos])
+                @endif
 
             </div>
 
         <!-- Botón para crear gráfica -->
-        <div style="text-align: center; margin-top: 20px;">
-            <button onclick="crearGrafica()">Crear Gráfica</button>
-        </div>
+        @if(Auth::user()->role != 'cliente')
+            <div style="text-align: center; margin-top: 20px;">
+                <button onclick="crearGrafica()">Crear Gráfica</button>
+            </div>
+        @endif
 
         <style>
             #grafica-container {
@@ -216,6 +222,10 @@
         
             // Función para activar/desactivar el bloqueo
             function toggleLock(lockIcon) {
+                @if(Auth::user()->role == 'cliente')
+                    alert('No tienes permiso para desbloquear este elemento.');
+                    return;
+                @endif
                 const row = lockIcon.closest("tr"); // Fila correspondiente al candado
                 const inputs = row.querySelectorAll("input"); // Todos los campos de entrada dentro de la fila
         

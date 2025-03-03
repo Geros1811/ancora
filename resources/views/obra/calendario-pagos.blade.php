@@ -4,7 +4,9 @@
     Calendario de Pagos (Total: $<span id="total-pago">0.00 MXN</span>)
 </h2>
 <div id="calendario-pagos" class="hidden-section">
-    <button onclick="addRow()">Agregar Fila</button>
+    @if(Auth::user()->role != 'cliente')
+        <button onclick="addRow()">Agregar Fila</button>
+    @endif
     <table class="obra-table">
         <thead>
             <tr>
@@ -20,6 +22,7 @@
         </tbody>
     </table>
 </div>
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -37,24 +40,26 @@
                     let newRow = tableBody.insertRow();
 
                     let cellConcepto = newRow.insertCell(0);
-                    cellConcepto.innerHTML = `<input type="text" value="${pago.concepto}" class="editable">`;
+                    cellConcepto.innerHTML = `<input type="text" value="${pago.concepto}" class="editable" disabled>`;
 
                     let cellFechaPago = newRow.insertCell(1);
-                    cellFechaPago.innerHTML = `<input type="date" value="${pago.fecha_pago}" class="editable">`;
+                    cellFechaPago.innerHTML = `<input type="date" value="${pago.fecha_pago}" class="editable" disabled>`;
 
                     let cellPago = newRow.insertCell(2);
-                    cellPago.innerHTML = `<input type="number" value="${pago.pago}" class="editable" oninput="updateAcumulado()" onblur="formatCurrency(this)">`;
+                    cellPago.innerHTML = `<input type="number" value="${pago.pago}" class="editable" oninput="updateAcumulado()" onblur="formatCurrency(this)" disabled>`;
 
                     let cellAcumulado = newRow.insertCell(3);
                     cellAcumulado.innerHTML = `<input type="text" value="${formatCurrencyValue(pago.acumulado)}" class="editable" disabled>`;
 
                     let cellAccion = newRow.insertCell(4);
-                    cellAccion.innerHTML = `<span onclick="toggleLock(this)" class="lock-icon" style="color: ${pago.bloqueado ? 'green' : 'black'};">${pago.bloqueado ? '🔒' : '🔓'}</span>`;
+                    cellAccion.innerHTML =  @if(Auth::user()->role != 'cliente') `<span onclick="toggleLock(this)" class="lock-icon" style="color: ${pago.bloqueado ? 'green' : 'black'};">${pago.bloqueado ? '🔒' : '🔓'}</span>` @else '' @endif;
 
                     if (pago.bloqueado) {
                         bloquearFila(newRow);
                     }
                 });
+</script>
+<script>
 
                 updateAcumulado(); // Actualizar el acumulado después de cargar los datos
             })

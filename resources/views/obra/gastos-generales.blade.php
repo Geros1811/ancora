@@ -31,30 +31,31 @@
                 <td style="background-color: #ADD8E6;">FALTA POR PAGAR</td>
                 <td style="background-color: #ADD8E6;">$<span id="falta-por-pagar">{{ number_format($obra->presupuesto - $totalPagosCliente, 2) }}</span></td>
             </tr>
-            <tr style="background-color: #90EE90;">
-                <th colspan="3" style="text-align: left; background-color: #90EE90;">Estado de Resultados</th>
-            </tr>
-            <tr style="background-color: #90EE90;">
-                <td style="background-color: #90EE90;">4</td>
-                <td style="background-color: #90EE90;">TOTAL GASTOS DE OBRA</td>
-                <td style="background-color: #90EE90;">${{ number_format($costosDirectos->sum('costo') + $costosIndirectos->sum('costo') + $pagosAdministrativos->sum('costo') - $pagosAdministrativosOcultos, 2) }}</td>
-            </tr>
-            <tr style="background-color: #90EE90;">
-                <td style="background-color: #90EE90;">5</td>
-                <td style="background-color: #90EE90;">INGRESOS DE OBRA</td>
-                <td style="background-color: #90EE90;">$<span id="total-ingresos">{{ number_format($ingresos->sum('importe'), 2) }}</span></td>
-            </tr>
-            <tr style="background-color: #90EE90;">
-                <td style="background-color: #90EE90;">6</td>
-                <td style="background-color: #90EE90;">EFECTIVO EN CAJA</td>
-                <td style="background-color: #90EE90;">$<span id="efectivo-en-caja">{{ number_format(($totalPagosCliente + $ingresos->sum('importe')) - ($costosDirectos->sum('costo') + $costosIndirectos->sum('costo') + $pagosAdministrativos->sum('costo') - $pagosAdministrativosOcultos), 2) }}</span></td>
-            </tr>
-            <tr style="background-color: #90EE90;">
-                <td style="background-color: #90EE90;">7</td>
-                <td style="background-color: #90EE90;">PRECIO POR M2</td>
-                <td style="background-color: #90EE90;">$<span id="precio-por-m2">{{ number_format(($costosDirectos->sum('costo') + $costosIndirectos->sum('costo') ) / $obra->metros_cuadrados, 2) }}</span></td>
-            </tr>
-            
+            @if(Auth::user()->role != 'cliente')
+                <tr style="background-color: #90EE90;">
+                    <th colspan="3" style="text-align: left; background-color: #90EE90;">Estado de Resultados</th>
+                </tr>
+                <tr style="background-color: #90EE90;">
+                    <td style="background-color: #90EE90;">4</td>
+                    <td style="background-color: #90EE90;">TOTAL GASTOS DE OBRA</td>
+                    <td style="background-color: #90EE90;">${{ number_format($costosDirectos->sum('costo') + $costosIndirectos->sum('costo') + $pagosAdministrativos->sum('costo') - $pagosAdministrativosOcultos, 2) }}</td>
+                </tr>
+                <tr style="background-color: #90EE90;">
+                    <td style="background-color: #90EE90;">5</td>
+                    <td style="background-color: #90EE90;">INGRESOS DE OBRA</td>
+                    <td style="background-color: #90EE90;">$<span id="total-ingresos">{{ number_format($ingresos->sum('importe'), 2) }}</span></td>
+                </tr>
+                <tr style="background-color: #90EE90;">
+                    <td style="background-color: #90EE90;">6</td>
+                    <td style="background-color: #90EE90;">EFECTIVO EN CAJA</td>
+                    <td style="background-color: #90EE90;">$<span id="efectivo-en-caja">{{ number_format(($totalPagosCliente + $ingresos->sum('importe')) - ($costosDirectos->sum('costo') + $costosIndirectos->sum('costo') + $pagosAdministrativos->sum('costo') - $pagosAdministrativosOcultos), 2) }}</span></td>
+                </tr>
+                <tr style="background-color: #90EE90;">
+                    <td style="background-color: #90EE90;">7</td>
+                    <td style="background-color: #90EE90;">PRECIO POR M2</td>
+                    <td style="background-color: #90EE90;">$<span id="precio-por-m2">{{ number_format(($costosDirectos->sum('costo') + $costosIndirectos->sum('costo') ) / $obra->metros_cuadrados, 2) }}</span></td>
+                </tr>
+            @endif
         </tbody>
     </table>
 </div>

@@ -46,7 +46,9 @@
     </div>
 
     <!-- Botón flotante que redirige a la creación de obra -->
-    <a href="{{ route('obra.create') }}">
-        <button class="floating-btn">+</button>
-    </a>
+    @if(Auth::user()->role != 'cliente')
+        <a href="{{ route('obra.create') }}">
+            <button class="floating-btn">+</button>
+        </a>
+    @endif
 @endsection
