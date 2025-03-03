@@ -34,6 +34,7 @@ use App\Http\Controllers\ContadorController;
 use App\Http\Controllers\IvaController;
 use App\Http\Controllers\OtrosPagosAdministrativosController;
 use App\Http\Controllers\IngresoController;
+use App\Http\Controllers\ClienteFotoController;
 
 Route::get('/costos/{id}', [CostosController::class, 'show'])->name('costos.show');
 
@@ -245,3 +246,5 @@ Route::post('/ingresos/{obraId}', [IngresoController::class, 'store'])->name('in
 Route::delete('/ingresos/{id}', [IngresoController::class, 'destroy'])->name('ingresos.destroy');
 
 Route::post('/pagos-administrativos/toggle-pago', [App\Http\Controllers\PagosAdministrativosController::class, 'togglePago'])->name('pagos-administrativos.toggle-pago');
+
+Route::get('/cliente_fotos', [ClienteFotoController::class, 'index'])->name('cliente_fotos.index');

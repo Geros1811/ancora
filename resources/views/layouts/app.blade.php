@@ -152,6 +152,11 @@
                     </a>
                   </li>
                 @endif
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('cliente_fotos.index') }}">
+                    <i class="fas fa-image"></i>Fotos cliente
+                  </a>
+                </li>
               @else
                 @if(request()->routeIs('register') || request()->routeIs('obra.create'))
                   <li class="nav-item">
@@ -264,12 +269,17 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="{{ route('dashboard') }}">
-                      <i class="fas fa-tachometer-alt"></i>Dashboard
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{{ route('obra.create') }}">
+                  <a class="nav-link" href="{{ route('dashboard') }}">
+                    <i class="fas fa-tachometer-alt"></i>Dashboard
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('cliente_fotos.index') }}">
+                    <i class="fas fa-image"></i>Fotos cliente
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('obra.create') }}">
                       <i class="fas fa-plus"></i>Crear Obra
                     </a>
                   </li>
