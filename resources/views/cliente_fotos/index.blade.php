@@ -39,7 +39,7 @@
                             echo '<td class="day" data-fecha="' . $fechaDia . '">
                                     <span class="day-number">' . $dia . '</span>';
                             
-                            if ($fotoDelDia->isEmpty()) {
+                            if ($fotoDelDia->isEmpty() && Auth::check() && Auth::user()->role != 'cliente') {
                                 echo '<div class="add-photo" onclick="openAddPhotoModal(\'' . $fechaDia . '\')">Agregar Foto</div>';
                             } else {
                                 foreach ($fotoDelDia as $foto) {
