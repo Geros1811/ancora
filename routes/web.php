@@ -247,4 +247,5 @@ Route::delete('/ingresos/{id}', [IngresoController::class, 'destroy'])->name('in
 
 Route::post('/pagos-administrativos/toggle-pago', [App\Http\Controllers\PagosAdministrativosController::class, 'togglePago'])->name('pagos-administrativos.toggle-pago');
 
-Route::get('/cliente_fotos', [ClienteFotoController::class, 'index'])->name('cliente_fotos.index');
+Route::get('/cliente_fotos/{obraId}', [ClienteFotoController::class, 'index'])->name('cliente_fotos.index');
+Route::post('/cliente_fotos/{obraId}', [ClienteFotoController::class, 'store'])->name('cliente_fotos.store');

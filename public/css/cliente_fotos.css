@@ -1,0 +1,123 @@
+:root {
+    --color-primary: #0b4d8b;
+    --color-secondary: #16d4cb;
+    --color-tertiary: #000000;
+    --color-background: #F7FFF7;
+    --color-text: #333333;
+}
+
+.calendar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.calendar {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: sans-serif;
+    color: var(--color-text);
+    background-color: var(--color-background);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar th,
+.calendar td {
+    border: none;
+    padding: 12px;
+    text-align: center;
+}
+
+.calendar th {
+    background-color: var(--color-primary);
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.9em;
+    letter-spacing: 1px;
+}
+
+
+
+.day {
+    width: 14.28%;
+    height: 150px;
+    vertical-align: top;
+    background-color: #fff;
+    transition: background-color 0.3s ease;
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.day:hover {
+    background-color: var(--color-secondary);
+    color: white;
+}
+
+.day-number {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: var(--color-tertiary);
+}
+
+.day img {
+    margin-bottom: 10px;
+    max-width: 80%;
+    height: auto;
+}
+
+.day p {
+    font-size: 0.9em;
+    margin: 5px 0;
+}
+
+.day p:first-of-type {
+    font-weight: bold;
+}
+
+.day-content {
+    padding: 10px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 40%;
+    text-align: center;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+h2 {
+    text-align: center;
+}
