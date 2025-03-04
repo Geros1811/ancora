@@ -250,3 +250,5 @@ Route::post('/pagos-administrativos/toggle-pago', [App\Http\Controllers\PagosAdm
 Route::get('/cliente_fotos/{obraId}', [ClienteFotoController::class, 'index'])->name('cliente_fotos.index');
 Route::post('/cliente_fotos/{obraId}', [ClienteFotoController::class, 'store'])->name('cliente_fotos.store');
 Route::put('cliente_fotos/updateComment', [ClienteFotoController::class, 'updateComment'])->name('cliente_fotos.updateComment');
+
+Route::post('/perfil/update', [App\Http\Controllers\PerfilController::class, 'update'])->name('perfil.update');

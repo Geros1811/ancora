@@ -16,7 +16,11 @@
 
         <!-- Sección de bienvenida -->
         <div class="welcome-container">
-            <h1>Bienvenido, {{ Auth::user()->name }}</h1>
+            <h1>Bienvenido, {{ Auth::user()->name }}
+            @if(Auth::user()->role == 'arquitecto')
+                <button id="perfilBtn" class="btn btn-primary">Perfil</button>
+            @endif
+            </h1>
         </div>
 
         <!-- Sección de obras -->
@@ -51,4 +55,51 @@
             <button class="floating-btn">+</button>
         </a>
     @endif
+
+    <!-- Modal -->
+    <div id="perfilModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Perfil de Arquitecto</h2>
+            <form action="{{ route('perfil.update') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="form-group">
+                    <label for="company_name">Nombre de la Empresa:</label>
+                    <input type="text" class="form-control" id="company_name" name="company_name" value="{{ Auth::user()->company_name }}">
+                </div>
+                <div class="form-group">
+                    <label for="logo">Logo:</label>
+                    <input type="file" class="form-control" id="logo" name="logo">
+                    @if(Auth::user()->logo)
+                        <img src="{{ asset('storage/' . Auth::user()->logo) }}" alt="Logo" style="max-width: 100px; max-height: 100px;">
+                    @endif
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const perfilBtn = document.getElementById('perfilBtn');
+            const perfilModal = document.getElementById('perfilModal');
+            const closeBtn = document.querySelector('.close');
+
+            if (perfilBtn && perfilModal && closeBtn) {
+                perfilBtn.addEventListener('click', function() {
+                    perfilModal.style.display = 'block';
+                });
+
+                closeBtn.addEventListener('click', function() {
+                    perfilModal.style.display = 'none';
+                });
+
+                window.addEventListener('click', function(event) {
+                    if (event.target == perfilModal) {
+                        perfilModal.style.display = 'none';
+                    }
+                });
+            }
+        });
+    </script>
 @endsection
