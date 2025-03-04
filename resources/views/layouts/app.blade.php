@@ -253,6 +253,11 @@
                       <i class="fas fa-cubes"></i>Materiales
                     </a>
                   </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ isset($obra) ? route('cajaChica.index', ['obraId' => $obra->id]) : route('cajaChica.index', ['obraId' => 1]) }}">
+                      <i class="fas fa-cash-register"></i>Caja Chica
+                    </a>
+                  </li>
                   @if(Auth::check() && (Auth::user()->role != 'maestro_obra' && Auth::user()->role != 'residente'))
                     <li class="nav-item">
                       <a class="nav-link" href="{{ isset($obra) ? route('destajos.index', ['obraId' => $obra->id]) : route('destajos.index', ['obraId' => 1]) }}">
