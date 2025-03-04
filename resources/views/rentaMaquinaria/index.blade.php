@@ -40,21 +40,31 @@
                     @foreach ($detalles as $index => $detalle)
                         <tr>
                             <input type="hidden" name="id[]" value="{{ $detalle->id }}">
-                            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="date" name="fecha[]" value="{{ $detalle->fecha }}" class="form-control" style="border: none; background: transparent; text-align: center;"></td>
-                            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="concepto[]" value="{{ $detalle->concepto }}" class="form-control" style="border: none; background: transparent; text-align: center;"></td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
-                                <select name="unidad[]" class="form-control" style="border: none; background: transparent; text-align: center;">
+                                <input type="date" name="fecha[]" value="{{ $detalle->fecha }}" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
+                            </td>
+                            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
+                                <input type="text" name="concepto[]" value="{{ $detalle->concepto }}" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
+                            </td>
+                            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
+                                <select name="unidad[]" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
                                     <option value="KG" {{ $detalle->unidad == 'KG' ? 'selected' : '' }}>KG</option>
                                     <option value="LTS" {{ $detalle->unidad == 'LTS' ? 'selected' : '' }}>LTS</option>
                                     <option value="PZ" {{ $detalle->unidad == 'PZ' ? 'selected' : '' }}>PZ</option>
                                     <option value="LOTE" {{ $detalle->unidad == 'LOTE' ? 'selected' : '' }}>LOTE</option>
                                 </select>
                             </td>
-                            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="cantidad[]" value="{{ $detalle->cantidad }}" class="form-control cantidad" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
-                            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="precio_unitario[]" value="{{ $detalle->precio_unitario }}" class="form-control precio-unitario" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
-                            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="subtotal[]" value="{{ $detalle->subtotal }}" class="form-control subtotal" style="border: none; background: transparent; text-align: center;" readonly></td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
-                                 <input type="file" name="fotos[]" class="form-control" style="border: none; background: transparent; text-align: center;">
+                                <input type="number" name="cantidad[]" value="{{ $detalle->cantidad }}" class="form-control cantidad" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
+                            </td>
+                            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
+                                <input type="number" name="precio_unitario[]" value="{{ $detalle->precio_unitario }}" class="form-control precio-unitario" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
+                            </td>
+                            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
+                                <input type="text" name="subtotal[]" value="{{ $detalle->subtotal }}" class="form-control subtotal" style="border: none; background: transparent; text-align: center;" readonly>
+                            </td>
+                            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
+                                 <input type="file" name="fotos[]" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
                                 @if($detalle->foto)
                                     <a href="{{ asset('storage/tickets/' . basename($detalle->foto)) }}" target="_blank">Ver foto</a>
                                 @else
@@ -62,14 +72,21 @@
                                 @endif
                             </td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
-                                <button type="button" class="btn btn-danger" onclick="removeRow(this, {{ $detalle->id }})">Eliminar</button>
+                                @if(Auth::check() && Auth::user()->role != 'maestro_obra' && Auth::user()->role != 'residente')
+                                    <button type="button" class="btn btn-danger" onclick="removeRow(this, {{ $detalle->id }})">Eliminar</button>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
-            <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow()">Añadir Fila</button>
-            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar</button>
+            @if(Auth::check() && Auth::user()->role != 'maestro_obra' && Auth::user()->role != 'residente')
+                <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow()">Añadir Fila</button>
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar</button>
+            @else
+                <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow()" style="display:none;">Añadir Fila</button>
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;" disabled>Guardar</button>
+            @endif
         </form>
     </div>
 
@@ -128,7 +145,6 @@
         const row = input.parentNode.parentNode;
         const cantidad = parseFloat(row.querySelector('.cantidad').value) || 0;
         const precioUnitario = parseFloat(row.querySelector('.precio-unitario').value) || 0;
-        const subtotal = cantidad * precioUnitario;
         row.querySelector('.subtotal').value = `$${subtotal.toFixed(2)}`;
         updateTotal();
     }

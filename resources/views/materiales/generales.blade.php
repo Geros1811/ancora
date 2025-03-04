@@ -23,10 +23,10 @@
                     @foreach ($generales as $index => $detalle)
                         <tr>
                             <input type="hidden" name="id_generales[]" value="{{ $detalle->id }}">
-                            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="date" name="fecha_generales[]" value="{{ $detalle->fecha }}" class="form-control" style="border: none; background: transparent; text-align: center;"></td>
-                            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="concepto_generales[]" value="{{ $detalle->concepto }}" class="form-control" style="border: none; background: transparent; text-align: center;"></td>
+                            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="date" name="fecha_generales[]" value="{{ $detalle->fecha }}" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}></td>
+                            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="concepto_generales[]" value="{{ $detalle->concepto }}" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}></td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
-                                <select name="unidad_generales[]" class="form-control" style="border: none; background: transparent; text-align: center;">
+                                <select name="unidad_generales[]" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
                                     <option value="M3" {{ $detalle->unidad == 'M3' ? 'selected' : '' }}>M3</option>
                                     <option value="KG" {{ $detalle->unidad == 'KG' ? 'selected' : '' }}>KG</option>
                                     <option value="PZ" {{ $detalle->unidad == 'PZ' ? 'selected' : '' }}>PZ</option>
@@ -37,7 +37,7 @@
                                 <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="precio_unitario_generales[]" value="{{ $detalle->precio_unitario }}" class="form-control precio-unitario" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this, 'generales')"></td>
                                 <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="subtotal_generales[]" value="{{ $detalle->subtotal }}" class="form-control subtotal" style="border: none; background: transparent; text-align: center;" readonly></td>
                                 <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
-                                    <input type="file" name="fotos_generales[]" class="form-control" style="border: none; background: transparent; text-align: center;">
+                                    <input type="file" name="fotos_generales[]" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
                                     @if($detalle->foto)
                                         <a href="{{ asset('storage/tickets/' . basename($detalle->foto)) }}" target="_blank">Ver foto</a>
                                     @else
@@ -45,14 +45,21 @@
                                     @endif
                                 </td>
                                 <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
-                                    <button type="button" class="btn btn-danger" onclick="removeRow(this, {{$detalle->id}}, 'generales')">Eliminar</button>
+                                    @if(Auth::check() && Auth::user()->role != 'maestro_obra' && Auth::user()->role != 'residente')
+                                        <button type="button" class="btn btn-danger" onclick="removeRow(this, {{$detalle->id}}, 'generales')">Eliminar</button>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-                <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow('generales')">Añadir Fila</button>
-                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar Generales</button>
+                @if(Auth::check() && Auth::user()->role != 'maestro_obra' && Auth::user()->role != 'residente')
+                    <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow('generales')">Añadir Fila</button>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar Generales</button>
+                @else
+                    <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow('generales')" style="display:none;">Añadir Fila</button>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;" disabled>Guardar Generales</button>
+                @endif
             </form>
         </div>
     </div>
