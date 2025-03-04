@@ -16,7 +16,7 @@
 
         <!-- Sección de bienvenida -->
         <div class="welcome-container">
-            <h1>Welcome, {{ Auth::user()->name }}</h1>
+            <h1>Bienvenido, {{ Auth::user()->name }}</h1>
         </div>
 
         <!-- Sección de obras -->
@@ -46,7 +46,7 @@
     </div>
 
     <!-- Botón flotante que redirige a la creación de obra -->
-    @if(Auth::user()->role != 'cliente')
+    @if(Auth::user()->role == 'arquitecto')
         <a href="{{ route('obra.create') }}">
             <button class="floating-btn">+</button>
         </a>

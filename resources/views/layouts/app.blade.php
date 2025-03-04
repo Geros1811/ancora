@@ -253,41 +253,42 @@
                       <i class="fas fa-cubes"></i>Materiales
                     </a>
                   </li>
+                  @if(Auth::check() && (Auth::user()->role != 'maestro_obra' && Auth::user()->role != 'residente'))
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ isset($obra) ? route('destajos.index', ['obraId' => $obra->id]) : route('destajos.index', ['obraId' => 1]) }}">
+                        <i class="fas fa-tasks"></i>Destajos
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ isset($obra) ? route('ingresos.index', ['obraId' => $obra->id]) : route('ingresos.index', ['obraId' => 1]) }}">
+                        <i class="fas fa-money-bill-wave"></i>Ingresos
+                      </a>
+                    </li>
+                  @endif
                   <li class="nav-item">
-                    <a class="nav-link" href="{{ isset($obra) ? route('destajos.index', ['obraId' => $obra->id]) : route('destajos.index', ['obraId' => 1]) }}">
-                      <i class="fas fa-tasks"></i>Destajos
+                    <a class="nav-link" href="{{ route('dashboard') }}">
+                      <i class="fas fa-tachometer-alt"></i>Dashboard
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="{{ isset($obra) ? route('cajaChica.index', ['obraId' => $obra->id]) : route('cajaChica.index', ['obraId' => 1]) }}">
-                      <i class="fas fa-cash-register"></i>Caja Chica
+                    <a class="nav-link" href="{{ isset($obra) ? route('cliente_fotos.index', ['obraId' => $obra->id]) : route('cliente_fotos.index', ['obraId' => 1]) }}">
+                      <i class="fas fa-image"></i>Fotos cliente
                     </a>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{{ isset($obra) ? route('ingresos.index', ['obraId' => $obra->id]) : route('ingresos.index', ['obraId' => 1]) }}">
-                      <i class="fas fa-money-bill-wave"></i>Ingresos
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                  <a class="nav-link" href="{{ route('dashboard') }}">
-                    <i class="fas fa-tachometer-alt"></i>Dashboard
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ isset($obra) ? route('cliente_fotos.index', ['obraId' => $obra->id]) : route('cliente_fotos.index', ['obraId' => 1]) }}">
-                    <i class="fas fa-image"></i>Fotos cliente
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ route('obra.create') }}">
-                      <i class="fas fa-plus"></i>Crear Obra
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{{ route('register') }}">
-                      <i class="fas fa-user-plus"></i>Registrar
-                    </a>
-                  </li>
+                  @if(Auth::user()->role != 'maestro_obra' && Auth::user()->role != 'residente')
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ route('obra.create') }}">
+                        <i class="fas fa-plus"></i>Crear Obra
+                      </a>
+                    </li>
+                  @endif
+                  @if(Auth::check() && Auth::user()->hasRole('arquitecto'))
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ route('register') }}">
+                        <i class="fas fa-user-plus"></i>Registrar
+                      </a>
+                    </li>
+                  @endif
                 @endif
               @endif
             </ul>

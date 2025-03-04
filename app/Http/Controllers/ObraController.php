@@ -18,7 +18,7 @@ class ObraController extends Controller
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            if (Auth::check() && Auth::user()->role == 'cliente') {
+            if (Auth::check() && (Auth::user()->role == 'cliente' || Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente')) {
                 if (in_array($request->route()->getActionMethod(), ['create', 'store'])) {
                     return redirect()->route('dashboard')->with('error', 'No tienes permiso para crear obras.');
                 }
@@ -31,9 +31,16 @@ class ObraController extends Controller
     {
         if (Auth::user()->role == 'arquitecto') {
             $obras = Obra::where('user_id', Auth::id())->get();
+        } elseif (Auth::user()->role == 'maestro_obra') {
+            $obras = Obra::where('residente', Auth::id())->get();
         } else {
             $obras = Obra::where('cliente', Auth::id())->get();
         }
+
+        // Share the $obra variable with all views
+        $obra = Obra::where('cliente', Auth::id())->first();
+        view()->share('obra', $obra);
+
         return view('dashboard', compact('obras'));
     }
 
@@ -46,50 +53,6 @@ class ObraController extends Controller
         return view('obra.create', compact('architects', 'maestroObras', 'clientes'));
     }
 
-    public function store(Request $request)
-    {
-        $obra = new Obra([
-            'nombre' => $request->nombre,
-            'presupuesto' => $request->presupuesto,
-            'cliente' => $request->cliente,
-            'fecha_inicio' => $request->fecha_inicio,
-            'fecha_termino' => $request->fecha_termino,
-            'residente' => $request->residente,
-            'ubicacion' => $request->ubicacion,
-            'descripcion' => $request->descripcion,
-            'metros_cuadrados' => $request->metros_cuadrados,
-            'user_id' => Auth::id(),
-        ]);
-
-        $obra->save();
-
-        $architects = $request->input('architects', []);
-
-        $obra->architects()->attach(array_fill_keys($architects, ['added_by' => Auth::id()]));
-
-        // Insertar valores iniciales en la tabla de costos indirectos
-        $costosIndirectos = ['Papelería', 'Gasolina', 'Renta', 'Utilidades'];
-        foreach ($costosIndirectos as $costo) {
-            CostoIndirecto::create([
-                'obra_id' => $obra->id,
-                'nombre' => $costo,
-                'costo' => 0,
-            ]);
-        }
-
-        // Insertar valores iniciales en la tabla de costos directos
-        $costosDirectos = ['Materiales', 'Mano de Obra', 'Equipo de Seguridad', 'Herramienta Menor', 'Maquinaria Menor', 'Limpieza', 'Maquinaria Mayor', 'Cimbras', 'Acarreos', 'Comidas', 'Trámites'];
-        foreach ($costosDirectos as $costo) {
-            CostoDirecto::create([
-                'obra_id' => $obra->id,
-                'nombre' => $costo,
-                'costo' => 0,
-            ]);
-        }
-
-        return redirect()->route('dashboard')->with('success', 'Obra creada correctamente.');
-    }
-
     public function show($id)
     {
         $obra = Obra::findOrFail($id);
@@ -97,6 +60,10 @@ class ObraController extends Controller
         // Check if the user is a client and is linked to the obra
         if (Auth::check() && Auth::user()->role == 'cliente') {
             $obra = Obra::where('id', $id)->where('cliente', Auth::id())->firstOrFail();
+        } elseif (Auth::check() && Auth::user()->role == 'maestro_obra') {
+            $obra = Obra::where('id', $id)->where('residente', Auth::id())->firstOrFail();
+        } else {
+            $obra = Obra::where('id', $id)->firstOrFail();
         }
 
         $costosDirectos = CostoDirecto::where('obra_id', $id)->get();
