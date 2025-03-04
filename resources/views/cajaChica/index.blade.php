@@ -10,32 +10,34 @@
         <h1>Caja Chica</h1>
     </div>
 
-    <form id="cajaChicaForm" action="{{ route('cajaChica.store') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <input type="hidden" name="obra_id" value="{{ $obraId }}">
-        
-        <div class="form-group">
-            <label for="fecha">Fecha:</label>
-            <input type="date" class="form-control" id="fecha" name="fecha" required>
-        </div>
+    @if(Auth::user()->role == 'arquitecto')
+        <form id="cajaChicaForm" action="{{ route('cajaChica.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <input type="hidden" name="obra_id" value="{{ $obraId }}">
+            
+            <div class="form-group">
+                <label for="fecha">Fecha:</label>
+                <input type="date" class="form-control" id="fecha" name="fecha" required>
+            </div>
 
-        <div class="form-group">
-            <label for="cantidad">Cantidad:</label>
-            <input type="number" class="form-control" id="cantidad" name="cantidad" required>
-        </div>
+            <div class="form-group">
+                <label for="cantidad">Cantidad:</label>
+                <input type="number" class="form-control" id="cantidad" name="cantidad" required>
+            </div>
 
-        <div class="form-group">
-            <label for="maestro_obra">Maestro de Obra:</label>
-            <select class="form-control" id="maestro_obra" name="maestro_obra_id" required>
-                <option value="">Seleccione un maestro de obra</option>
-                @foreach ($users as $user)
-                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                @endforeach
-            </select>
-        </div>
+            <div class="form-group">
+                <label for="maestro_obra">Residente:</label>
+                <select class="form-control" id="maestro_obra" name="maestro_obra_id" required>
+                    <option value="">Seleccione un Residente</option>
+                    @foreach ($users as $user)
+                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-        <button type="submit" class="btn btn-primary">Crear</button>
-    </form>
+            <button type="submit" class="btn btn-primary">Crear</button>
+        </form>
+    @endif
 
     <div id="tablas-detalles-container" style="margin-top: 40px;">
         @foreach ($cajaChicas as $cajaChica)
@@ -125,9 +127,11 @@
                                                   <a href="{{ asset('storage/tickets/' . basename($detalle->foto)) }}" target="_blank">Ver Foto</a>
                                               @endif
                                           </td>
-                                          <td class="gastos-rapidos-td">
-                                              <button type="button" class="btn btn-primary" onclick="submitForm(this)">Enviar</button>
-                                          </td>
+                                          @if(Auth::user()->role == 'arquitecto')
+                                            <td class="gastos-rapidos-td">
+                                                <button type="button" class="btn btn-primary" onclick="submitForm(this)">Enviar</button>
+                                            </td>
+                                          @endif
                                       </tr>
                                   @endforeach
                             </tbody>
@@ -213,9 +217,11 @@
             <td class="gastos-rapidos-td">
                 <input type="file" name="foto[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;">
             </td>
+            @if(Auth::user()->role == 'arquitecto')
             <td class="gastos-rapidos-td">
                 <button type="button" class="btn btn-primary" onclick="submitForm(this)">Enviar</button>
             </td>
+            @endif
         `;
         tableBody.appendChild(newRow);
         setTimeout(() => updateSubtotal(cajaChicaId), 0);

@@ -7,14 +7,15 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\CajaChica;
 use App\Models\DetalleCajaChica;
+use Illuminate\Support\Facades\Auth;
 
 class CajaChicaController extends Controller
 {
     public function index(Request $request)
     {
         $obraId = $request->obraId;
-        $users = User::where('role', 'maestro_obra')->get();
-        $cajaChicas = CajaChica::where('obra_id', $obraId)->get();
+        $users = User::where('role', 'maestro_obra')->where('created_by', Auth::id())->get();
+        $cajaChicas = CajaChica::where('obra_id', $obraId)->where('maestro_obra_id', Auth::id())->get();
         $cajaChica = null;
         $obra = \App\Models\Obra::find($obraId);
 

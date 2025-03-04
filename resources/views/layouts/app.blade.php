@@ -189,11 +189,6 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="{{ isset($obra) ? route('utilidades.index', ['obraId' => $obra->id]) : route('utilidades.index', ['obraId' => 1]) }}">
-                      <i class="fas fa-chart-line"></i>Utilidades
-                    </a>
-                  </li>
-                  <li class="nav-item">
                     <a class="nav-link" href="{{ isset($obra) ? route('acarreos.index', ['obraId' => $obra->id]) : route('acarreos.index', ['obraId' => 1]) }}">
                       <i class="fas fa-truck"></i>Acarreos
                     </a>
@@ -262,6 +257,11 @@
                     <li class="nav-item">
                       <a class="nav-link" href="{{ isset($obra) ? route('destajos.index', ['obraId' => $obra->id]) : route('destajos.index', ['obraId' => 1]) }}">
                         <i class="fas fa-tasks"></i>Destajos
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ isset($obra) ? route('utilidades.index', ['obraId' => $obra->id]) : route('utilidades.index', ['obraId' => 1]) }}">
+                        <i class="fas fa-chart-line"></i>Utilidades
                       </a>
                     </li>
                     <li class="nav-item">
