@@ -118,30 +118,30 @@
         <div class="firma-container">
             <div class="firma">
                 <p>___________________________</p>
-                <p>Autorizo</p>
+                <p>Autorizó</p>
             </div>
             <div class="firma">
                 <p>___________________________</p>
-                <p>Recibi Pago</p>
+                <p>Recibí Pago</p>
             </div>
             <div class="firma">
                 <p>___________________________</p>
-                <p>Aprobo</p>
+                <p>Aprobó</p>
             </div>
         </div>
     </div>
 
     <div class="footer">
         <div>
-            <img src="{{ public_path('icons/phone.png') }}" alt="Teléfono">
+            <img src="https://img.icons8.com/ios-filled/15/000000/phone.png" alt="Teléfono">
             <span>@if(Auth::user()->numero) {{ Auth::user()->numero }} @endif</span>
         </div>
         <div>
-            <img src="{{ public_path('icons/email.png') }}" alt="Correo">
+            <img src="https://img.icons8.com/ios-filled/15/000000/email.png" alt="Correo">
             <span>@if(Auth::user()->correo) {{ Auth::user()->correo }} @endif</span>
         </div>
         <div>
-            <img src="{{ public_path('icons/location.png') }}" alt="Dirección">
+            <img src="https://img.icons8.com/ios-filled/15/000000/marker.png" alt="Dirección">
             <span>@if(Auth::user()->direccion) {{ Auth::user()->direccion }} @endif</span>
         </div>
     </div>
