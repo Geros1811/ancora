@@ -16,11 +16,19 @@
 
         <!-- Sección de bienvenida -->
         <div class="welcome-container">
-            <h1>Bienvenido, {{ Auth::user()->name }}
+            <h1 class="text-center">Bienvenido, {{ Auth::user()->name }}</h1>
             @if(Auth::user()->role == 'arquitecto')
-                <button id="perfilBtn" class="btn btn-primary">Perfil</button>
+                @if(Auth::user()->logo && Auth::user()->company_name)
+                    <div class="company-info text-center">
+                        <img src="{{ asset('storage/' . Auth::user()->logo) }}" alt="Logo" class="company-logo">
+                        <h2 class="company-name">{{ Auth::user()->company_name }}</h2>
+                    </div>
+                @else
+                    <div class="text-center">
+                        <button id="perfilBtn" class="btn btn-primary">Perfil</button>
+                    </div>
+                @endif
             @endif
-            </h1>
         </div>
 
         <!-- Sección de obras -->
@@ -71,7 +79,7 @@
                     <label for="logo">Logo:</label>
                     <input type="file" class="form-control" id="logo" name="logo">
                     @if(Auth::user()->logo)
-                        <img src="{{ asset('storage/' . Auth::user()->logo) }}" alt="Logo" style="max-width: 100px; max-height: 100px;">
+                        <img src="{{ asset('storage/' . Auth::user()->logo) }}" alt="Logo" class="company-logo">
                     @endif
                 </div>
                 <button type="submit" class="btn btn-primary">Guardar</button>

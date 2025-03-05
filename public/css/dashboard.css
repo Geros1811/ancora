@@ -30,6 +30,30 @@ body {
     margin: 0;
 }
 
+/* Estilo para la información de la empresa */
+.company-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.company-logo {
+    max-width: 250px;
+    max-height: 250px;
+    margin-bottom: 5px;
+}
+
+.company-name {
+    margin-top: 0px;
+    font-size: 30px;
+    color: #3a4c72;
+}
+
+.text-center {
+    text-align: center;
+}
+
 /* Contenedor para la lista de obras */
 .obras-container {
     background-color: #f9f9f9;
