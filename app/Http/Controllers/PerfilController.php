@@ -13,6 +13,9 @@ class PerfilController extends Controller
     {
         $request->validate([
             'company_name' => 'nullable|string|max:255',
+            'numero' => 'nullable|string|max:20',
+            'correo' => 'nullable|email|max:255',
+            'direccion' => 'nullable|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
@@ -27,6 +30,9 @@ class PerfilController extends Controller
         }
 
         $user->company_name = $request->input('company_name');
+        $user->numero = $request->input('numero');
+        $user->correo = $request->input('correo');
+        $user->direccion = $request->input('direccion');
         $user->save();
 
         return redirect()->route('dashboard')

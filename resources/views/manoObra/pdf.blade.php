@@ -12,12 +12,29 @@
         th { background-color: #ddd; }
         .firma-container { display: flex; justify-content: space-between; margin-top: 30px; width: 100%; }
         .firma { text-align: center; width: 30%; display: inline-block; vertical-align: top; }
+        .header, .footer { width: 100%; text-align: center; position: fixed; }
+        .header { top: 0; }
+        .footer { bottom: 0; }
+        .header img { max-width: 100px; max-height: 100px; }
+        .footer p { margin: 0; }
     </style>
 </head>
 <body>
-    <h1 style="text-align: center;">Obra: {{ $obra->nombre ?? 'N/A' }}</h1>
-    <h2 style="text-align: center;">Nómina de la Semana {{ $nomina->nombre ?? 'N/A' }}</h2>
-        <h3 style="text-align: center;">Del:  {{ $nomina->dia_inicio }}  {{ \Carbon\Carbon::parse($nomina->fecha_inicio)->format('d/m/Y') }} Al {{ $nomina->dia_fin }}  {{ \Carbon\Carbon::parse($nomina->fecha_fin)->format('d/m/Y') }}</h3>
+    <div class="header">
+        @if(Auth::user()->logo)
+        <img src="{{ public_path('storage/' . Auth::user()->logo) }}" alt="Logo" class="company-logo">
+
+    @endif
+        @if(Auth::user()->company_name)
+            <h2>{{ Auth::user()->company_name }}</h2>
+        @endif
+    </div>
+
+    <div style="margin-top: 120px; text-align: center;">
+        <h1>Obra: {{ $obra->nombre ?? 'N/A' }}</h1>
+        <h2>Nómina de la Semana {{ $nomina->nombre ?? 'N/A' }}</h2>
+        <h3>Del:  {{ $nomina->dia_inicio }}  {{ \Carbon\Carbon::parse($nomina->fecha_inicio)->format('d/m/Y') }} Al {{ $nomina->dia_fin }}  {{ \Carbon\Carbon::parse($nomina->fecha_fin)->format('d/m/Y') }}</h3>
+    </div>
 
     <!-- Tabla de Mano de Obra -->
     <h3>Mano de Obra</h3>
@@ -101,6 +118,18 @@
             <p>___________________________</p>
             <h2>Aprobo</h2>
         </div>
+    </div>
+
+    <div class="footer">
+        @if(Auth::user()->numero)
+            <p>Número: {{ Auth::user()->numero }}</p>
+        @endif
+        @if(Auth::user()->correo)
+            <p>Correo: {{ Auth::user()->correo }}</p>
+        @endif
+        @if(Auth::user()->direccion)
+            <p>Dirección: {{ Auth::user()->direccion }}</p>
+        @endif
     </div>
 </body>
 </html>

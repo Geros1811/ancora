@@ -13,7 +13,8 @@ use App\Models\Destajo;
 use App\Models\Obra;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Imagen;
-
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 
 class ManoObraController extends Controller
@@ -181,8 +182,9 @@ class ManoObraController extends Controller
         $obra = Obra::findOrFail($nomina->obra_id);
         $destajos = Destajo::where('nomina_id', $nomina_id)->get();
         $detalles = DetalleManoObra::where('nomina_id', $nomina_id)->get();
+        $user = Auth::user();
 
-        $pdf = PDF::loadView('manoObra.pdf', compact('nomina', 'destajos', 'detalles', 'obra'));
+        $pdf = PDF::loadView('manoObra.pdf', compact('nomina', 'destajos', 'detalles', 'obra', 'user'));
 
         return $pdf->stream("nomina_semana_{$nomina_id}.pdf");
     }

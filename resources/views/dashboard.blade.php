@@ -75,17 +75,30 @@
                     <label for="company_name">Nombre de la Empresa:</label>
                     <input type="text" class="form-control" id="company_name" name="company_name" value="{{ Auth::user()->company_name }}">
                 </div>
+                 <div class="form-group">
+                    <label for="numero">Número:</label>
+                    <input type="text" class="form-control" id="numero" name="numero" value="{{ Auth::user()->numero }}">
+                </div>
+                 <div class="form-group">
+                    <label for="correo">Correo:</label>
+                    <input type="email" class="form-control" id="correo" name="correo" value="{{ Auth::user()->correo }}">
+                </div>
+                 <div class="form-group">
+                    <label for="direccion">Dirección:</label>
+                    <input type="text" class="form-control" id="direccion" name="direccion" value="{{ Auth::user()->direccion }}">
+                </div>
                 <div class="form-group">
                     <label for="logo">Logo:</label>
                     <input type="file" class="form-control" id="logo" name="logo">
                     @if(Auth::user()->logo)
-                        <img src="{{ asset('storage/' . Auth::user()->logo) }}" alt="Logo" class="company-logo">
+                        <img src="{{ asset('storage/' . Auth::user()->logo) }}" alt="Logo" style="max-width: 100px; max-height: 100px;">
                     @endif
                 </div>
                 <button type="submit" class="btn btn-primary">Guardar</button>
             </form>
         </div>
     </div>
+                
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

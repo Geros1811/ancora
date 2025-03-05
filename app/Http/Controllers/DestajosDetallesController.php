@@ -12,6 +12,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Imagen;
+use Illuminate\Support\Facades\Auth;
 
 class DestajosDetallesController extends Controller
 {
@@ -142,10 +143,11 @@ class DestajosDetallesController extends Controller
         $dia_fin       = $detalle->nomina->dia_fin;
 
         $destajoDetalles = DestajoDetalle::where('destajo_id', $detalle->id)->get();
+        $user = Auth::user();
 
-        $pdf = Pdf::loadView('destajo.pdf', compact(
+        $pdf = \PDF::loadView('destajo.pdf', compact(
             'detalle', 'obra', 'fecha_inicio', 'fecha_fin',
-            'nombre_nomina', 'dia_inicio', 'dia_fin', 'obraId', 'destajoDetalles'
+            'nombre_nomina', 'dia_inicio', 'dia_fin', 'obraId', 'destajoDetalles', 'user'
         ));
 
         return $pdf->stream('detalles_destajo.pdf');
