@@ -429,31 +429,75 @@
         
                 let graficaContainer = document.createElement('div');
                 graficaContainer.id = 'grafica-container';
-                graficaContainer.innerHTML = '<canvas id="grafica"></canvas><div id="fullscreen-icon" onclick="toggleFullscreen()">🔍</div>';
+                graficaContainer.innerHTML = '<canvas id="grafica"></canvas><div id="fullscreen-icon" onclick="openModal()">🔍</div>';
                 document.body.appendChild(graficaContainer);
         
                 let ctx = document.getElementById('grafica').getContext('2d');
                 new Chart(ctx, config);
             }
 
-            function toggleFullscreen() {
-                let graficaContainer = document.getElementById('grafica-container');
-                let grafica = document.getElementById('grafica');
-                let fullscreenIcon = document.getElementById('fullscreen-icon');
-                if (!graficaContainer.classList.contains('fullscreen')) {
-                    graficaContainer.classList.add('fullscreen');
-                    grafica.style.width = '100vw';
-                    grafica.style.height = '100vh';
-                    grafica.style.maxWidth = 'none';
-                    grafica.style.maxHeight = 'none';
-                    fullscreenIcon.innerHTML = '❌'; // Cambiar icono a "cerrar"
-                } else {
-                    graficaContainer.classList.remove('fullscreen');
-                    grafica.style.width = '';
-                    grafica.style.height = '';
-                    grafica.style.maxWidth = '500px';
-                    grafica.style.maxHeight = '500px';
-                    fullscreenIcon.innerHTML = '🔍'; // Cambiar icono a "fullscreen"
+            function openModal() {
+                let modal = document.createElement('div');
+                modal.id = 'graficaModal';
+                modal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 1000;
+                `;
+
+                let modalContent = document.createElement('div');
+                modalContent.style.cssText = `
+                    background-color: white;
+                    padding: 20px;
+                    border-radius: 5px;
+                    width: 90vw;
+                    height: 90vh;
+                    max-width: 90vw;
+                    max-height: 90vh;
+                    overflow: auto;
+                    position: relative;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                `;
+
+                let canvasCopy = document.getElementById('grafica').cloneNode(true);
+                canvasCopy.id = 'graficaModalCanvas';
+                canvasCopy.style.maxWidth = '100%';
+                canvasCopy.style.maxHeight = '100%';
+                modalContent.appendChild(canvasCopy);
+
+                let closeButton = document.createElement('button');
+                closeButton.innerText = 'X';
+                closeButton.style.cssText = `
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    font-size: 20px;
+                    border: none;
+                    background-color: transparent;
+                    cursor: pointer;
+                `;
+                closeButton.onclick = function() {
+                    document.body.removeChild(modal);
+                };
+                modalContent.appendChild(closeButton);
+
+                modal.appendChild(modalContent);
+                document.body.appendChild(modal);
+
+                // Redraw the chart on the cloned canvas
+                let ctx = canvasCopy.getContext('2d');
+                let originalChart = Chart.getChart('grafica'); // Get the chart instance
+                if (originalChart) {
+                    new Chart(ctx, originalChart.config); // Redraw the chart
                 }
             }
         </script>
