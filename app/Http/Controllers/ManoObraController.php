@@ -188,4 +188,22 @@ class ManoObraController extends Controller
 
         return $pdf->stream("nomina_semana_{$nomina_id}.pdf");
     }
+
+    public function bloquear(Request $request, $id)
+    {
+        $nomina = Nomina::findOrFail($id);
+        $nomina->bloqueado = true;
+        $nomina->save();
+
+        return response()->json(['success' => true]);
+    }
+
+    public function desbloquear(Request $request, $id)
+    {
+        $nomina = Nomina::findOrFail($id);
+        $nomina->bloqueado = false;
+        $nomina->save();
+
+        return response()->json(['success' => true]);
+    }
 }

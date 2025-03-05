@@ -15,7 +15,13 @@ class CajaChicaController extends Controller
     {
         $obraId = $request->obraId;
         $users = User::where('role', 'maestro_obra')->where('created_by', Auth::id())->get();
-        $cajaChicas = CajaChica::where('obra_id', $obraId)->where('maestro_obra_id', Auth::id())->get();
+        
+        $cajaChicasQuery = CajaChica::where('obra_id', $obraId);
+        if (Auth::user()->role !== 'arquitecto') {
+            $cajaChicasQuery->where('maestro_obra_id', Auth::id());
+        }
+        $cajaChicas = $cajaChicasQuery->get();
+
         $cajaChica = null;
         $obra = \App\Models\Obra::find($obraId);
 

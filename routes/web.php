@@ -252,3 +252,6 @@ Route::post('/cliente_fotos/{obraId}', [ClienteFotoController::class, 'store'])-
 Route::put('cliente_fotos/updateComment', [ClienteFotoController::class, 'updateComment'])->name('cliente_fotos.updateComment');
 
 Route::post('/perfil/update', [App\Http\Controllers\PerfilController::class, 'update'])->name('perfil.update');
+
+Route::post('/mano-de-obra/{id}/bloquear', [ManoObraController::class, 'bloquear']);
+Route::post('/mano-de-obra/{id}/desbloquear', [ManoObraController::class, 'desbloquear']);

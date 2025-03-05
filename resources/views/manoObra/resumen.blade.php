@@ -43,6 +43,15 @@
                         @else
                             <span style="color: gray;">Guardado</span>
                         @endif
+                        @if($nomina->bloqueado)
+                            <button class="desbloquear-btn" data-id="{{ $nomina->id }}" style="background-color: #f39c12; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px;">
+                                Desbloquear
+                            </button>
+                        @else
+                            <button class="bloquear-btn" data-id="{{ $nomina->id }}" style="background-color: #e74c3c; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px;">
+                                Bloquear
+                            </button>
+                        @endif
                     </td>
                 </tr>
                 @if($nomina->destajos->isNotEmpty())
@@ -111,6 +120,82 @@
             .catch(error => console.error('Error al hacer la solicitud', error));
         });
     });
+
+    document.querySelectorAll('.bloquear-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = button.getAttribute('data-id');
+            bloquearNomina(id);
+        });
+    });
+
+    document.querySelectorAll('.desbloquear-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = button.getAttribute('data-id');
+            desbloquearNomina(id);
+        });
+    });
+
+    function bloquearNomina(id) {
+        fetch(`/mano-de-obra/${id}/bloquear`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Nómina bloqueada correctamente');
+                const fila = document.querySelector(`.fila-nomina[data-id="${id}"]`);
+                fila.classList.add('bloqueada');
+                const bloquearBtn = fila.querySelector('.bloquear-btn');
+                bloquearBtn.outerHTML = `<button class="desbloquear-btn" data-id="${id}" style="background-color: #f39c12; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px;">Desbloquear</button>`;
+                attachDesbloquearListener(id);
+            } else {
+                console.error('Error al bloquear nómina');
+            }
+        })
+        .catch(error => console.error('Error al hacer la solicitud', error));
+    }
+
+    function desbloquearNomina(id) {
+        fetch(`/mano-de-obra/${id}/desbloquear`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Nómina desbloqueada correctamente');
+                const fila = document.querySelector(`.fila-nomina[data-id="${id}"]`);
+                fila.classList.remove('bloqueada');
+                const desbloquearBtn = fila.querySelector('.desbloquear-btn');
+                desbloquearBtn.outerHTML = `<button class="bloquear-btn" data-id="${id}" style="background-color: #e74c3c; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px;">Bloquear</button>`;
+                attachBloquearListener(id);
+            } else {
+                console.error('Error al desbloquear nómina');
+            }
+        })
+        .catch(error => console.error('Error al hacer la solicitud', error));
+    }
+
+    function attachDesbloquearListener(id) {
+        const button = document.querySelector(`.desbloquear-btn[data-id="${id}"]`);
+        button.addEventListener('click', function() {
+            desbloquearNomina(id);
+        });
+    }
+
+    function attachBloquearListener(id) {
+        const button = document.querySelector(`.bloquear-btn[data-id="${id}"]`);
+        button.addEventListener('click', function() {
+            bloquearNomina(id);
+        });
+    }
 </script>
 
 @endsection

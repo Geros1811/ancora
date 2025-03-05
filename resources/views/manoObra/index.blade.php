@@ -33,11 +33,13 @@
     </div>
     <div class="text-right">
         <!-- Botón para ir al resumen -->
-        <form action="{{ route('resumen', ['obraId' => $obraId]) }}" method="get">
-            <button type="submit" class="btn btn-info">
-                Ver Resumen de Nómina
-            </button>
-        </form>
+        @if(Auth::user()->role == 'arquitecto')
+            <form action="{{ route('resumen', ['obraId' => $obraId]) }}" method="get">
+                <button type="submit" class="btn btn-info">
+                    Ver Resumen de Nómina
+                </button>
+            </form>
+        @endif
     </div>
  
     <!-- Contenedor de tablas de detalles -->
