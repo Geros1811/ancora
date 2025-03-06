@@ -262,3 +262,5 @@ Route::get('/rentas/{obraId}/pdf', [RentasController::class, 'generatePdf'])->na
 Route::get('/acarreos/{obraId}/pdf', [AcarreosController::class, 'generatePdf'])->name('acarreos.pdf');
 Route::get('/comidas/{obraId}/pdf', [ComidasController::class, 'generatePdf'])->name('comidas.pdf');
 Route::get('/tramites/{obraId}/pdf', [TramitesController::class, 'generatePdf'])->name('tramites.pdf');
+Route::get('/cimbras/{obraId}/pdf', [CimbrasController::class, 'generatePdf'])->name('cimbras.pdf');
+Route::get('/maquinariaMayor/{obraId}/pdf', [MaquinariaMayorController::class, 'generatePdf'])->name('maquinariaMayor.pdf');

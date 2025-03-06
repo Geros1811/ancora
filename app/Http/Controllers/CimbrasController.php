@@ -92,4 +92,30 @@ class CimbrasController extends Controller
 
         return response()->json(['success' => 'Registro eliminado correctamente.']);
     }
+
+    public function generatePdf($obraId)
+    {
+        $obra = Obra::findOrFail($obraId);
+        $cimbrasDetalles = DetalleCimbras::where('obra_id', $obraId)->get();
+        $costoTotal = $cimbrasDetalles->sum('subtotal');
+
+        if (!auth()->user()->hasRole('arquitecto')) {
+            return redirect()->back()->with('error', 'No tienes permisos para generar el PDF de cimbras.');
+        }
+
+        $data = [
+            'obra' => $obra,
+            'cimbrasDetalles' => $cimbrasDetalles,
+            'costoTotal' => $costoTotal,
+            'nombre_nomina' => 'N/A',
+            'dia_inicio' => 'N/A',
+            'fecha_inicio' => now(),
+            'dia_fin' => 'N/A',
+            'fecha_fin' => now(),
+        ];
+
+        $pdf = \PDF::loadView('cimbras.pdf', $data);
+
+        return $pdf->stream('cimbras_' . $obra->nombre . '.pdf');
+    }
 }
