@@ -154,7 +154,7 @@ class ManoObraController extends Controller
                 ->get();
         }
 
-        return view('manoObra.resumen', compact('nominas', 'obra'));
+        return view('manoObra.resumen', compact('nominas', 'obra', 'obraId'));
     }
 
     public function actualizar(Request $request, $id) {
@@ -205,5 +205,34 @@ class ManoObraController extends Controller
         $nomina->save();
 
         return response()->json(['success' => true]);
+    }
+
+    public function generateResumenPdf($obraId)
+    {
+        $nominas = Nomina::where('obra_id', $obraId)->orderBy('fecha_inicio', 'asc')->get();
+        $obra = Obra::findOrFail($obraId);
+
+        $costoTotal = 0;
+        foreach ($nominas as $nomina) {
+            $nomina->destajos = Destajo::where('obra_id', $obraId)
+                ->where('nomina_id', $nomina->id)
+                ->get();
+            $costoTotal += $nomina->total;
+            foreach ($nomina->destajos as $destajo) {
+                $costoTotal += $destajo->cantidad;
+            }
+        }
+
+        $data = [
+            'nominas' => $nominas,
+            'obra' => $obra,
+            'obraId' => $obraId,
+            'costoTotal' => $costoTotal,
+        ];
+
+        $pdf = \PDF::loadView('manoObra.resumen_pdf', $data);
+
+        // Prevent automatic download - stream the PDF to the browser
+        return $pdf->stream('manoObra_resumen.pdf');
     }
 }

@@ -83,6 +83,16 @@
     </table>
 </div>
 
+    <div class="actions" style="margin-top: 20px; text-align: center;">
+        @if(Auth::check() && Auth::user()->role != 'maestro_obra' && Auth::user()->role != 'residente' && Auth::user()->hasRole('arquitecto'))
+            <a href="{{ route('manoObra.resumenPdf', ['obraId' => $obraId]) }}" class="btn btn-primary" style="display: inline-block; background-color: #007bff; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; transition: background-color 0.3s ease; margin-right: 10px;">
+                PDF Resumen <i class="fas fa-file-pdf" style="margin-left: 5px;"></i>
+            </a>
+        @endif
+        <a href="{{ route('manoObra.index', ['obraId' => $obraId]) }}" class="btn btn-primary" style="display: inline-block; background-color: #007bff; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; transition: background-color 0.3s ease;">Regresar</a>
+    </div>
+</div>
+
 <script>
     document.querySelectorAll('.guardar-btn').forEach(button => {
         button.addEventListener('click', function() {
