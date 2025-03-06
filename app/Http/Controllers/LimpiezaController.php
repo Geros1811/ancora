@@ -92,4 +92,22 @@ class LimpiezaController extends Controller
 
         return response()->json(['success' => 'Registro eliminado correctamente.']);
     }
+
+    public function generatePdf($obraId)
+    {
+        $detalles = DetalleLimpieza::where('obra_id', $obraId)->get();
+        $costoTotal = $detalles->sum('subtotal');
+        $obra = Obra::findOrFail($obraId);
+
+        $data = [
+            'limpiezaDetalles' => $detalles,
+            'costoTotal' => $costoTotal,
+            'obra' => $obra,
+        ];
+
+        $pdf = \PDF::loadView('limpieza.pdf', $data);
+
+        // Prevent automatic download - stream the PDF to the browser
+        return $pdf->stream('limpieza.pdf');
+    }
 }
