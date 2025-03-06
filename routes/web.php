@@ -258,3 +258,5 @@ Route::post('/mano-de-obra/{id}/desbloquear', [ManoObraController::class, 'desbl
 
 Route::get('/papeleria/{obraId}/pdf', [PapeleriaController::class, 'generatePdf'])->name('papeleria.pdf');
 Route::get('/gasolina/{obraId}/pdf', [GasolinaController::class, 'generatePdf'])->name('gasolina.pdf');
+Route::get('/rentas/{obraId}/pdf', [RentasController::class, 'generatePdf'])->name('rentas.pdf');
+Route::get('/acarreos/{obraId}/pdf', [AcarreosController::class, 'generatePdf'])->name('acarreos.pdf');

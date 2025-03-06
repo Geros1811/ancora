@@ -92,4 +92,30 @@ class RentasController extends Controller
 
         return response()->json(['success' => 'Registro eliminado correctamente.']);
     }
+
+    public function generatePdf($obraId)
+    {
+        $obra = Obra::findOrFail($obraId);
+        $rentasDetalles = DetalleRentas::where('obra_id', $obraId)->get();
+        $costoTotal = $rentasDetalles->sum('subtotal');
+
+        if (!auth()->user()->hasRole('arquitecto')) {
+            return redirect()->back()->with('error', 'No tienes permisos para generar el PDF de rentas.');
+        }
+
+        $data = [
+            'obra' => $obra,
+            'rentasDetalles' => $rentasDetalles,
+            'costoTotal' => $costoTotal,
+            'nombre_nomina' => 'N/A', // You might want to fetch this dynamically
+            'dia_inicio' => 'N/A', // You might want to fetch this dynamically
+            'fecha_inicio' => now(), // You might want to fetch this dynamically
+            'dia_fin' => 'N/A', // You might want to fetch this dynamically
+            'fecha_fin' => now(), // You might want to fetch this dynamically
+        ];
+
+        $pdf = \PDF::loadView('rentas.pdf', $data);
+
+        return $pdf->stream('rentas_' . $obra->nombre . '.pdf');
+    }
 }

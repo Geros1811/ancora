@@ -67,6 +67,8 @@
                                  <input type="file" name="fotos[]" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
                                 @if($detalle->foto)
                                     <a href="{{ asset('storage/tickets/' . basename($detalle->foto)) }}" target="_blank">Ver foto</a>
+                                    <br>
+
                                 @else
                                     <span>Imagen no Subida</span>
                                 @endif
@@ -81,19 +83,18 @@
                 </tbody>
             </table>
             @if(Auth::check() && Auth::user()->role != 'maestro_obra' && Auth::user()->role != 'residente')
-                <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow()">Añadir Fila</button>
                 <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar</button>
-            @else
-                <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow()" style="display:none;">Añadir Fila</button>
-                <button type="submit" class="btn btn-primary" style="margin-top: 10px;" disabled>Guardar</button>
+            @endif
+            @if(Auth::check() && Auth::user()->role != 'maestro_obra' && Auth::user()->role != 'residente' && Auth::user()->hasRole('arquitecto'))
+                <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow()">Añadir Fila</button>
+                <a href="{{ route('rentas.pdf', ['obraId' => $obraId]) }}" class="btn btn-primary" style="margin-top: 10px; margin-left: 10px;" target="_blank">
+                    PDF <i class="fas fa-file-pdf" style="margin-left: 5px;"></i>
+                </a>
             @endif
         </form>
     </div>
 
-    <!-- Botón para regresar -->
-    <div class="actions" style="margin-top: 20px; text-align: center;">
-        <a href="{{ route('rentas.index', ['obraId' => $obraId]) }}" class="btn btn-primary" style="display: inline-block; background-color: #007bff; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; transition: background-color 0.3s ease;">Regresar</a>
-    </div>
+
 </div>
 
 <script>
