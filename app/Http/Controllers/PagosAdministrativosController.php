@@ -61,8 +61,9 @@ class PagosAdministrativosController extends Controller
         $totalPagosAdministrativos = array_sum(array_column($pagosAdministrativos, 'costo'));
 
         return view('obra.pagos-administrativos', [
-            'pagosAdministrativos' => $pagosAdministrativos, // Aquí se envía
+            'pagosAdministrativos' => $pagosAdministrativos,
             'obra' => $obra,
+            'obraId' => $obra->id, // 🔹 Asegúrate de incluir esto
             'pagosAdministrativosOcultos' => $pagosAdministrativosOcultos,
             'totalPagosAdministrativos' => $totalPagosAdministrativos,
         ]);
@@ -76,5 +77,49 @@ class PagosAdministrativosController extends Controller
         Session::put('pagos_administrativos.' . $nombre, $active);
 
         return response()->json(['success' => true]);
+    }
+
+    public function generateConsolidatedPdf($obraId)
+    {
+        $obra = Obra::findOrFail($obraId);
+
+        $sueldoResidente = \App\Models\SueldoResidente::where('obra_id', $obraId)->get();
+        $imss = \App\Models\Imss::where('obra_id', $obraId)->get();
+        $contador = \App\Models\Contador::where('obra_id', $obraId)->get();
+        $iva = \App\Models\Iva::where('obra_id', $obraId)->get();
+        $otrosPagos = \App\Models\OtrosPagosAdministrativos::where('obra_id', $obraId)->get();
+
+        $costoTotal = 0;
+        if ($sueldoResidente) {
+            $costoTotal += $sueldoResidente->sum('importe');
+        }
+        if ($imss) {
+            $costoTotal += $imss->sum('importe');
+        }
+        if ($contador) {
+            $costoTotal += $contador->sum('importe');
+        }
+        if ($iva) {
+            $costoTotal += $iva->sum('importe');
+        }
+        if ($otrosPagos) {
+            $costoTotal += $otrosPagos->sum('importe');
+        }
+
+        $data = [
+            'obra' => $obra,
+            'sueldoResidente' => $sueldoResidente,
+            'imss' => $imss,
+            'contador' => $contador,
+            'iva' => $iva,
+            'otrosPagos' => $otrosPagos,
+            'costoTotal' => $costoTotal,
+            'obraId' => $obraId,
+        ];
+
+        $pdf = \PDF::loadView('pagosAdministrativos.consolidated_pdf', $data);
+
+        // Prevent automatic download - stream the PDF to the browser
+        return $pdf->stream('pagosAdministrativos_consolidated.pdf');
     }
 }

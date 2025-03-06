@@ -1,6 +1,9 @@
 <h2>
     <span class="toggle-button" onclick="toggleSection('pagos-administrativos')">+</span>
     Pagos Administrativos (Total Real: $<span id="total-pagos">{{ number_format($pagosAdministrativos->sum('costo'), 2) }}</span>)
+    <a href="{{ route('pagosAdministrativos.consolidatedPdf', ['obraId' => $obraId ?? $obra->id]) }}" class="btn btn-primary" style="margin-left: 10px; margin-bottom: 10px;" target="_blank">
+        PDF Consolidado <i class="fas fa-file-pdf" style="margin-left: 5px;"></i>
+    </a>
 </h2>
 <div id="pagos-administrativos" class="hidden-section">
     <table class="obra-table">
