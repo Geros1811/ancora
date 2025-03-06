@@ -7,7 +7,7 @@
     </div>
 
     <!-- Información general de Ingresos -->
-    <div class="info-box" style="margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
+    <div class="info-box" style="margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
         <div class="info-item" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
             <span class="info-label" style="font-weight: bold; color: #34495e;">Nombre:</span>
             <span class="info-value" style="color: #2c3e50;">Ingresos</span>
@@ -42,21 +42,29 @@
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="importe[]" value="{{ $ingreso->importe }}" class="form-control importe" style="border: none; background: transparent; text-align: center;"></td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="observaciones[]" value="{{ $ingreso->observaciones }}" class="form-control observaciones" style="border: none; background: transparent; text-align: center;"></td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
-                                <button type="button" class="btn btn-danger" onclick="removeRow(this, {{ $ingreso->id }})">Eliminar</button>
+                                @if(Auth::check() && Auth::user()->role != 'maestro_obra' && Auth::user()->role != 'residente')
+                                    <button type="button" class="btn btn-danger" onclick="removeRow(this, {{ $ingreso->id }})">Eliminar</button>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
-            <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow()">Añadir Fila</button>
-            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar</button>
+            @if(Auth::check() && Auth::user()->role != 'maestro_obra' && Auth::user()->role != 'residente')
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar</button>
+                @if(Auth::check() && Auth::user()->hasRole('arquitecto'))
+                    <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow()">Añadir Fila</button>
+                    <a href="{{ route('ingresos.pdf', ['obraId' => $obraId]) }}" class="btn btn-primary" style="margin-top: 10px; margin-left: 10px;" target="_blank">
+                        PDF <i class="fas fa-file-pdf" style="margin-left: 5px;"></i>
+                    </a>
+                @endif
+            @else
+                
+            @endif
         </form>
     </div>
 
-    <!-- Botón para regresar -->
-    <div class="actions" style="margin-top: 20px; text-align: center;">
-        <a href="{{ route('ingresos.index', ['obraId' => $obraId]) }}" class="btn btn-primary" style="display: inline-block; background-color: #007bff; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; transition: background-color 0.3s ease;">Regresar</a>
-    </div>
+
 </div>
 
 <script>
@@ -104,8 +112,8 @@
             total += parseFloat(input.value) || 0;
         });
         document.getElementById('costo-total').innerText = `$${total.toFixed(2)}`;
-
-         // Actualizar el costo total en la vista de costos indirectos
+        
+        // Actualizar el costo total en la vista de costos indirectos
         fetch(`{{ route('updateCostoIndirecto', ['obraId' => $obraId, 'costo' => 'ingresos']) }}?costo=${total.toFixed(2)}`, {
             method: 'POST',
             headers: {
@@ -113,6 +121,5 @@
             }
         });
     }
-
 </script>
 @endsection

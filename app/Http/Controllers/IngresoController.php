@@ -70,4 +70,22 @@ class IngresoController extends Controller
 
         return response()->json(['success' => 'Registro eliminado correctamente.']);
     }
+
+    public function generatePdf($obraId)
+    {
+        $ingresos = Ingreso::where('obra_id', $obraId)->get();
+        $costoTotal = $ingresos->sum('importe');
+        $obra = Obra::findOrFail($obraId);
+
+        $data = [
+            'ingresosDetalles' => $ingresos,
+            'costoTotal' => $costoTotal,
+            'obra' => $obra,
+        ];
+
+        $pdf = \PDF::loadView('ingresos.pdf', $data);
+
+        // Prevent automatic download - stream the PDF to the browser
+        return $pdf->stream('ingresos.pdf');
+    }
 }

@@ -270,3 +270,4 @@ Route::get('/limpieza/{obraId}/pdf', [LimpiezaController::class, 'generatePdf'])
 Route::get('/herramientaMenor/{obraId}/pdf', [HerramientaMenorController::class, 'generatePdf'])->name('herramientaMenor.pdf');
 Route::get('/equipoSeguridad/{obraId}/pdf', [EquipoSeguridadController::class, 'generatePdf'])->name('equipoSeguridad.pdf');
 Route::get('/utilidades/{obraId}/pdf', [UtilidadesController::class, 'generatePdf'])->name('utilidades.pdf');
+Route::get('/utilidades/{obraId}/pdf', [IngresoController::class, 'generatePdf'])->name('ingresos.pdf');
