@@ -92,4 +92,22 @@ class UtilidadesController extends Controller
 
         return response()->json(['success' => 'Registro eliminado correctamente.']);
     }
+
+    public function generatePdf($obraId)
+    {
+        $detalles = DetalleUtilidades::where('obra_id', $obraId)->get();
+        $costoTotal = $detalles->sum('subtotal');
+        $obra = Obra::findOrFail($obraId);
+
+        $data = [
+            'utilidadesDetalles' => $detalles,
+            'costoTotal' => $costoTotal,
+            'obra' => $obra,
+        ];
+
+        $pdf = \PDF::loadView('utilidades.pdf', $data);
+
+        // Prevent automatic download - stream the PDF to the browser
+        return $pdf->stream('utilidades.pdf');
+    }
 }
