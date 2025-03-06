@@ -92,4 +92,30 @@ class TramitesController extends Controller
 
         return response()->json(['success' => 'Registro eliminado correctamente.']);
     }
+
+    public function generatePdf($obraId)
+    {
+        $obra = Obra::findOrFail($obraId);
+        $tramitesDetalles = DetalleTramites::where('obra_id', $obraId)->get();
+        $costoTotal = $tramitesDetalles->sum('subtotal');
+
+        if ( ! auth()->user()->hasRole('arquitecto') ) {
+            return redirect()->back()->with('error', 'No tienes permisos para generar el PDF de trámites.');
+        }
+
+        $data = [
+            'obra' => $obra,
+            'tramitesDetalles' => $tramitesDetalles,
+            'costoTotal' => $costoTotal,
+            'nombre_nomina' => 'N/A',
+            'dia_inicio' => 'N/A',
+            'fecha_inicio' => now(),
+            'dia_fin' => 'N/A',
+            'fecha_fin' => now(),
+        ];
+
+        $pdf = \PDF::loadView('tramites.pdf', $data);
+
+        return $pdf->stream('tramites_' . $obra->nombre . '.pdf');
+    }
 }

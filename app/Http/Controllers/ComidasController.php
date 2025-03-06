@@ -92,4 +92,30 @@ class ComidasController extends Controller
 
         return response()->json(['success' => 'Registro eliminado correctamente.']);
     }
+
+    public function generatePdf($obraId)
+    {
+        $obra = Obra::findOrFail($obraId);
+        $comidasDetalles = DetalleComidas::where('obra_id', $obraId)->get();
+        $costoTotal = $comidasDetalles->sum('subtotal');
+
+        if (!auth()->user()->hasRole('arquitecto')) {
+            return redirect()->back()->with('error', 'No tienes permisos para generar el PDF de comidas.');
+        }
+
+        $data = [
+            'obra' => $obra,
+            'comidasDetalles' => $comidasDetalles,
+            'costoTotal' => $costoTotal,
+            'nombre_nomina' => 'N/A',
+            'dia_inicio' => 'N/A',
+            'fecha_inicio' => now(),
+            'dia_fin' => 'N/A',
+            'fecha_fin' => now(),
+        ];
+
+        $pdf = \PDF::loadView('comidas.pdf', $data);
+
+        return $pdf->stream('comidas_' . $obra->nombre . '.pdf');
+    }
 }
