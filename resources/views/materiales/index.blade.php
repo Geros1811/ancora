@@ -26,7 +26,11 @@
 
     <!-- Botón para regresar -->
     <div class="actions" style="margin-top: 20px; text-align: center;">
-        <a href="{{ route('materiales.index', ['obraId' => $obraId]) }}" class="btn btn-primary" style="display: inline-block; background-color: #007bff; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; transition: background-color 0.3s ease;">Regresar</a>
+        @if(Auth::check() && Auth::user()->role != 'maestro_obra' && Auth::user()->role != 'residente' && Auth::user()->hasRole('arquitecto'))
+            <a href="{{ route('materiales.pdf', ['obraId' => $obraId]) }}" class="btn btn-primary" style="display: inline-block; background-color: #007bff; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; transition: background-color 0.3s ease;">
+                PDF <i class="fas fa-file-pdf" style="margin-left: 5px;"></i>
+            </a>
+        @endif
     </div>
 </div>
 

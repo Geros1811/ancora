@@ -414,4 +414,35 @@ class MaterialesController extends Controller
 
         return response()->json(['success' => 'Registro eliminado correctamente.']);
     }
+
+    public function generatePdf($obraId)
+    {
+        $agregados = Agregado::where('obra_id', $obraId)->get();
+        $aceros = Acero::where('obra_id', $obraId)->get();
+        $cemento = Cemento::where('obra_id', $obraId)->get();
+        $losas = Losa::where('obra_id', $obraId)->get();
+        $generales = General::where('obra_id', $obraId)->get();
+        $obra = Obra::findOrFail($obraId);
+
+        $costoTotal = $agregados->sum('subtotal') +
+                      $aceros->sum('subtotal') +
+                      $cemento->sum('subtotal') +
+                      $losas->sum('subtotal') +
+                      $generales->sum('subtotal');
+
+        $data = [
+            'agregados' => $agregados,
+            'aceros' => $aceros,
+            'cemento' => $cemento,
+            'losas' => $losas,
+            'generales' => $generales,
+            'costoTotal' => $costoTotal,
+            'obra' => $obra,
+        ];
+
+        $pdf = \PDF::loadView('materiales.pdf', $data);
+
+        // Prevent automatic download - stream the PDF to the browser
+        return $pdf->stream('materiales.pdf');
+    }
 }
