@@ -81,19 +81,15 @@
                 </tbody>
             </table>
             @if(Auth::check() && Auth::user()->role != 'maestro_obra' && Auth::user()->role != 'residente')
-                <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow()">Añadir Fila</button>
-                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar</button>
-            @else
-                <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow()" style="display:none;">Añadir Fila</button>
-                <button type="submit" class="btn btn-primary" style="margin-top: 10px;" disabled>Guardar</button>
-            @endif
-        </form>
-    </div>
-
-    <!-- Botón para regresar -->
-    <div class="actions" style="margin-top: 20px; text-align: center;">
-        <a href="{{ route('rentaMaquinaria.index', ['obraId' => $obraId]) }}" class="btn btn-primary" style="display: inline-block; background-color: #007bff; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; transition: background-color 0.3s ease;">Regresar</a>
-    </div>
+            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Guardar</button>
+        @endif
+        @if(Auth::check() && Auth::user()->role != 'maestro_obra' && Auth::user()->role != 'residente' && Auth::user()->hasRole('arquitecto'))
+            <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow()">Añadir Fila</button>
+            <a href="{{ route('rentaMaquinaria.pdf', ['obraId' => $obraId]) }}" class="btn btn-primary" style="margin-top: 10px; margin-left: 10px;" target="_blank">
+                PDF <i class="fas fa-file-pdf" style="margin-left: 5px;"></i>
+            </a>
+        @endif
+    </form>
 </div>
 
 <script>
@@ -145,7 +141,8 @@
         const row = input.parentNode.parentNode;
         const cantidad = parseFloat(row.querySelector('.cantidad').value) || 0;
         const precioUnitario = parseFloat(row.querySelector('.precio-unitario').value) || 0;
-        row.querySelector('.subtotal').value = `$${subtotal.toFixed(2)}`;
+        const subtotal = cantidad * precioUnitario;
+        row.querySelector('.subtotal').value = `\$${subtotal.toFixed(2)}`;
         updateTotal();
     }
 

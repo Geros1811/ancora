@@ -139,11 +139,12 @@
         }
     }
 
-    function updateSubtotal(input) {
+function updateSubtotal(input) {
         const row = input.parentNode.parentNode;
         const cantidad = parseFloat(row.querySelector('.cantidad').value) || 0;
         const precioUnitario = parseFloat(row.querySelector('.precio-unitario').value) || 0;
-        row.querySelector('.subtotal').value = `$${subtotal.toFixed(2)}`;
+        const subtotal = cantidad * precioUnitario;
+        row.querySelector('.subtotal').value = `\$${subtotal.toFixed(2)}`;
         updateTotal();
     }
 
