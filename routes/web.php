@@ -255,3 +255,5 @@ Route::post('/perfil/update', [App\Http\Controllers\PerfilController::class, 'up
 
 Route::post('/mano-de-obra/{id}/bloquear', [ManoObraController::class, 'bloquear']);
 Route::post('/mano-de-obra/{id}/desbloquear', [ManoObraController::class, 'desbloquear']);
+
+Route::get('/papeleria/{obraId}/pdf', [PapeleriaController::class, 'generatePdf'])->name('papeleria.pdf');

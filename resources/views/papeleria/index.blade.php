@@ -87,8 +87,11 @@
     @else
    
     @endif
-    @if(Auth::check() && Auth::user()->role != 'maestro_obra' && Auth::user()->role != 'residente')
+    @if(Auth::check() && Auth::user()->role != 'maestro_obra' && Auth::user()->role != 'residente' && Auth::user()->hasRole('arquitecto'))
         <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="addRow()">Añadir Fila</button>
+        <a href="{{ route('papeleria.pdf', ['obraId' => $obraId]) }}" class="btn btn-primary" style="margin-top: 10px; margin-left: 10px;" target="_blank">
+            PDF <i class="fas fa-file-pdf" style="margin-left: 5px;"></i>
+        </a>
     @endif
             </form>
         </div>

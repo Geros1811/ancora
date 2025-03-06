@@ -100,4 +100,30 @@ class PapeleriaController extends Controller
 
         return redirect()->route('papeleria.index', ['obraId' => $obraId]);
     }
+
+    public function generatePdf($obraId)
+    {
+        $obra = Obra::findOrFail($obraId);
+        $papeleriaDetalles = DetallePapeleria::where('obra_id', $obraId)->get();
+        $costoTotal = $papeleriaDetalles->sum('subtotal');
+
+        if (!auth()->user()->hasRole('arquitecto')) {
+            return redirect()->back()->with('error', 'No tienes permisos para generar el PDF de papelería.');
+        }
+
+        $data = [
+            'obra' => $obra,
+            'papeleriaDetalles' => $papeleriaDetalles,
+            'costoTotal' => $costoTotal,
+            'nombre_nomina' => 'N/A', // You might want to fetch this dynamically
+            'dia_inicio' => 'N/A', // You might want to fetch this dynamically
+            'fecha_inicio' => now(), // You might want to fetch this dynamically
+            'dia_fin' => 'N/A', // You might want to fetch this dynamically
+            'fecha_fin' => now(), // You might want to fetch this dynamically
+        ];
+
+        $pdf = \PDF::loadView('papeleria.pdf', $data);
+
+        return $pdf->stream('papeleria_' . $obra->nombre . '.pdf');
+    }
 }
