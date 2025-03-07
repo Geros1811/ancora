@@ -31,9 +31,13 @@
 <body>
     <div class="container">
         <div class="header">
-
+            @if(Auth::user()->logo)
+                <img src="{{ public_path('storage/' . Auth::user()->logo) }}" alt="Logo">
+            @endif
             <div class="company-name">
-
+                @if(Auth::user()->company_name)
+                    {{ Auth::user()->company_name }}
+                @endif
             </div>
         </div>
 
@@ -43,9 +47,10 @@
             <div style="font-size: 1.5em; display: block; text-align: right;">Costo Mensual Total: ${{ number_format($costoMensualTotal, 2) }}</div>
             <div style="font-size: 1.5em; display: block; text-align: right;">Ingreso Mensual: ${{ number_format($ingresoMensual, 2) }}</div>
             <h2>Reporte General</h2>
+           
         </div>
 
-      
+ 
         <table>
             <thead>
                 <tr>
@@ -478,5 +483,19 @@
             @endforeach
         </tbody>
     </table>
+    <div class="footer">
+        <div>
+            <img src="https://img.icons8.com/ios-filled/15/000000/phone.png" alt="Teléfono">
+            <span>@if(Auth::user()->numero) {{ Auth::user()->numero }} @endif</span>
+        </div>
+        <div>
+            <img src="https://img.icons8.com/ios-filled/15/000000/email.png" alt="Correo">
+            <span>@if(Auth::user()->correo) {{ Auth::user()->correo }} @endif</span>
+        </div>
+        <div>
+            <img src="https://img.icons8.com/ios-filled/15/000000/marker.png" alt="Dirección">
+            <span>@if(Auth::user()->direccion) {{ Auth::user()->direccion }} @endif</span>
+        </div>
+    </div>
 </body>
 </html>

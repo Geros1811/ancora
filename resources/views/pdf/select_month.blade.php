@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -65,5 +67,6 @@
 
         <button type="submit">Generate PDF</button>
     </form>
+    <a href="{{ route('obra.show', ['id' => $obraId]) }}" style="display: inline-block; margin-top: 10px; padding: 8px 12px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px;">Regresar a Detalles de Obra</a>
 </body>
 </html>
