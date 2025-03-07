@@ -31,6 +31,7 @@ use App\Models\Imss;
 use App\Models\Contador;
 use App\Models\Iva;
 use App\Models\OtrosPagosAdministrativos;
+use App\Models\DetallePapeleria;
 
 class PdfGeneratorController extends Controller
 {
@@ -42,39 +43,42 @@ class PdfGeneratorController extends Controller
     public function generatePdf(Request $request)
     {
         $month = $request->input('month');
+        $year = $request->input('year');
         $obraId = $request->input('obraId');
 
         $data = [
-            'title' => 'General PDF - ' . $this->getMonthName($month),
+            'title' => 'General PDF - ' . $this->getMonthName($month) . ' ' . $year,
             'date' => date('m/d/Y'),
             'month' => $month,
-            'acarreos' => DetalleAcarreos::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'cimbras' => DetalleCimbras::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'maquinariaMayor' => DetalleMaquinariaMayor::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'utilidades' => DetalleUtilidades::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'tramites' => DetalleTramites::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'rentas' => DetalleRentas::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'rentaMaquinaria' => RentaMaquinaria::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'agregados' => Agregado::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'aceros' => Acero::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'cemento' => Cemento::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'losas' => Losa::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'generales' => General::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'maquinariaMenor' => DetalleMaquinariaMenor::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'comidas' => DetalleComidas::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'equipoSeguridad' => DetalleEquipoSeguridad::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'gasolina' => DetalleGasolina::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'herramientaMenor' => DetalleHerramientaMenor::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'ingresos' => Ingreso::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'limpieza' => DetalleLimpieza::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
+            'year' => $year,
+            'acarreos' => DetalleAcarreos::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'cimbras' => DetalleCimbras::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'maquinariaMayor' => DetalleMaquinariaMayor::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'utilidades' => DetalleUtilidades::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'tramites' => DetalleTramites::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'rentas' => DetalleRentas::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'rentaMaquinaria' => RentaMaquinaria::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'agregados' => Agregado::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'aceros' => Acero::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'cemento' => Cemento::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'losas' => Losa::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'generales' => General::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'maquinariaMenor' => DetalleMaquinariaMenor::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'comidas' => DetalleComidas::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'equipoSeguridad' => DetalleEquipoSeguridad::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'gasolina' => DetalleGasolina::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'herramientaMenor' => DetalleHerramientaMenor::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'ingresos' => Ingreso::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'limpieza' => DetalleLimpieza::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
            
-            'nominas' => Nomina::where('obra_id', $obraId)->whereMonth('fecha_inicio', $month)->get(),
+            'nominas' => Nomina::where('obra_id', $obraId)->whereMonth('fecha_inicio', $month)->whereYear('fecha_inicio', $year)->get(),
            
-            'sueldoResidente' => SueldoResidente::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'imss' => Imss::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'contador' => Contador::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'iva' => Iva::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
-            'otrosPagos' => OtrosPagosAdministrativos::where('obra_id', $obraId)->whereMonth('fecha', $month)->get(),
+            'sueldoResidente' => SueldoResidente::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'imss' => Imss::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'contador' => Contador::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'iva' => Iva::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'otrosPagos' => OtrosPagosAdministrativos::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
+            'papeleria' => DetallePapeleria::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
         ];
 
         $pdf = PDF::loadView('pdf.general', $data);

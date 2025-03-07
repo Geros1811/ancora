@@ -52,6 +52,17 @@
             <option value="11">Noviembre</option>
             <option value="12">Diciembre</option>
         </select>
+        
+        <label for="year">Year:</label>
+        <select name="year" id="year">
+            <?php
+            $currentYear = date("Y");
+            for ($year = $currentYear; $year >= 2020; $year--) {
+                echo "<option value='$year'>$year</option>";
+            }
+            ?>
+        </select>
+
         <button type="submit">Generate PDF</button>
     </form>
 </body>
