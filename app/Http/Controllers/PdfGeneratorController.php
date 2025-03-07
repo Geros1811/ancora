@@ -57,9 +57,12 @@ class PdfGeneratorController extends Controller
         // Calculate the total cost for each nomina
         foreach ($nominas as $nomina) {
             $costoMensualTotal += $nomina->total;
-            $nomina->destajos = Destajo::where('obra_id', $obraId)
+            $destajos = Destajo::where('obra_id', $obraId)
                 ->where('nomina_id', $nomina->id)
                 ->get();
+            foreach ($destajos as $destajo) {
+                $costoMensualTotal += $destajo->cantidad;
+            }
         }
 
         $acarreos = DetalleAcarreos::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get();

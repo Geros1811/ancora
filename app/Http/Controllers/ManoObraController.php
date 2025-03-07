@@ -151,11 +151,14 @@ class ManoObraController extends Controller
         foreach ($nominas as $nomina) {
             $nomina->destajos = Destajo::where('obra_id', $obraId)
                 ->where('nomina_id', $nomina->id)
-                ->get();
-        }
-
-        return view('manoObra.resumen', compact('nominas', 'obra', 'obraId'));
+            ->get();
     }
+
+    $totalNomina = $nominas->sum('total');
+    $totalDestajos = Destajo::where('obra_id', $obraId)->sum('cantidad');
+
+    return view('manoObra.resumen', compact('nominas', 'obra', 'obraId', 'totalNomina', 'totalDestajos'));
+}
 
     public function actualizar(Request $request, $id) {
         $nomina = Nomina::findOrFail($id);
@@ -209,25 +212,18 @@ class ManoObraController extends Controller
 
     public function generateResumenPdf($obraId)
     {
-        $nominas = Nomina::where('obra_id', $obraId)->orderBy('fecha_inicio', 'asc')->get();
+        $nominas = Nomina::with('destajos')->where('obra_id', $obraId)->orderBy('fecha_inicio', 'asc')->get();
         $obra = Obra::findOrFail($obraId);
 
-        $costoTotal = 0;
-        foreach ($nominas as $nomina) {
-            $nomina->destajos = Destajo::where('obra_id', $obraId)
-                ->where('nomina_id', $nomina->id)
-                ->get();
-            $costoTotal += $nomina->total;
-            foreach ($nomina->destajos as $destajo) {
-                $costoTotal += $destajo->cantidad;
-            }
-        }
+        $totalNomina = $nominas->sum('total');
+        $totalDestajos = Destajo::where('obra_id', $obraId)->sum('cantidad');
 
         $data = [
             'nominas' => $nominas,
             'obra' => $obra,
             'obraId' => $obraId,
-            'costoTotal' => $costoTotal,
+            'totalNomina' => $totalNomina,
+            'totalDestajos' => $totalDestajos,
         ];
 
         $pdf = \PDF::loadView('manoObra.resumen_pdf', $data);

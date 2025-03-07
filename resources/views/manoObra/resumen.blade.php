@@ -81,6 +81,10 @@
             @endforeach
         </tbody>
     </table>
+    <div style="margin-top: 10px; text-align: right;">
+        <strong>Total Nómina:</strong> ${{ number_format($totalNomina, 2) }}<br>
+        <strong>Total Destajos:</strong> ${{ number_format($totalDestajos, 2) }}
+    </div>
 </div>
 
     <div class="actions" style="margin-top: 20px; text-align: center;">

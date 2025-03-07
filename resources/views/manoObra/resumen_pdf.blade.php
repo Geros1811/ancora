@@ -44,7 +44,10 @@
         <div style="text-align: center; margin-bottom: 20px;">
             <h1>Obra: {{ $obra->nombre ?? 'N/A' }}</h1>
             <h2>Reporte de Resumen Mano de Obra</h2>
-            <div style="font-size: 1.5em; display: block; text-align: right;">Costo Total: ${{ number_format($costoTotal, 2) }}</div>
+            <div style="font-size: 1.5em; display: block; text-align: right;">
+                <strong>Total Nómina:</strong> ${{ number_format($totalNomina, 2) }}<br>
+                <strong>Total Destajos:</strong> ${{ number_format($totalDestajos, 2) }}
+            </div>
         </div>
 
         <h3>Resumen de Nóminas</h3>

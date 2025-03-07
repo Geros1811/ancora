@@ -17,4 +17,9 @@ class Nomina extends Model
         'fecha_inicio',
         'fecha_fin'
     ];
+
+    public function destajos()
+    {
+        return $this->hasMany(Destajo::class);
+    }
 }
