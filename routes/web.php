@@ -80,9 +80,14 @@ Route::post('/validar-password', function (Illuminate\Http\Request $request) {
 })->middleware('auth');
 
 // Página de bienvenida
+use App\Http\Controllers\PdfGeneratorController;
+
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/obras/{obraId}/general-pdf', [PdfGeneratorController::class, 'showSelectMonthForm'])->name('general_pdf.select_month');
+Route::post('/general-pdf/generate', [PdfGeneratorController::class, 'generatePdf'])->name('general_pdf.generate');
 
 // Rutas para papelería y gasolina
 Route::get('/papeleria/{obraId}', [PapeleriaController::class, 'index'])->name('papeleria.index');

@@ -140,8 +140,10 @@
             <ul class="navbar-nav ml-auto">
               @if(Auth::check() && Auth::user()->role == 'cliente')
                 <li class="nav-item">
-                  <a class="nav-link" href="{{ route('dashboard') }}">
-                    <i class="fas fa-tachometer-alt"></i>Dashboard
+                 
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ route('dashboard') }}">
+                      <i class="fas fa-tachometer-alt"></i>Dashboard
                   </a>
                 </li>
                  {{-- Mostrar el enlace "Home" solo si NO estamos en la ruta "home" --}}
@@ -267,6 +269,13 @@
                     <li class="nav-item">
                       <a class="nav-link" href="{{ isset($obra) ? route('ingresos.index', ['obraId' => $obra->id]) : route('ingresos.index', ['obraId' => 1]) }}">
                         <i class="fas fa-money-bill-wave"></i>Ingresos
+                      </a>
+                    </li>
+                  @endif
+                  @if(Auth::check() && Auth::user()->hasRole('arquitecto'))
+                  <li class="nav-item">
+                      <a class="nav-link" href="{{ route('general_pdf.select_month', ['obraId' => $obra->id ?? 1]) }}">
+                        <i class="fas fa-file-pdf"></i>General PDF
                       </a>
                     </li>
                   @endif
