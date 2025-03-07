@@ -47,7 +47,7 @@
                         <span class="toggle-button">+</span>
                     </button>
                     <h2 class="table-title" style="font-size: 20px; color: #34495e; margin: 0;">
-                        Caja Chica: {{ $cajaChica->formatted_created_at }} - {{ $cajaChica->maestroObra->name }}
+                        Caja Chica: {{ $cajaChica->fecha }} - {{ $cajaChica->maestroObra->name }}
                         <span id="total-cajaChica-{{ $cajaChica->id }}" style="font-size: 16px; color: #e74c3c;" data-cajaChica-id="{{ $cajaChica->id }}">
                             Cantidad: ${{ number_format($cajaChica->cantidad, 2) }}
                         </span>
@@ -79,7 +79,7 @@
                                       <tr>
                                           <input type="hidden" name="id[]" value="{{ $detalle->id }}">
                                           <td class="gastos-rapidos-td">
-                                              <input type="date" name="fecha[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $cajaChica->formatted_created_at }}" readonly>
+                                              <input type="date" name="fecha[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->fecha }}">
                                           </td>
                                           <td class="gastos-rapidos-td"><input type="text" name="concepto[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->concepto }}"></td>
                                           <td class="gastos-rapidos-td">
