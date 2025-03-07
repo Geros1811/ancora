@@ -46,6 +46,14 @@ class PdfGeneratorController extends Controller
         $year = $request->input('year');
         $obraId = $request->input('obraId');
 
+        $nominas = Nomina::where('obra_id', $obraId)->whereMonth('fecha_inicio', $month)->whereYear('fecha_inicio', $year)->get();
+
+        foreach ($nominas as $nomina) {
+            $nomina->destajos = Destajo::where('obra_id', $obraId)
+                ->where('nomina_id', $nomina->id)
+                ->get();
+        }
+
         $data = [
             'title' => 'General PDF - ' . $this->getMonthName($month) . ' ' . $year,
             'date' => date('m/d/Y'),
@@ -70,9 +78,7 @@ class PdfGeneratorController extends Controller
             'herramientaMenor' => DetalleHerramientaMenor::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
             'ingresos' => Ingreso::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
             'limpieza' => DetalleLimpieza::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
-           
-            'nominas' => Nomina::where('obra_id', $obraId)->whereMonth('fecha_inicio', $month)->whereYear('fecha_inicio', $year)->get(),
-           
+            'nominas' => $nominas,
             'sueldoResidente' => SueldoResidente::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
             'imss' => Imss::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
             'contador' => Contador::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),

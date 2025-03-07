@@ -439,5 +439,43 @@
                 @endforeach
         </tbody>
     </table>
+
+    <h3>Resumen de Nóminas</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Semana No</th>
+                <th>Del</th>
+                <th>Al</th>
+                <th>Días Trabajados</th>
+                <th>Monto de Nómina</th>
+                <th>Observaciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($nominas as $index => $nomina)
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ \Carbon\Carbon::parse($nomina->fecha_inicio)->locale('es')->format('d M Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($nomina->fecha_fin)->locale('es')->format('d M Y') }}</td>
+                    <td>{{ $nomina->dias_trabajados }}</td>
+                    <td>${{ number_format($nomina->total, 2) }}</td>
+                    <td>{{ $nomina->observaciones }}</td>
+                </tr>
+                @if($nomina->destajos->isNotEmpty())
+                    @foreach($nomina->destajos as $destajo)
+                        <tr>
+                            <td>Destajo</td>
+                            <td>{{ \Carbon\Carbon::parse($nomina->fecha_inicio)->locale('es')->format('d M Y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($nomina->fecha_fin)->locale('es')->format('d M Y') }}</td>
+                            <td></td>
+                            <td>${{ number_format($destajo->cantidad, 2) }}</td>
+                            <td>{{ $destajo->frente }}</td>
+                        </tr>
+                    @endforeach
+                @endif
+            @endforeach
+        </tbody>
+    </table>
 </body>
 </html>
