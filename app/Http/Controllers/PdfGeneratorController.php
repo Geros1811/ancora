@@ -32,6 +32,7 @@ use App\Models\Contador;
 use App\Models\Iva;
 use App\Models\OtrosPagosAdministrativos;
 use App\Models\DetallePapeleria;
+use App\Models\Obra;
 
 class PdfGeneratorController extends Controller
 {
@@ -46,6 +47,8 @@ class PdfGeneratorController extends Controller
         $year = $request->input('year');
         $obraId = $request->input('obraId');
 
+        $obra = Obra::findOrFail($obraId);
+
         $nominas = Nomina::where('obra_id', $obraId)->whereMonth('fecha_inicio', $month)->whereYear('fecha_inicio', $year)->get();
 
         foreach ($nominas as $nomina) {
@@ -55,6 +58,7 @@ class PdfGeneratorController extends Controller
         }
 
         $data = [
+            'obra' => $obra,
             'title' => 'General PDF - ' . $this->getMonthName($month) . ' ' . $year,
             'date' => date('m/d/Y'),
             'month' => $month,
@@ -87,7 +91,7 @@ class PdfGeneratorController extends Controller
             'papeleria' => DetallePapeleria::where('obra_id', $obraId)->whereMonth('fecha', $month)->whereYear('fecha', $year)->get(),
         ];
 
-        $pdf = PDF::loadView('pdf.general', $data);
+        $pdf = PDF::loadView('pdf.general', $data, ['obra' => $obra]);
 
         return $pdf->stream('general.pdf');
     }
