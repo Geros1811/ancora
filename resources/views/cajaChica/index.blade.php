@@ -123,7 +123,7 @@
                                           </td>
                                           <td class="gastos-rapidos-td">
                                               <input type="file" name="foto[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;">
-                                              @if($detalle->foto)
+                                              @if($detalle->foto != null && $detalle->foto != '')
                                                   <a href="{{ asset('storage/tickets/' . basename($detalle->foto)) }}" target="_blank">Ver Foto</a>
                                               @endif
                                           </td>
