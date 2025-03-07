@@ -40,12 +40,12 @@
 
         <div style="text-align: center; margin-bottom: 20px;">
             <h1>Obra: {{ $obra->nombre ?? 'N/A' }}</h1>
-            <div style="font-size: 1.5em; display: block; text-align: right;">Costo Mensual Total: N/A</div>
-            <div style="font-size: 1.5em; display: block; text-align: right;">Ingreso Mensual Total: N/A</div>
+            <div style="font-size: 1.5em; display: block; text-align: right;">Costo Mensual Total: ${{ number_format($costoMensualTotal, 2) }}</div>
+            <div style="font-size: 1.5em; display: block; text-align: right;">Ingreso Mensual: ${{ number_format($ingresoMensual, 2) }}</div>
             <h2>Reporte General</h2>
         </div>
 
-       
+      
         <table>
             <thead>
                 <tr>
