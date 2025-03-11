@@ -5,7 +5,7 @@
     <div class="dashboard-container">
         <h1>Detalles de la Obra: {{ $obra->nombre }}</h1>
         @if(Auth::check() && Auth::user()->hasRole('arquitecto'))
-            <a href="#" id="notification-button" style="float: right;">
+            <a href="#" id="notification-button" style="float: right;" disabled>
                 <i class="fas fa-bell" style="font-size: 24px;"></i>
             </a>
         @endif
@@ -97,7 +97,7 @@
             }
             #fullscreen-icon {
                 position: absolute;
-                bottom: -30px;
+                bottom: 30px;
                 right: 50%;
                 transform: translateX(50%);
                 cursor: pointer;
@@ -238,7 +238,7 @@
                     return;
                 @endif
                 const row = lockIcon.closest("tr"); // Fila correspondiente al candado
-                const inputs = row.querySelectorAll("input"); // Todos los campos de entrada dentro de la fila
+                const inputs = row.querySelectorAll("input"); // Todos los campos de entrada within the row
         
                 if (lockIcon.innerHTML === "🔓") {
                     // Bloquear todos los campos de la fila y ponerla verde
@@ -505,40 +505,48 @@
                 }
             }
         </script>
-        </script>
-    <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="notificationModalLabel">Notificaciones</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    @if(Auth::check() && Auth::user()->hasRole('arquitecto'))
-                        @php
-                            $unreadNotifications = Auth::user()->notifications()->whereNull('read_at')->where('obra_id', $obraId ?? null)->get();
-                        @endphp
 
-                        @if($unreadNotifications->count() > 0)
-                            <ul>
-                                @foreach($unreadNotifications as $notification)
-                                    <li>{{ $notification->message }}</li>
-                                @endforeach
-                            </ul>
-                        @else
-                            <p>No hay notificaciones.</p>
-                        @endif
-                    @endif
-                </div>
-            </div>
-        </div>
+        <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true" style="display:none;">
+        @include('notifications.index')
     </div>
+
+    <style>
+        #notificationModal .modal-dialog {
+            max-width: 300px;
+            margin-right: 0;
+            margin-left: auto;
+        }
+
+        #notificationModal .modal-content {
+            border: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #notificationModal .modal-header {
+            border-bottom: none;
+        }
+
+        #notificationModal .modal-body {
+            padding: 15px;
+        }
+
+        /* Slide in from right animation */
+        #notificationModal.fade .modal-dialog {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-out;
+        }
+
+        #notificationModal.show .modal-dialog {
+            transform: translateX(0);
+        }
+    </style>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
         $(document).ready(function() {
+            $('#notification-button').prop('disabled', false);
+
             $('#notification-button').on('click', function(event) {
                 event.preventDefault();
                 $('#notificationModal').modal('show');
