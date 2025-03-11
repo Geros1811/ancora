@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
 @section('head')
-    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 @endsection
 
 @section('content')
     <div class="login-container">
-        <h2>Login</h2>
+        <h2 style="color: #fff;">Registrate</h2>
 
         <form action="{{ route('login') }}" method="POST">
             @csrf

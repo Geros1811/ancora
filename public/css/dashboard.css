@@ -1,36 +1,45 @@
 /* Estilos generales para el cuerpo de la página */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #879baa;  /* Gris azulado de fondo */
+    font-family: 'Poppins', sans-serif;
+    background-color: #0a192f;
     margin: 0;
     padding: 0;
-    color: #333;
+    color: #f0f0f0;
 }
 
-/* Contenedor para el Dashboard */
+/* Contenedor principal */
 .dashboard-container {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    max-width: 800px;
-    margin: 30px auto;
-    border: 2px solid #3a4c72;  /* Azul oscuro para el borde */
+    background-color: #112240;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    padding: 25px;
+    max-width: 900px;
+    margin: 40px auto;
+    border: 1px solid #64ffda;
+    color: #f0f0f0;
+    text-align: center;
+    animation: fadeIn 0.8s ease-in-out;
 }
 
-/* Contenedor para la bienvenida */
-.welcome-container {
-    margin-top: 50px;  /* Separar de la parte superior */
-    margin-bottom: 30px;
+/* Animación */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
+/* Encabezado */
 .welcome-container h1 {
-    font-size: 28px;
-    color: #3a4c72;  /* Azul oscuro */
-    margin: 0;
+    color: #64ffda;
+    font-size: 24px;
 }
 
-/* Estilo para la información de la empresa */
+/* Contenedor del logo */
 .company-info {
     display: flex;
     flex-direction: column;
@@ -39,155 +48,113 @@ body {
 }
 
 .company-logo {
-    max-width: 250px;
-    max-height: 250px;
-    margin-bottom: 5px;
+    max-width: 150px;
+    margin-bottom: 10px;
 }
 
-.company-name {
-    margin-top: 0px;
-    font-size: 30px;
-    color: #3a4c72;
-}
-
-.text-center {
-    text-align: center;
-}
-
-/* Contenedor para la lista de obras */
+/* Contenedor de tarjetas */
 .obras-container {
-    background-color: #f9f9f9;
+    background-color: #233554;
+    color: #f0f0f0;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     margin-bottom: 20px;
 }
 
-/* Título de las obras */
-.obras-container h2 {
-    font-size: 24px;
-    color: #3a4c72;
-    margin-bottom: 15px;
-}
-
-/* Estilos para la lista de obras */
-.obras-list {
-    margin-top: 20px;
-}
-
+/* Lista de elementos */
 .obras-list ul {
     list-style-type: none;
     padding: 0;
 }
 
 .obras-list li {
-    background-color: #f4f4f4;
-    margin: 15px 0;
+    background-color: #0a192f;
+    color: #f0f0f0;
+    margin: 10px 0;
     padding: 15px;
-    border-radius: 5px;
+    border-radius: 8px;
     display: flex;
-    justify-content: space-between;  /* Alinea el nombre y el presupuesto en extremos */
+    justify-content: space-between;
     align-items: center;
+    transition: all 0.3s ease-in-out;
 }
 
-.obras-list li strong {
-    font-size: 18px;
-    color: #3a4c72;  /* Azul oscuro */
+.obras-list li:hover {
+    background-color: #112240;
 }
 
-.obras-list li span {
-    font-size: 16px;
-    color: #007bff;  /* Azul para el presupuesto */
-}
-
-/* Estilo para el formulario de logout */
+/* Botón de logout */
 .logout-container {
     position: absolute;
     top: 20px;
     right: 20px;
 }
 
-/* Estilo para el botón de logout */
 .logout-container button {
-    padding: 12px;
-    background-color: #3a4c72;  /* Azul oscuro */
-    color: #fff;
+    padding: 10px 15px;
+    background-color: #64ffda;
+    color: #0a192f;
     border: none;
-    border-radius: 4px;
-    font-size: 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
     cursor: pointer;
+    transition: all 0.3s ease-in-out;
 }
 
 .logout-container button:hover {
-    background-color: #2a3b5c;  /* Azul más oscuro */
+    background-color: #52d6b7;
 }
 
-/* Estilo del botón flotante */
+/* Botón flotante */
 .floating-btn {
     position: fixed;
     right: 20px;
     bottom: 20px;
     padding: 15px;
-    background-color: #007bff;
-    color: white;
+    background-color: #64ffda;
+    color: #0a192f;
     border-radius: 50%;
     font-size: 24px;
     border: none;
     cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease-in-out;
 }
 
 .floating-btn:hover {
-    background-color: #0056b3;  /* Azul más oscuro */
+    background-color: #52d6b7;
 }
 
-/* Estilo del formulario de crear obra */
-form label {
-    display: block;
-    margin-bottom: 5px;
-    color: #3a4c72;
-    font-weight: bold;
-}
-
+/* Estilo para inputs y botones */
 form input, form textarea {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: 1px solid #64ffda;
+    border-radius: 6px;
+    background-color: #112240;
+    color: #f0f0f0;
 }
 
 form button {
     width: 100%;
     padding: 12px;
-    background-color: #3a4c72;
-    color: white;
+    background-color: #64ffda;
+    color: #0a192f;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     font-size: 16px;
+    font-weight: bold;
     cursor: pointer;
+    transition: all 0.3s ease-in-out;
 }
 
 form button:hover {
-    background-color: #2a3b5c;
+    background-color: #52d6b7;
 }
 
-/* Botón de Logout */
-.logout-btn {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background-color: #3a4c72;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.logout-btn:hover {
-    background-color: #2a3b5c;
-}
 
 /* The Modal (background) */
 .modal {

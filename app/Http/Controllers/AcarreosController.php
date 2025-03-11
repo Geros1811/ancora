@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\DetalleAcarreos;
 use App\Models\CostoDirecto;
 use App\Models\Obra;
+use App\Models\User;
+use App\Models\Notification;
 
 class AcarreosController extends Controller
 {
@@ -81,6 +83,16 @@ class AcarreosController extends Controller
             ['obra_id' => $obraId, 'nombre' => 'Acarreos'],
             ['costo' => $costoTotal]
         );
+
+        // Create notification for the architect
+        $architects = User::where('role', 'arquitecto')->get();
+        foreach ($architects as $architect) {
+            $notification = new Notification();
+            $notification->user_id = $architect->id;
+            $notification->obra_id = $obraId;
+            $notification->message = 'Se ha agregado un nuevo gasto de Acarreos en la obra.';
+            $notification->save();
+        }
 
         return redirect()->route('acarreos.index', ['obraId' => $obraId]);
     }

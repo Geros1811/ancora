@@ -55,7 +55,6 @@
                 @endif
             </div>
         </div>
-    </div>
 
     <!-- Botón flotante que redirige a la creación de obra -->
     @if(Auth::user()->role == 'arquitecto')

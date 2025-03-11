@@ -332,7 +332,6 @@
                     alert("Hubo un problema al guardar los cambios.");
                 });
             }
-
             function crearGrafica() {
     let presupuesto = parseFloat("{{ $obra->presupuesto }}");
     let costosDirectos = {
@@ -501,4 +500,11 @@
                 }
             }
         </script>
+        </script>
+
+        @if(Auth::check() && Auth::user()->hasRole('arquitecto'))
+            <a href="{{ route('notifications.index', ['obraId' => $obra->id ?? 1]) }}">
+                <i class="fas fa-bell"></i>
+            </a>
+        @endif
 @endsection

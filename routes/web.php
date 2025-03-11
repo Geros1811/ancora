@@ -35,6 +35,7 @@ use App\Http\Controllers\IvaController;
 use App\Http\Controllers\OtrosPagosAdministrativosController;
 use App\Http\Controllers\IngresoController;
 use App\Http\Controllers\ClienteFotoController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/costos/{id}', [CostosController::class, 'show'])->name('costos.show');
 
@@ -279,3 +280,5 @@ Route::get('/utilidades/{obraId}/pdf', [UtilidadesController::class, 'generatePd
 Route::get('/ingresos/{obraId}/pdf', [IngresoController::class, 'generatePdf'])->name('ingresos.pdf');
 Route::get('/materiales/{obraId}/pdf', [MaterialesController::class, 'generatePdf'])->name('materiales.pdf');
 Route::get('/mano-obra/resumen/pdf/{obraId}', [ManoObraController::class, 'generateResumenPdf'])->name('manoObra.resumenPdf');
+
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
