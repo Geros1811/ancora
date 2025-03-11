@@ -7,6 +7,9 @@
         @if(Auth::check() && Auth::user()->hasRole('arquitecto'))
             <a href="#" id="notification-button" style="float: right;" disabled>
                 <i class="fas fa-bell" style="font-size: 24px;"></i>
+                @if(Auth::user()->notifications()->whereNull('read_at')->count() > 0)
+                    <span class="notification-badge"></span>
+                @endif
             </a>
         @endif
 
@@ -41,6 +44,17 @@
 
     .btn-flotante:hover {
       background-color: #0056b3;
+    }
+    .notification-badge {
+        position: relative;
+        top: -10px;
+        right: -10px;
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        background-color: red;
+        border-radius: 50%;
+        border: 1px solid white;
     }
   </style>
     
