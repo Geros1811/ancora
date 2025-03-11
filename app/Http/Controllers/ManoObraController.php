@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Imagen;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Notification;
 
 
 class ManoObraController extends Controller
@@ -138,6 +139,16 @@ class ManoObraController extends Controller
             ['obra_id' => $obraId, 'nombre' => 'Mano de Obra'],
             ['costo' => $costoTotal]
         );
+
+        // Create notification for the architect
+        $architects = User::where('role', 'arquitecto')->get();
+        foreach ($architects as $architect) {
+            $notification = new Notification();
+            $notification->user_id = $architect->id;
+            $notification->obra_id = $obraId;
+            $notification->message = "Nueva Nómina creada o Pase de lista Modificado.";
+            $notification->save();
+        }
 
         return redirect()->route('manoObra.index', ['obraId' => $obraId])
             ->with('success', 'Nómina actualizada correctamente.');
