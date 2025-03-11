@@ -506,55 +506,92 @@
             }
         </script>
 
-        <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true" style="display:none;">
-        @include('notifications.index')
+        <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            </div>
+            <div class="modal-body">
+                @include('notifications.index', ['obra' => $obra])
+            </div>
+        </div>
     </div>
+</div>
 
-    <style>
-        #notificationModal .modal-dialog {
-            max-width: 300px;
-            margin-right: 0;
-            margin-left: auto;
-        }
+<style>
+    /* Hacer que el modal cubra toda la altura de la pantalla y esté alineado a la derecha */
+    #notificationModal .modal-dialog {
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100vh;
+        max-width: 350px;
+        width: 100%;
+        margin: 0;
+        display: flex;
+        align-items: stretch;
+    }
 
-        #notificationModal .modal-content {
-            border: none;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+    #notificationModal .modal-content {
+        height: 100vh;
+        border: none;
+        box-shadow: -5px 0 10px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+    }
 
-        #notificationModal .modal-header {
-            border-bottom: none;
-        }
+    #notificationModal .modal-body {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 15px;
+    }
 
-        #notificationModal .modal-body {
-            padding: 15px;
-        }
+    /* Animación para deslizar desde la derecha */
+    #notificationModal.fade .modal-dialog {
+        transform: translateX(100%);
+        transition: transform 0.3s ease-out;
+    }
 
-        /* Slide in from right animation */
-        #notificationModal.fade .modal-dialog {
-            transform: translateX(100%);
-            transition: transform 0.3s ease-out;
-        }
+    #notificationModal.show .modal-dialog {
+        transform: translateX(0);
+    }
+    
+</style>
 
-        #notificationModal.show .modal-dialog {
-            transform: translateX(0);
-        }
-    </style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#notification-button').prop('disabled', false);
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#notification-button').prop('disabled', false);
-
-            $('#notification-button').on('click', function(event) {
-                event.preventDefault();
-                $('#notificationModal').modal('show');
-            });
-
-            $('.close').on('click', function() {
-                $('#notificationModal').modal('hide');
+        $('#notification-button').on('click', function(event) {
+            event.preventDefault();
+            $('#notificationModal').modal('show');
+            
+            // Mark all notifications as read when the modal is opened
+            $.ajax({
+                url: "/marcar-todas-notificaciones-leidas",
+                type: "POST",
+                data: {
+                    obra_id: {{ $obra->id }},
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Remove the red dot from the notification button
+                        $('#notification-button i').removeClass('fas fa-bell').addClass('far fa-bell');
+                    }
+                },
+                error: function() {
+                    alert("Hubo un error al marcar las notificaciones como leídas.");
+                }
             });
         });
-    </script>
+
+        $('.close').on('click', function() {
+            $('#notificationModal').modal('hide');
+        });
+    });
+</script>
+
 @endsection

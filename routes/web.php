@@ -282,3 +282,20 @@ Route::get('/materiales/{obraId}/pdf', [MaterialesController::class, 'generatePd
 Route::get('/mano-obra/resumen/pdf/{obraId}', [ManoObraController::class, 'generateResumenPdf'])->name('manoObra.resumenPdf');
 
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::post('/marcar-notificacion-leida', function (Illuminate\Http\Request $request) {
+    $notification = \App\Models\Notification::find($request->id);
+    if ($notification) {
+        $notification->read_at = now();
+        $notification->save();
+        return response()->json(['success' => true])->header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+    return response()->json(['success' => false])->header('Cache-Control', 'no-cache, no-store, must-revalidate');
+});
+
+Route::post('/marcar-todas-notificaciones-leidas', function (Illuminate\Http\Request $request) {
+    $obraId = $request->input('obra_id');
+    \App\Models\Notification::where('obra_id', $obraId)
+        ->whereNull('read_at')
+        ->update(['read_at' => now()]);
+    return response()->json(['success' => true]);
+});
