@@ -121,11 +121,33 @@ class GastosRapidosController extends Controller
 
             // Create notification for the architect
             $architects = User::where('role', 'arquitecto')->get();
+            $tableNameMap = [
+                'detalle_gasolinas' => 'Gasolina',
+                'detalle_maquinaria_mayor' => 'Maquinaria Mayor',
+                'detalle_maquinaria_menor' => 'Maquinaria Menor',
+                'detalle_herramienta_menor' => 'Herramienta Menor',
+                'detalle_equipo_seguridad' => 'Equipo de Seguridad',
+                'renta_maquinarias' => 'Renta de Maquinaria',
+                'detalle_rentas' => 'Rentas',
+                'detalle_utilidades' => 'Utilidades',
+                'detalle_acarreos' => 'Acarreos',
+                'detalle_comidas' => 'Comidas',
+                'detalle_tramites' => 'Trámites',
+                'detalle_cimbras' => 'Cimbras',
+                'detalle_limpieza' => 'Limpieza',
+                'detalles_papeleria' => 'Papelería',
+                'agregados' => 'Agregados',
+                'aceros' => 'Aceros',
+                'cemento' => 'Cemento',
+                'losas' => 'Losas',
+                'generales' => 'Materiales',
+            ];
+            $friendlyTableName = $tableNameMap[$tableName] ?? ucfirst($tableName);
             foreach ($architects as $architect) {
                 $notification = new Notification();
                 $notification->user_id = $architect->id;
                 $notification->obra_id = $obraId;
-                $notification->message = 'Se ha agregado un nuevo gasto rápido en la obra.';
+                $notification->message = "Nuevo Gasto en $friendlyTableName.";
                 $notification->save();
             }
 

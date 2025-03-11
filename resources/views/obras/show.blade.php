@@ -592,8 +592,8 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        // Remove the red dot from the notification button
-                        $('#notification-button i').removeClass('fas fa-bell').addClass('far fa-bell');
+                        // Hide the red dot from the notification button
+                        $('#notification-button .notification-badge').hide();
                     }
                 },
                 error: function() {
