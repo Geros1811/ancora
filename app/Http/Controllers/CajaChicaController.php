@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\CajaChica;
 use App\Models\DetalleCajaChica;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Notification;
+
 
 class CajaChicaController extends Controller
 {
@@ -54,6 +56,16 @@ class CajaChicaController extends Controller
             'subtotal' => 0, // Valor por defecto para subtotal
             'cambio' => 0, // Valor por defecto para cambio
         ]);
+
+        // Create notification for the architect
+        $architects = User::where('role', 'arquitecto')->get();
+        foreach ($architects as $architect) {
+            $notification = new Notification();
+            $notification->user_id = $architect->id;
+            $notification->obra_id = $request->obra_id;
+            $notification->message = 'Se ha agregado una nueva Caja Chica en la obra.';
+            $notification->save();
+        }
 
         return redirect()->route('cajaChica.index', ['obraId' => $request->obra_id, 'cajaChica' => $cajaChica->id])
             ->with('success', 'Datos guardados exitosamente.');
@@ -121,11 +133,24 @@ class CajaChicaController extends Controller
         $this->updateCajaChicaSubtotalAndCambio($cajaChicaId);
 
         $obraId = $request->input('obra_id');
+
+        // Create notification for the architect
+        $architects = User::where('role', 'arquitecto')->get();
+        foreach ($architects as $architect) {
+            $notification = new Notification();
+            $notification->user_id = $architect->id;
+            $notification->obra_id = $obraId;
+            $notification->message = 'Se ha agregado un nuevo gasto de Caja Chica en la obra.';
+            $notification->save();
+        }
+
         return redirect()->route('cajaChica.index', ['obraId' => $obraId, 'cajaChica' => $cajaChicaId])
             ->with('success', 'Detalles guardados exitosamente.');
     }
+
     public function storeDetail(Request $request)
     {
+        
         $request->validate([
             'id.*' => 'nullable|exists:detalle_caja_chicas,id',
             'caja_chica_id' => 'required|exists:caja_chicas,id',
