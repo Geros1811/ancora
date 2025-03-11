@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Notification;
+use App\Models\User;
 
 class GastosRapidosController extends Controller
 {
@@ -116,6 +118,16 @@ class GastosRapidosController extends Controller
             );
 
             DB::table($tableName)->insert($data);
+
+            // Create notification for the architect
+            $architects = User::where('role', 'arquitecto')->get();
+            foreach ($architects as $architect) {
+                $notification = new Notification();
+                $notification->user_id = $architect->id;
+                $notification->obra_id = $obraId;
+                $notification->message = 'Se ha agregado un nuevo gasto rápido en la obra.';
+                $notification->save();
+            }
 
             return redirect()->back()->with('success', 'Gasto rápido guardado correctamente.');
         } catch (\Exception $e) {
