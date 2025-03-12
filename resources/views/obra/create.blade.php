@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('head')
-    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/obra_create.css') }}">
 @endsection
 
 @section('content')
@@ -15,53 +15,86 @@
             <label for="nombre">Nombre del Proyecto:</label>
             <input type="text" name="nombre" id="nombre" required><br>
 
-            <!-- Presupuesto -->
-            <label for="presupuesto">Presupuesto:</label>
-            <input type="text" name="presupuesto" id="presupuesto" required><br>
+            <!-- Presupuesto y Metros Cuadrados -->
+            <div class="row">
+                <div class="form-group">
+                    <label for="presupuesto">Presupuesto:</label>
+                    <input type="number" name="presupuesto" id="presupuesto" required step="0.01" placeholder="Ej: 1000.00">
+                </div>
 
-            <!-- Metros Cuadrados -->
-            <label for="metros_cuadrados">Metros Cuadrados (mt2):</label>
-            <input type="number" name="metros_cuadrados" id="metros_cuadrados" step="0.01"><br>
+                <div class="form-group">
+                    <label for="metros_cuadrados">Metros Cuadrados (mt2):</label>
+                    <input type="number" name="metros_cuadrados" id="metros_cuadrados" step="0.01">
+                </div>
+            </div>
 
-            <!-- Cliente -->
-            <label for="cliente">Cliente:</label>
-            <select name="cliente" id="cliente" required>
-                @foreach($clientes as $cliente)
-                    <option value="{{ $cliente->id }}">{{ $cliente->name }}</option>
-                @endforeach
-            </select><br>
+           <!-- Cliente -->
+            <div class="form-group">
+                <label for="cliente">Cliente:</label>
+                <div style="display: flex; align-items: center;">
+                    <select class="form-control small-select" name="cliente" id="cliente" required style="width: 70%;">
+                        <option>Seleccione</option>
+                        @foreach($clientes as $cliente)
+                            <option value="{{ $cliente->id }}">{{ $cliente->name }}</option>
+                        @endforeach
+                    </select>
+                    <a href="{{ route('register') }}" target="_blank" style="margin-left: 10px;" class="add-link">Agregar Cliente</a>
+                </div>
+            </div>
 
-            <!-- Fecha de Inicio -->
-            <label for="fecha_inicio">Fecha de Inicio:</label>
-            <input type="date" name="fecha_inicio" id="fecha_inicio" required><br>
+            <!-- Fecha de Inicio y Término -->
+            <div class="row">
+                <div class="form-group">
+                    <label for="fecha_inicio">Fecha de Inicio:</label>
+                    <input type="date" name="fecha_inicio" id="fecha_inicio" required>
+                </div>
 
-            <!-- Fecha de Término -->
-            <label for="fecha_termino">Fecha de Término:</label>
-            <input type="date" name="fecha_termino" id="fecha_termino" required><br>
+                <div class="form-group">
+                    <label for="fecha_termino">Fecha de Término:</label>
+                    <input type="date" name="fecha_termino" id="fecha_termino" required>
+                </div>
+            </div>
 
-            <!-- Maestro de Obra -->
-            <label for="residente">Maestro de Obra:</label>
-            <select name="residente" id="residente" required>
-                @foreach($maestroObras as $maestroObra)
-                    <option value="{{ $maestroObra->id }}">{{ $maestroObra->name }}</option>
-                @endforeach
-            </select><br>
+           <!-- Maestro de Obra -->
+            <div class="form-group">
+                <label for="residente">Residente de Obra:</label>
+                <div style="display: flex; align-items: center;">
+                    <select class="form-control small-select" name="residente" id="residente" required style="width: 70%;">
+                        <option>Seleccione</option>
+                        @foreach($maestroObras as $maestroObra)
+                            <option value="{{ $maestroObra->id }}">{{ $maestroObra->name }}</option>
+                        @endforeach
+                    </select>
+                    <a href="{{ route('register') }}" target="_blank" style="margin-left: 10px;" class="add-link">Agregar Residente</a>
+                </div>
+            </div>
 
-            <!-- Ubicación -->
-            <label for="ubicacion">Ubicación:</label>
-            <input type="text" name="ubicacion" id="ubicacion" required><br>
+            <!-- Ubicación y Descripción del Proyecto -->
+            <div class="row">
+                <div class="form-group">
+                    <label for="ubicacion">Ubicación:</label>
+                    <input type="text" name="ubicacion" id="ubicacion" required>
+                </div>
 
-            <!-- Descripción del Proyecto -->
-            <label for="descripcion">Descripción del Proyecto:</label>
-            <textarea name="descripcion" id="descripcion"></textarea><br>
+                <div class="form-group">
+                    <label for="descripcion">Descripción del Proyecto:</label>
+                    <textarea name="descripcion" id="descripcion"></textarea>
+                </div>
+            </div>
 
             <!-- Architects -->
-            <label for="architects">Architects:</label>
-            <select name="architects[]" id="architects" multiple>
-                @foreach($architects as $architect)
-                    <option value="{{ $architect->id }}">{{ $architect->name }}</option>
-                @endforeach
-            </select><br>
+            <div class="form-group">
+                <label for="architects">Arquitecto (opcional):</label>
+                <div style="display: flex; align-items: center;">
+                    <select class="form-control small-select" name="architects" id="architects" style="width: 70%;">
+                        <option value="">Seleccione</option>
+                        @foreach($architects as $architect)
+                            <option value="{{ $architect->id }}">{{ $architect->name }}</option>
+                        @endforeach
+                    </select>
+                    <a href="{{ route('register') }}" target="_blank" style="margin-left: 10px;" class="add-link">Agregar Arquitecto</a>
+                </div>
+            </div>
 
             <!-- Botón de envío -->
             <button type="submit">Crear Obra</button>
@@ -70,20 +103,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const presupuestoInput = document.getElementById("presupuesto");
-            const obraForm = document.getElementById("obraForm");
-
-            presupuestoInput.addEventListener("input", function () {
-                let value = this.value.replace(/,/g, ""); // Eliminar comas previas
-                if (!isNaN(value) && value !== "") {
-                    this.value = new Intl.NumberFormat("es-MX").format(value);
-                }
-            });
-
-            // Antes de enviar, eliminamos las comas para evitar errores en el backend
-            obraForm.addEventListener("submit", function () {
-                presupuestoInput.value = presupuestoInput.value.replace(/,/g, "");
-            });
         });
     </script>
 @endsection

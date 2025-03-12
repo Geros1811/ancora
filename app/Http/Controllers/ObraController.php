@@ -29,8 +29,11 @@ class ObraController extends Controller
 
     public function index()
     {
+        $obras = [];
         if (Auth::user()->role == 'arquitecto') {
-            $obras = Obra::where('user_id', Auth::id())->get();
+            $obras = Obra::where('user_id', Auth::id())
+                         ->orWhere('arquitecto_id', Auth::id())
+                         ->get();
         } elseif (Auth::user()->role == 'maestro_obra') {
             $obras = Obra::where('residente', Auth::id())->get();
         } else {
@@ -51,6 +54,39 @@ class ObraController extends Controller
         $maestroObras = User::where('role', 'maestro_obra')->where('created_by', $userId)->get();
         $clientes = User::where('role', 'cliente')->where('created_by', $userId)->get();
         return view('obra.create', compact('architects', 'maestroObras', 'clientes'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nombre' => 'required',
+            'presupuesto' => 'required|numeric',
+            'metros_cuadrados' => 'nullable|numeric',
+            'cliente' => 'required',
+            'fecha_inicio' => 'nullable|date',
+            'fecha_termino' => 'nullable|date',
+            'residente' => 'required',
+            'ubicacion' => 'required',
+            'descripcion' => 'nullable',
+            'architects' => 'nullable|exists:users,id',
+        ]);
+
+        $obra = new Obra();
+        $obra->nombre = $request->input('nombre');
+        $obra->presupuesto = $request->input('presupuesto');
+        $obra->metros_cuadrados = $request->input('metros_cuadrados');
+        $obra->cliente = $request->input('cliente');
+        $obra->fecha_inicio = $request->input('fecha_inicio');
+        $obra->fecha_termino = $request->input('fecha_termino');
+        $obra->residente = $request->input('residente');
+        $obra->ubicacion = $request->input('ubicacion');
+        $obra->descripcion = $request->input('descripcion');
+        $obra->user_id = Auth::id();
+        $obra->arquitecto_id = $request->input('architects');
+
+        $obra->save();
+
+        return redirect()->route('dashboard')->with('success', 'Obra creada correctamente.');
     }
 
     public function show($id)

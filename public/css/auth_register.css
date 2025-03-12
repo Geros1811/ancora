@@ -1,0 +1,68 @@
+/* Estilos generales para el cuerpo de la página */
+body {
+    font-family: "Swis721 LtEx BT", sans-serif;
+    background-color: #0a192f;
+    margin: 0;
+    padding: 0;
+    color: #f0f0f0;
+}
+
+/* Contenedor principal */
+.auth-container {
+    background-color: #112240;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    padding: 25px;
+    max-width: 900px;
+    margin: 40px auto;
+    border: 1px solid #64ffda;
+    color: #f0f0f0;
+    text-align: center;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+/* Animación */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Encabezado */
+.auth-container h1 {
+    color: #64ffda;
+    font-size: 24px;
+}
+
+/* Estilo para inputs y botones */
+form input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #64ffda;
+    border-radius: 6px;
+    background-color: #112240;
+    color: #f0f0f0;
+}
+
+form button {
+    width: 100%;
+    padding: 12px;
+    background-color: #64ffda;
+    color: #0a192f;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+form button:hover {
+    background-color: #52d6b7;
+}

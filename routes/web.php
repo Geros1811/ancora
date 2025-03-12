@@ -60,9 +60,10 @@ Route::get('/obra/crear', [ObraController::class, 'create'])->name('obra.create'
 Route::post('/obra', [ObraController::class, 'store'])->name('obra.store');
 
 // Rutas de registro
+Route::get('/register', [LoginController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [LoginController::class, 'register'])->name('register');
+
 Route::middleware('auth')->group(function () {
-    Route::get('/register', [LoginController::class, 'showRegisterForm'])->name('register');
-    Route::post('/register', [LoginController::class, 'register'])->name('register');
 });
 
 // Rutas para gastos rápidos

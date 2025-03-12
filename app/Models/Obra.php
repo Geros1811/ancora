@@ -12,14 +12,15 @@ class Obra extends Model
     protected $fillable = [
         'nombre',
         'presupuesto',
+        'metros_cuadrados',
         'cliente',
         'fecha_inicio',
         'fecha_termino',
         'residente',
         'ubicacion',
         'descripcion',
-        'metros_cuadrados',
-        'user_id'
+        'user_id',
+        'arquitecto_id'
     ];
 
     public function detalles()

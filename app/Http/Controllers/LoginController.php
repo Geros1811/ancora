@@ -63,6 +63,6 @@ class LoginController extends Controller
             'created_by' => Auth::id() ?? 1, // Si no hay usuario autenticado, usa 1
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'User registered successfully.');
+        return redirect()->route('obra.create')->with('success', 'User registered successfully.');
     }
 }

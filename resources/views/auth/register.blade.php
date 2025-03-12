@@ -1,17 +1,21 @@
 @extends('layouts.app')
 
 @section('head')
-    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/auth_register.css') }}">
+@endsection
+
+@section('head')
+  
 @endsection
 
 @section('content')
-    <div class="register-container">
-        <h2>Register</h2>
+    <div class="auth-container">
+        <h2>Registrar Equipo</h2>
 
         <form action="{{ route('register') }}" method="POST">
             @csrf
             <div>
-                <label for="name">Name:</label>
+                <label for="name">Nombre:</label>
                 <input type="text" name="name" id="name" required><br>
             </div>
             <div>
@@ -19,22 +23,22 @@
                 <input type="email" name="email" id="email" required><br>
             </div>
             <div>
-                <label for="password">Password:</label>
+                <label for="password">Contraseña:</label>
                 <input type="password" name="password" id="password" required><br>
             </div>
             <div>
-                <label for="password_confirmation">Confirm Password:</label>
+                <label for="password_confirmation">Confirmar Contraseña:</label>
                 <input type="password" name="password_confirmation" id="password_confirmation" required><br>
             </div>
             <div>
                 <label for="role">Role:</label>
                 <select name="role" id="role" required>
                     <option value="arquitecto">Arquitecto</option>
-                    <option value="maestro_obra">Maestro de Obra</option>
+                    <option value="maestro_obra">Residente</option>
                     <option value="cliente">Cliente</option>
                 </select><br>
             </div>
-            <button type="submit">Register</button>
+            <button type="submit">Registrar</button>
         </form>
 
         @if ($errors->any())
