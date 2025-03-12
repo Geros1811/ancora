@@ -64,12 +64,21 @@
             @if(Auth::user()->role == 'arquitecto' || Auth::user()->role == 'cliente')
                 <p><strong>Presupuesto:</strong> ${{ number_format($obra->presupuesto, 2) }}</p>
                 <p><strong>Metros Cuadrados:</strong> {{ $obra->metros_cuadrados }} MT2</p>
-                <p><strong>Cliente:</strong> {{ $obra->cliente }}</p>
+                <p><strong>Cliente:</strong> {{ $cliente->name }}</p>
+            @endif
+            @if(Auth::user()->role != 'residente' && $obra->fecha_inicio)
+                <p><strong>Fecha de Inicio:</strong> {{ \Carbon\Carbon::parse($obra->fecha_inicio)->format('d/m/Y') }}</p>
+            @endif
+            @if(Auth::user()->role != 'residente' && $obra->fecha_termino)
+                <p><strong>Fecha de Término:</strong> {{ \Carbon\Carbon::parse($obra->fecha_termino)->format('d/m/Y') }}</p>
             @endif
             @if(Auth::user()->role != 'residente')
-                <p><strong>Fecha de Inicio:</strong> {{ $obra->fecha_inicio }}</p>
-                <p><strong>Fecha de Término:</strong> {{ $obra->fecha_termino }}</p>
-                <p><strong>Residente de Obra:</strong> {{ $obra->residente }}</p>
+               
+                @if(isset($residente))
+                    <p><strong>Residente de Obra:</strong> {{ $residente->name }}</p>
+                @else
+                    <p><strong>Residente de Obra:</strong> No asignado</p>
+                @endif
                 <p><strong>Ubicación:</strong> {{ $obra->ubicacion }}</p>
                 <p><strong>Descripción:</strong> {{ $obra->descripcion }}</p>
             @endif

@@ -102,6 +102,9 @@ class ObraController extends Controller
             $obra = Obra::where('id', $id)->firstOrFail();
         }
 
+        $cliente = User::find($obra->cliente);
+        $residente = User::find($obra->residente);
+
         $costosDirectos = CostoDirecto::where('obra_id', $id)->get();
         $costosIndirectos = CostoIndirecto::where('obra_id', $id)->get();
         $totalPagosCliente = CalendarioPago::where('obra_id', $id)->sum('pago');
@@ -122,7 +125,7 @@ class ObraController extends Controller
         // Calculate total cantidad from destajos
         $totalCantidadDestajos = \App\Models\Destajo::where('obra_id', $id)->sum('cantidad');
 
-        return view('obras.show', compact('obra', 'costosDirectos', 'costosIndirectos', 'totalPagosCliente', 'totalCantidadDestajos', 'pagosAdministrativos', 'ingresos', 'pagosAdministrativosOcultos'));
+        return view('obras.show', compact('obra', 'costosDirectos', 'costosIndirectos', 'totalPagosCliente', 'totalCantidadDestajos', 'pagosAdministrativos', 'ingresos', 'pagosAdministrativosOcultos', 'cliente', 'residente'));
     }
 
     public function guardarCalendario(Request $request)
