@@ -20,7 +20,7 @@
             @if(Auth::user()->role == 'arquitecto')
                 @if(Auth::user()->logo && Auth::user()->company_name)
                     <div class="company-info text-center">
-                        <img src="{{ asset('storage/' . Auth::user()->logo) }}" alt="Logo" class="company-logo">
+                        <img src="{{ asset(Auth::user()->logo) }}" alt="Logo" class="company-logo">
                         <h2 class="company-name">{{ Auth::user()->company_name }}</h2>
                     </div>
                 @else

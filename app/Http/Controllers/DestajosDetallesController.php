@@ -274,7 +274,10 @@ class DestajosDetallesController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $imagePath = $request->file('image')->store('images', 'public');
+        $image = $request->file('image');
+        $imageName = time() . '_' . $image->getClientOriginalName();
+        $image->move(base_path('destajofotos'), $imageName);
+        $imagePath = 'destajofotos/' . $imageName;
 
         $imagen = new Imagen();
         $imagen->path = $imagePath;

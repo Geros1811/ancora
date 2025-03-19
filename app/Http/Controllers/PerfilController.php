@@ -24,8 +24,8 @@ class PerfilController extends Controller
         if ($request->hasFile('logo')) {
             $image = $request->file('logo');
             $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(base_path('logos'), $imageName);
             $logoPath = 'logos/' . $imageName;
-            $image->storeAs('public/logos', $imageName);
             $user->logo = $logoPath;
         }
 
