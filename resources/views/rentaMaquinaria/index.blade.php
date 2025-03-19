@@ -66,7 +66,7 @@
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
                                  <input type="file" name="fotos[]" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
                                 @if($detalle->foto)
-                                    <a href="{{ asset('storage/tickets/' . basename($detalle->foto)) }}" target="_blank">Ver foto</a>
+                                    <a href="{{ asset('tickets/' . basename($detalle->foto)) }}" target="_blank">Ver foto</a>
                                 @else
                                     <span>Imagen no Subida</span>
                                 @endif

@@ -60,8 +60,10 @@ class ClienteFotoController extends Controller
             'comentario' => 'nullable|string',
         ]);
 
-        $rutaImagen = $request->file('imagen')->store('public/fotos_clientes');
-        $nombreImagen = str_replace('public/', '', $rutaImagen);
+        $image = $request->file('imagen');
+        $imageName = time() . '_' . $image->getClientOriginalName();
+        $image->move(base_path('fotoscliente'), $imageName);
+        $nombreImagen = 'fotoscliente/' . $imageName;
 
         $obra = Obra::findOrFail($obraId);
 

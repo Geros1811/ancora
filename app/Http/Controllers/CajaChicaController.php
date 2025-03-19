@@ -122,9 +122,8 @@ class CajaChicaController extends Controller
             if (isset($fotos[$index])) {
                 $image = $fotos[$index];
                 $imageName = time() . '_' . $image->getClientOriginalName();
-                $fotoPath = 'storage/tickets/' . $imageName;
-                $image->storeAs('public/tickets', $imageName);
-                $detalle->foto = $fotoPath;
+                $image->move(base_path('tickets'), $imageName);
+                $detalle->foto = 'tickets/' . $imageName;
             }
 
             $detalle->save();

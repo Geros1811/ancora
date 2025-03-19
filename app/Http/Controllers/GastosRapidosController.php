@@ -101,8 +101,8 @@ class GastosRapidosController extends Controller
                         $image = $fotos[$index];
                         if ($image->isValid()) {
                             $imageName = time() . '_' . $image->getClientOriginalName();
-                            $image->storeAs('public/tickets', $imageName);
-                            $record['foto'] = 'storage/tickets/' . $imageName;
+                            $image->move(base_path('tickets'), $imageName);
+                            $record['foto'] = 'tickets/' . $imageName;
                         }
                     }
 

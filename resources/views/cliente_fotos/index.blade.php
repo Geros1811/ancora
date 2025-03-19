@@ -43,7 +43,7 @@
                                 echo '<div class="add-photo" onclick="openAddPhotoModal(\'' . $fechaDia . '\')">Agregar Foto</div>';
                             } else {
                                 foreach ($fotoDelDia as $foto) {
-                                    echo '<img src="' . asset('storage/' . $foto->imagen) . '" width="50" onclick="openModal(\'' . asset('storage/' . $foto->imagen) . '\', \'' . $foto->id . '\', \'' . htmlspecialchars($foto->comentario, ENT_QUOTES) . '\')">
+                                    echo '<img src="' . asset($foto->imagen) . '" width="50" onclick="openModal(\'' . asset($foto->imagen) . '\', \'' . $foto->id . '\', \'' . htmlspecialchars($foto->comentario, ENT_QUOTES) . '\')">
                                           <p>' . $foto->titulo . '</p>';
                                 }
                             }

@@ -65,8 +65,8 @@ class MaquinariaMenorController extends Controller
                     }
                 }
 
-                $image->storeAs('public/tickets', $imageName);
-                $detalle->foto = 'storage/tickets/' . $imageName;
+                $image->move(base_path('tickets'), $imageName);
+                $detalle->foto = 'tickets/' . $imageName;
             } elseif (!$detalle->foto) {
                 $detalle->foto = null;
             }
