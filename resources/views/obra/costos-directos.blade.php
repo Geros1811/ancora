@@ -26,7 +26,8 @@
                     <div id="manoObra-options" class="hidden-section">
                         <ul>
                             <li><a href="{{ route('manoObra.index', ['obraId' => $obra->id, 'tipo' => 'nomina']) }}">Nómina</a></li>
-                            <li><a href="{{ route('destajos.index', ['obraId' => $obra->id]) }}">Destajos</a></li>
+                            <li><a href="{{ route('destajos.index', ['obraId' => $obra->id]) }}">Destajos Con Nomina</a></li>
+                            <li><a href="{{ route('destajosSinNomina.index', ['obraId' => $obra->id]) }}">Destajos Sin Nomina</a></li>
                         </ul>
                     </div>
                 </td>

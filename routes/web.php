@@ -36,6 +36,7 @@ use App\Http\Controllers\OtrosPagosAdministrativosController;
 use App\Http\Controllers\IngresoController;
 use App\Http\Controllers\ClienteFotoController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\DestajosSinNominaController;
 
 Route::get('/costos/{id}', [CostosController::class, 'show'])->name('costos.show');
 
@@ -64,6 +65,8 @@ Route::get('/register', [LoginController::class, 'showRegisterForm'])->name('reg
 Route::post('/register', [LoginController::class, 'register'])->name('register');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/destajosSinNomina/{obraId}', [DestajosSinNominaController::class, 'index'])->name('destajosSinNomina.index');
+    Route::post('/destajosSinNomina/{obraId}', [DestajosSinNominaController::class, 'store'])->name('destajosSinNomina.store');
 });
 
 // Rutas para gastos rápidos
