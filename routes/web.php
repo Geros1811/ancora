@@ -67,6 +67,8 @@ Route::post('/register', [LoginController::class, 'register'])->name('register')
 Route::middleware('auth')->group(function () {
     Route::get('/destajosSinNomina/{obraId}', [DestajosSinNominaController::class, 'index'])->name('destajosSinNomina.index');
     Route::post('/destajosSinNomina/{obraId}', [DestajosSinNominaController::class, 'store'])->name('destajosSinNomina.store');
+    Route::post('/destajosSinNomina/{obraId}/{partidaId}', [DestajosSinNominaController::class, 'storeDetalles'])->name('destajosSinNomina.storeDetalles');
+    Route::post('/destajosSinNomina/{obraId}/{partidaId}/upload-image', [DestajosSinNominaController::class, 'uploadImage'])->name('destajosSinNomina.uploadImage');
 });
 
 // Rutas para gastos rápidos
