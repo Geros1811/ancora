@@ -22,270 +22,356 @@
         <div class="partida-container">
             <form id="partida-form-{{ $partida->id }}"
                 action="{{ route('destajosSinNomina.storeDetalles', ['obraId' => $obraId, 'partidaId' => $partida->id]) }}"
-                method="POST">
+                method="POST" enctype="multipart/form-data">
                 @csrf
-                <span class="toggle-button" onclick="toggleTable('partida-{{ $partida->id }}')">+</span>
-                <h3>{{ $partida->title }}</h3>
+                <h3>{{ $partida->title }} <span class="toggle-button" onclick="toggleTable('partida-{{ $partida->id }}')">+</span></h3>
 
-                <div class="table-wrapper">
-                    <table id="partida-{{ $partida->id }}" class="partida-table">
-                        <thead>
-                            <tr>
-                                <th>Clave</th>
-                                <th>Concepto</th>
-                                <th>Unidad</th>
-                                <th>Cantidad</th>
-                                <th>Precio Unitario</th>
-                                <th>Subtotal</th>
-                                <th>Restante
-                                    <button type="button" onclick="addColumn('partida-{{ $partida->id }}')">+</button>
-                                </th>
-                                @php
-                                    $pagoNumbers = [];
-
-                                    // Recorrer las partidas y detalles para encontrar los índices de los pagos
-                                    foreach ($partida->detalles as $detalle) {
-                                        if (is_array($detalle->pagos)) {
-                                            $pagoNumbers = array_merge($pagoNumbers, array_keys($detalle->pagos));
+                <div class="table-container hidden" style="margin-top: 20px;">
+                    <div class="table-wrapper">
+                        <table class="obra-table">
+                            <thead>
+                                <tr>
+                                    <th>Clave</th>
+                                    <th>Concepto</th>
+                                    <th>Unidad</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Unitario</th>
+                                    <th>Subtotal</th>
+                                    <th id="pago-header-1">
+                                        Pago 1
+                                        <button type="button" class="btn btn-success btn-sm" onclick="agregarColumnaPago(this)">+</button>
+                                    </th>
+                                    @php
+                                        $maxPagos = 0;
+                                        foreach ($partida->detalles as $detalle) {
+                                            if (is_array($detalle->pagos)) {
+                                                $maxPagos = max($maxPagos, count($detalle->pagos));
+                                            }
                                         }
-                                    }
-
-                                    // Ordenar los números de pagos de menor a mayor
-                                    $pagoNumbers = array_unique($pagoNumbers);
-                                    sort($pagoNumbers);
-                                @endphp
-                                @foreach ($pagoNumbers as $pagoNumber)
-                                    <th>Pago {{ $pagoNumber }}</th>
-                                @endforeach
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if ($partida->detalles)
-                                @foreach ($partida->detalles as $detalle)
-                                    <tr>
-                                        <td><input type="text" name="clave[]" value="{{ $detalle->clave }}"></td>
-                                        <td><input type="text" name="concepto[]" value="{{ $detalle->concepto }}"></td>
-                                        <td><input type="text" name="unidad[]" value="{{ $detalle->unidad }}"></td>
-                                        <td><input type="number" class="cantidad" name="cantidad[]"
-                                                value="{{ $detalle->cantidad }}" oninput="calcularSubtotal(this)"></td>
-                                        <td><input type="number" class="precioUnitario" name="precio_unitario[]"
-                                                value="{{ $detalle->precio_unitario }}" oninput="calcularSubtotal(this)"></td>
-                                        <td><span class="subtotal">{{ $detalle->subtotal }}</span><input type="hidden"
-                                                class="subtotal-hidden" name="subtotal[]" value="{{ $detalle->subtotal }}">
-                                        </td>
-                                        <td><span class="restante">0.00</span></td>
-                                        @foreach ($pagoNumbers as $pagoNumber)
+                                    @endphp
+                                    @for ($i = 2; $i <= $maxPagos; $i++)
+                                        <th id="pago-header-{{ $i }}">Pago {{ $i }}</th>
+                                    @endfor
+                                    <th>Pendiente</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if ($partida->detalles)
+                                    @foreach ($partida->detalles as $index => $detalle)
+                                        <tr>
                                             <td>
-                                                <input type="number" class="pago" name="pago_{{ $pagoNumber }}[]" 
-                                                    value="{{ isset($detalle->pagos[$pagoNumber]['monto']) ? $detalle->pagos[$pagoNumber]['monto'] : '' }}">
-                                                <br>
-                                                <input type="date" name="pago_fecha_{{ $pagoNumber }}[]" 
-                                                    value="{{ isset($detalle->pagos[$pagoNumber]['fecha']) ? $detalle->pagos[$pagoNumber]['fecha'] : '' }}">
+                                                <input type="hidden" name="detalle_id[]" value="{{ $detalle->id }}">
+                                                <input type="text" name="clave[]" class="form-control"
+                                                    value="{{ $detalle->clave }}">
                                             </td>
-                                        @endforeach
-                                    </tr>
-                                @endforeach
-                            @endif
-                        </tbody>
-                    </table>
-                </div>
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        toggleTable('partida-{{ $partida->id }}');
-                    });
-                </script>
+                                            <td>
+                                                <input type="text" name="concepto[]" class="form-control"
+                                                    value="{{ $detalle->concepto }}">
+                                            </td>
+                                            <td>
+                                                <input type="text" name="unidad[]" class="form-control"
+                                                    value="{{ $detalle->unidad }}">
+                                            </td>
+                                            <td>
+                                                <input type="number" name="cantidad[]" class="form-control"
+                                                    value="{{ $detalle->cantidad }}" oninput="calcularSubtotal(this.closest('tr')); calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()">
+                                            </td>
+                                            <td>
+                                                <input type="number" name="precio_unitario[]" class="form-control"
+                                                    value="{{ $detalle->precio_unitario }}" oninput="calcularSubtotal(this.closest('tr')); calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()">
+                                            </td>
+                                            <td>
+                                                <input type="number" name="subtotal[]" class="form-control"
+                                                    value="{{ $detalle->subtotal }}" placeholder="$" readonly>
+                                            </td>
+                                            <td>
+                                                Fecha: <input type="date" name="pago_fecha_1[]" class="form-control" value="{{ $detalle->pagos[1]['fecha'] ?? '' }}"
+                                                    onchange="calcularPendiente(this.closest('tr'))"><br>
+                                                Pago: <input type="number" name="pago_numero_1[]" class="form-control pago_numero"
+                                                    placeholder="$" value="{{ $detalle->pagos[1]['monto'] ?? '' }}" oninput="calcularPendiente(this.closest('tr'))">
+                                            </td>
+                                            @for ($i = 2; $i <= $maxPagos; $i++)
+                                                <td>
+                                                    Fecha: <input type="date" name="pago_fecha_{{ $i }}[]" class="form-control" value="{{ $detalle->pagos[$i]['fecha'] ?? '' }}"
+                                                        onchange="calcularPendiente(this.closest('tr'))"><br>
+                                                    Pago: <input type="number" name="pago_numero_{{ $i }}[]" class="form-control pago_numero"
+                                                        placeholder="$" value="{{ $detalle->pagos[$i]['monto'] ?? '' }}" oninput="calcularPendiente(this.closest('tr'))">
+                                                </td>
+                                            @endfor
+                                            <td>
+                                                <input type="number" name="pendiente[]" class="form-control"
+                                                    value="{{ $detalle->pendiente ?? 0 }}" placeholder="$" readonly>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+                            </tbody>
+                        </table>
 
-                <h4>Total de la Partida: $<span class="total-partida">0.00</span></h4>
-                <h4>Pagos de la Partida: $<span class="total-pagos-partida">0.00</span></h4>
-                <button type="submit" onclick="guardarPartida(event, '{{ $partida->id }}')">Guardar Partida</button>
+                        <div style="margin-top: 10px; text-align: right;">
+                            <strong>Monto Total Autorizado:</strong> $<span class="monto_aprobado_total">{{ number_format($partida->monto_total_aprobado, 2) }}</span>
+                        </div>
+                        <div style="margin-top: 10px; text-align: right;">
+                            <strong>Cantidad Total Pagada:</strong> $<span class="cantidad_total_pagada">{{ number_format($partida->cantidad_total_pagada, 2) }}</span>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="agregarFila(this)">Agregar Fila</button>
+                    </div>
+
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar
+                        Detalles</button>
+                </div>
             </form>
-            <button class="add-row-button" onclick="addRow('partida-{{ $partida->id }}')">Añadir Fila</button>
         </div>
     @endforeach
 
+    <style>
+        .btn {
+            border-radius: 5px;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+    </style>
+
     <script>
-       function guardarPartida(event, partidaId) {
-    event.preventDefault();
-
-    let form = document.getElementById('partida-form-' + partidaId);
-    let formData = new FormData(form);
-
-    // Get all payment inputs
-    let paymentInputs = form.querySelectorAll('input[name^="pago_"]');
-    paymentInputs.forEach(input => {
-        formData.append(input.name, input.value);
-    });
-
-    fetch(form.action, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        let tableBody = document.querySelector('#partida-' + partidaId + ' tbody');
-        tableBody.innerHTML = '';
-
-       data.forEach(detalle => {
-        let newRow = document.createElement('tr');
-        newRow.innerHTML = `
-            <td><input type="text" name="clave[]" value="${detalle.clave}"></td>
-            <td><input type="text" name="concepto[]" value="${detalle.concepto}"></td>
-            <td><input type="text" name="unidad[]" value="${detalle.unidad}"></td>
-            <td><input type="number" class="cantidad" name="cantidad[]" value="${detalle.cantidad}" oninput="calcularSubtotal(this)"></td>
-            <td><input type="number" class="precioUnitario" name="precio_unitario[]" value="${detalle.precio_unitario}" oninput="calcularSubtotal(this)"></td>
-            <td><span class="subtotal">${detalle.subtotal}</span><input type="hidden" class="subtotal-hidden" name="subtotal[]" value="${detalle.subtotal}"></td>
-            <td><span class="restante">0.00</span></td>
-        `;
-
-        // Add payment inputs
-        @php
-            $pagoNumbers = [];
-            foreach ($partidas as $partida) {
-                if ($partida->detalles) {
-                    foreach ($partida->detalles as $detalle) {
-                        if (is_array($detalle->pagos)) {
-                            $pagoNumbers = array_merge($pagoNumbers, array_keys($detalle->pagos));
-                        }
-                    }
-                }
-            }
-            $pagoNumbers = array_unique($pagoNumbers);
-            sort($pagoNumbers);
-        @endphp
-        @foreach ($pagoNumbers as $pagoNumber)
-            let pagoValue = detalle.pagos && detalle.pagos['{{ $pagoNumber }}'] ? detalle.pagos['{{ $pagoNumber }}'].monto : '';
-            let pagoFecha = detalle.pagos && detalle.pagos['{{ $pagoNumber }}'] ? detalle.pagos['{{ $pagoNumber }}'].fecha : '';
-            newRow.innerHTML += `
-                <td>
-                    <input type="number" class="pago" name="pago_{{ $pagoNumber }}[]" value="${pagoValue}">
-                    <br>
-                    <input type="date" name="pago_fecha_{{ $pagoNumber }}[]" value="${pagoFecha}">
-                </td>
-            `;
-        @endforeach
-
-        tableBody.appendChild(newRow);
-    });
-})
-.catch(error => {
-    console.error('Error:', error);
-});
-}
-
-        function toggleTable(tableId) {
-            let table = document.getElementById(tableId);
-            let addButton = table.parentNode.parentNode.querySelector('.add-row-button');
-            table.classList.toggle('hidden');
-            addButton.classList.toggle('hidden');
-        }
-
-        function addRow(tableId) {
-            let table = document.getElementById(tableId);
-            let tbody = table.querySelector('tbody');
-            let header = table.querySelector('thead tr');
-            let numCols = header.cells.length;
-
-            let newRow = document.createElement('tr');
-            for (let i = 0; i < numCols; i++) {
-                let newCell = document.createElement('td');
-
-                if (header.cells[i].innerHTML.includes('Pagos') || header.cells[i].innerHTML.includes('Pago')) {
-                    newCell.innerHTML = '<input type="number" class="pago" value="0" oninput="actualizarTotales()"><br><input type="date">';
-                } else if (header.cells[i].innerHTML.includes('Subtotal')) {
-                    newCell.innerHTML = '<span class="subtotal">0.00</span><input type="hidden" class="subtotal-hidden" name="subtotal[]" value="0">';
-                } else if (header.cells[i].innerHTML.includes('Restante')) {
-                    newCell.innerHTML = '<span class="restante">0.00</span>';
-                } else if (header.cells[i].innerHTML.includes('Cantidad')) {
-                    newCell.innerHTML = '<input type="number" class="cantidad" name="cantidad[]" value="1" oninput="calcularSubtotal(this)">';
-                } else if (header.cells[i].innerHTML.includes('Precio Unitario')) {
-                    newCell.innerHTML = '<input type="number" class="precioUnitario" name="precio_unitario[]" value="0" oninput="calcularSubtotal(this)">';
-                } else {
-                    let name = '';
-                    if (header.cells[i].innerHTML.includes('Clave')) {
-                        name = 'clave[]';
-                    } else if (header.cells[i].innerHTML.includes('Concepto')) {
-                        name = 'concepto[]';
-                    } else if (header.cells[i].innerHTML.includes('Unidad')) {
-                        name = 'unidad[]';
-                    }
-                    newCell.innerHTML = '<input type="text" name="' + name + '">';
-                }
-
-                newRow.appendChild(newCell);
-            }
-
-            tbody.appendChild(newRow);
-        }
-
-        function addColumn(tableId) {
-            let table = document.getElementById(tableId);
-            let header = table.querySelector('thead tr');
-
-            // Contar cuántas columnas de pago existen
-            let existingPayments = header.querySelectorAll('th').length - 7; 
-            let newPaymentIndex = existingPayments + 1;
-
-            // Crear nueva columna en el encabezado
-            let newHeader = document.createElement('th');
-            newHeader.innerHTML = 'Pago ' + newPaymentIndex;
-            header.appendChild(newHeader);
-
-            // Agregar nuevas celdas a cada fila
-            let tbody = table.querySelector('tbody');
-            tbody.querySelectorAll('tr').forEach(row => {
-                let newCell = document.createElement('td');
-               newCell.innerHTML = `
-                    <input type="number" class="pago" name="pago_${newPaymentIndex}[]" value="0">
-                    <br>
-                    <input type="date" name="pago_fecha_${newPaymentIndex}[]">
-                    `;
-                row.appendChild(newCell);
+        function calcularTotalMontoAprobado() {
+            let totalMontoAprobado = 0;
+            let totalCantidadPagada = 0;
+            document.querySelectorAll('input[name="subtotal[]"]').forEach(function(input) {
+                totalMontoAprobado += Number(input.value) || 0;
             });
+
+            document.querySelectorAll('tbody tr').forEach(function(row) {
+                let totalPagos = 0;
+                let pagoInputs = row.querySelectorAll('input[name^="pago_numero"]');
+
+                for (let i = 0; i < pagoInputs.length; i++) {
+                    let pago = Number(pagoInputs[i].value) || 0;
+                    totalPagos += pago;
+                }
+                totalCantidadPagada += totalPagos;
+            });
+
+            document.getElementById('monto_aprobado_total').innerText = totalMontoAprobado.toFixed(2);
+            document.getElementById('cantidad_total_pagada').innerText = totalCantidadPagada.toFixed(2);
         }
-        function calcularSubtotal(input) {
-            let row = input.closest('tr');
-            let cantidad = parseFloat(row.querySelector('.cantidad').value) || 0;
-            let precioUnitario = parseFloat(row.querySelector('.precioUnitario').value) || 0;
+
+        function calcularSubtotal(row) {
+            let cantidadInput = row.querySelector('input[name="cantidad[]"]');
+            let precioUnitarioInput = row.querySelector('input[name="precio_unitario[]"]');
+            let subtotalInput = row.querySelector('input[name="subtotal[]"]');
+
+            if (!cantidadInput || !precioUnitarioInput || !subtotalInput) return;
+
+            let cantidad = Number(cantidadInput.value) || 0;
+            let precioUnitario = Number(precioUnitarioInput.value) || 0;
             let subtotal = cantidad * precioUnitario;
 
-            row.querySelector('.subtotal').textContent = subtotal.toFixed(2);
-            row.querySelector('.subtotal-hidden').value = subtotal.toFixed(2);
-            actualizarTotales();
+            subtotalInput.value = subtotal.toFixed(2);
         }
 
-        function actualizarTotales() {
+        function calcularPendiente(row) {
+            let subtotalInput = row.querySelector('input[name="subtotal[]"]');
+            let montoAprobado = Number(subtotalInput.value) || 0;
+            let totalPagos = 0;
+            let pagoInputs = row.querySelectorAll('input[name^="pago_numero"]');
+
+            for (let i = 0; i < pagoInputs.length; i++) {
+                let pago = Number(pagoInputs[i].value) || 0;
+                totalPagos += pago;
+            }
+
+            let pendiente = montoAprobado - totalPagos;
+            pendiente = pendiente < 0 ? 0 : pendiente;
+            let pendienteInput = row.querySelector('input[name="pendiente[]"]');
+            if (pendienteInput) {
+                pendienteInput.value = pendiente.toFixed(2);
+            }
+        }
+
+        function agregarColumnaPago(button) {
+            const table = button.closest('table');
+            const headerRow = table.querySelector('thead tr');
+            let pagoCount = headerRow.querySelectorAll('th').length - 7;
+            const newHeader = document.createElement('th');
+            newHeader.innerHTML = `Pago ${pagoCount + 1} <button type="button" class="btn btn-success btn-sm" onclick="agregarColumnaPago(this)">+</button>`;
+            headerRow.insertBefore(newHeader, headerRow.lastElementChild);
+
+            table.querySelectorAll('tbody tr').forEach(row => {
+                const newColumn = document.createElement('td');
+                newColumn.innerHTML = `
+                Fecha: <input type="date" name="pago_fecha_${pagoCount + 1}[]" class="form-control" onchange="calcularPendiente(this.closest('tr'))">
+                Pago: <input type="number" name="pago_numero_${pagoCount + 1}[]" class="form-control pago_numero" placeholder="$" oninput="calcularPendiente(this.closest('tr'))">
+            `;
+                row.insertBefore(newColumn, row.lastElementChild);
+            });
+        }
+
+        function agregarFila(button) {
+            const tableBody = button.closest('.table-container').querySelector('.obra-table tbody');
+            const newRow = document.createElement('tr');
+            let numPagoColumns = button.closest('.table-container').querySelector('.obra-table thead tr').querySelectorAll('th').length - 7;
+            let newRowHTML = `
+            <td><input type="text" name="clave[]" class="form-control" value=""></td>
+            <td><input type="text" name="concepto[]" class="form-control" value=""></td>
+            <td><input type="text" name="unidad[]" class="form-control" value=""></td>
+            <td><input type="number" name="cantidad[]" class="form-control" value="" oninput="calcularSubtotal(this.closest('tr')); calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()"></td>
+            <td><input type="number" name="precio_unitario[]" class="form-control" value="" oninput="calcularSubtotal(this.closest('tr')); calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()"></td>
+            <td><input type="number" name="subtotal[]" class="form-control subtotal" value="0" placeholder="$" readonly></td>
+        `;
+
+            for (let i = 1; i <= numPagoColumns; i++) {
+                newRowHTML += `
+                <td>
+                    Fecha: <input type="date" name="pago_fecha_${i}[]" class="form-control" onchange="calcularPendiente(this.closest('tr'))">
+                    Pago: <input type="number" name="pago_numero_${i}[]" class="form-control pago_numero" value="0" placeholder="$" oninput="calcularPendiente(this.closest('tr'))">
+                </td>
+            `;
+            }
+
+            newRowHTML += `
+            <td><input type="number" name="pendiente[]" class="form-control" value="0" placeholder="$" readonly></td>
+        `;
+            newRow.innerHTML = newRowHTML;
+            tableBody.appendChild(newRow);
+            calcularPendiente(newRow);
+            calcularTotalMontoAprobado();
+        }
+
+        // Inicializar totales al cargar la página
+        calcularTotalMontoAprobado();
+
+        function toggleTable(tableId) {
+            let toggleButton = document.querySelector(`.toggle-button[onclick="toggleTable('${tableId}')"]`);
+            let tableContainer = toggleButton.closest('.partida-container').querySelector('.table-container');
+            tableContainer.classList.toggle('hidden');
+        }
+
+        function calcularTotalesPorTabla(tableContainer) {
             let totalMontoAprobado = 0;
-            let totalPagosGlobal = 0;
+            let totalCantidadPagada = 0;
 
-            document.querySelectorAll('.partida-container').forEach(partida => {
-                let totalSubtotales = 0;
-                let totalPagos = 0;
-
-                partida.querySelectorAll('.subtotal').forEach(sub => {
-                    totalSubtotales += parseFloat(sub.textContent) || 0;
-                });
-
-                partida.querySelectorAll('.pago').forEach(pago => {
-                    totalPagos += parseFloat(pago.value) || 0;
-                });
-
-                partida.querySelector('.total-partida').textContent = totalSubtotales.toFixed(2);
-                partida.querySelector('.total-pagos-partida').textContent = totalPagos.toFixed(2);
-
-                totalMontoAprobado += totalSubtotales;
-                totalPagosGlobal += totalPagos;
-
-                partida.querySelectorAll('.restante').forEach(restanteCell => {
-                    let subtotal = parseFloat(restanteCell.closest('tr').querySelector('.subtotal').textContent) || 0;
-                    let pagosFila = 0;
-                    restanteCell.closest('tr').querySelectorAll('.pago').forEach(pago => {
-                        pagosFila += parseFloat(pago.value) || 0;
-                    });
-                    restanteCell.textContent = (subtotal - pagosFila).toFixed(2);
-                });
+            // Suma los subtotales de la tabla
+            tableContainer.querySelectorAll('input[name="subtotal[]"]').forEach(function(input) {
+                totalMontoAprobado += Number(input.value) || 0;
             });
 
-            document.getElementById('montoTotalAprobado').textContent = totalMontoAprobado.toFixed(2);
-            document.getElementById('pagosTotales').textContent = totalPagosGlobal.toFixed(2);
+            // Suma los pagos realizados en la tabla
+            tableContainer.querySelectorAll('tbody tr').forEach(function(row) {
+                let totalPagos = 0;
+                let pagoInputs = row.querySelectorAll('input[name^="pago_numero"]');
+
+                for (let i = 0; i < pagoInputs.length; i++) {
+                    let pago = Number(pagoInputs[i].value) || 0;
+                    totalPagos += pago;
+                }
+                totalCantidadPagada += totalPagos;
+            });
+
+            // Actualiza los totales en la tabla correspondiente
+            tableContainer.querySelector('.monto_aprobado_total').innerText = totalMontoAprobado.toFixed(2);
+            tableContainer.querySelector('.cantidad_total_pagada').innerText = totalCantidadPagada.toFixed(2);
+        }
+
+        function calcularTotalesGlobales() {
+            document.querySelectorAll('.table-container').forEach(function(tableContainer) {
+                calcularTotalesPorTabla(tableContainer);
+            });
+        }
+
+        // Inicializar totales al cargar la página
+        calcularTotalesGlobales();
+
+        // Llama a calcularTotalesGlobales después de cualquier cambio
+        document.querySelectorAll('input').forEach(function(input) {
+            input.addEventListener('input', function() {
+                calcularTotalesGlobales();
+            });
+        });
+
+        // Vincula eventos de entrada para actualizar los totales en tiempo real
+        document.querySelectorAll('input[name="cantidad[]"], input[name="precio_unitario[]"], input[name^="pago_numero"]').forEach(function(input) {
+            input.addEventListener('input', function() {
+                const tableContainer = input.closest('.table-container');
+                calcularTotalesPorTabla(tableContainer);
+            });
+        });
+
+        document.querySelectorAll('form[id^="partida-form-"]').forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Evita el envío tradicional del formulario
+
+                const formData = new FormData(form);
+                const url = form.action;
+
+                fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Actualiza la tabla con los datos devueltos
+                    actualizarTabla(form.closest('.partida-container'), data);
+                    alert('Datos guardados correctamente.');
+                })
+                .catch(error => {
+                    console.error('Error al guardar los datos:', error);
+                    alert('Ocurrió un error al guardar los datos.');
+                });
+            });
+        });
+
+        function actualizarTabla(partidaContainer, detalles) {
+            const tbody = partidaContainer.querySelector('tbody');
+            tbody.innerHTML = ''; // Limpia las filas existentes
+
+            detalles.forEach(detalle => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <input type="hidden" name="detalle_id[]" value="${detalle.id}">
+                        <input type="text" name="clave[]" class="form-control" value="${detalle.clave}">
+                    </td>
+                    <td>
+                        <input type="text" name="concepto[]" class="form-control" value="${detalle.concepto}">
+                    </td>
+                    <td>
+                        <input type="text" name="unidad[]" class="form-control" value="${detalle.unidad}">
+                    </td>
+                    <td>
+                        <input type="number" name="cantidad[]" class="form-control" value="${detalle.cantidad}" oninput="calcularSubtotal(this.closest('tr')); calcularPendiente(this.closest('tr')); calcularTotalesPorTabla(partidaContainer)">
+                    </td>
+                    <td>
+                        <input type="number" name="precio_unitario[]" class="form-control" value="${detalle.precio_unitario}" oninput="calcularSubtotal(this.closest('tr')); calcularPendiente(this.closest('tr')); calcularTotalesPorTabla(partidaContainer)">
+                    </td>
+                    <td>
+                        <input type="number" name="subtotal[]" class="form-control" value="${detalle.subtotal}" placeholder="$" readonly>
+                    </td>
+                    ${generarColumnasPagos(detalle.pagos)}
+                    <td>
+                        <input type="number" name="pendiente[]" class="form-control" value="${detalle.pendiente}" placeholder="$" readonly>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            calcularTotalesPorTabla(partidaContainer);
+        }
+
+        function generarColumnasPagos(pagos) {
+            let columnas = '';
+            const keys = Object.keys(pagos || {});
+            keys.forEach(key => {
+                columnas += `
+                    <td>
+                        Fecha: <input type="date" name="pago_fecha_${key}[]" class="form-control" value="${pagos[key]?.fecha || ''}" onchange="calcularPendiente(this.closest('tr'))"><br>
+                        Pago: <input type="number" name="pago_numero_${key}[]" class="form-control pago_numero" value="${pagos[key]?.monto || ''}" placeholder="$" oninput="calcularPendiente(this.closest('tr'))">
+                    </td>
+                `;
+            });
+            return columnas;
         }
     </script>
+@endsection
