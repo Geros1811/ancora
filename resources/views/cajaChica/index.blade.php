@@ -101,7 +101,7 @@
                                                   <option value="papeleria" {{ $detalle->vista == 'papeleria' ? 'selected' : '' }}>Papelería</option>
                                                   <option value="gasolina" {{ $detalle->vista == 'gasolina' ? 'selected' : '' }}>Gasolina</option>
                                                   <option value="rentas" {{ $detalle->vista == 'rentas' ? 'selected' : '' }}>Rentas</option>
-                                                  <option value="utilidades" {{ $detalle->vista == 'utilidades' ? 'selected' : '' }}>Utilidades</option>
+                                                
                                                   <option value="acarreos" {{ $detalle->vista == 'acarreos' ? 'selected' : '' }}>Acarreos</option>
                                                   <option value="comida" {{ $detalle->vista == 'comida' ? 'selected' : '' }}>Comida</option>
                                                   <option value="tramites" {{ $detalle->vista == 'tramites' ? 'selected' : '' }}>Trámites</option>

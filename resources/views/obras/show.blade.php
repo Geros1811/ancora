@@ -364,7 +364,7 @@
     let presupuesto = parseFloat("{{ $obra->presupuesto }}");
     let costosDirectos = {
         'Materiales': parseFloat("{{ optional($costosDirectos->where('nombre', 'Materiales')->first())->costo ?? 0.00 }}"),
-        'Mano de Obra': parseFloat("{{ $costosDirectos->where('nombre', 'Mano de Obra')->sum('costo') + $totalCantidadDestajos }}"),
+        'Mano de Obra': parseFloat("{{ $costosDirectos->where('nombre', 'Mano de Obra')->sum('costo') + $totalCantidadDestajos + ($totalPagosDestajosSinNomina ?? 0) }}"),
         'Equipo de Seguridad': parseFloat("{{ optional($costosDirectos->where('nombre', 'Equipo de Seguridad')->first())->costo ?? 0.00 }}"),
         'Herramienta Menor': parseFloat("{{ optional($costosDirectos->where('nombre', 'Herramienta Menor')->first())->costo ?? 0.00 }}"),
         'Maquinaria Menor': parseFloat("{{ optional($costosDirectos->where('nombre', 'Maquinaria Menor')->first())->costo ?? 0.00 }}"),

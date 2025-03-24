@@ -31,7 +31,7 @@
                         </ul>
                     </div>
                 </td>
-                <td>${{ number_format($costosDirectos->where('nombre', 'Mano de Obra')->sum('costo') + $totalCantidadDestajos, 2) }}</td>
+                <td>${{ number_format($costosDirectos->where('nombre', 'Mano de Obra')->sum('costo') + $totalCantidadDestajos + ($totalPagosDestajosSinNomina ?? 0), 2) }}</td>
             </tr>
             <tr>
                 <td>3</td>

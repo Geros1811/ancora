@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class DestajosSinNominaController extends Controller
 {
@@ -27,7 +28,21 @@ class DestajosSinNominaController extends Controller
             $partida->cantidad_total_pagada = $partida->cantidad_total_pagada ?? 0;
         }
 
-        return view('destajoSinNomina.index', ['obraId' => $obraId, 'partidas' => $partidas]);
+        $obra = \App\Models\Obra::find($obraId);
+
+        // Calculate total pagos
+        $totalPagos = 0;
+        foreach ($partidas as $partida) {
+            foreach ($partida->detalles as $detalle) {
+                if (is_array($detalle->pagos)) {
+                    foreach ($detalle->pagos as $pago) {
+                        $totalPagos += $pago['monto'];
+                    }
+                }
+            }
+        }
+
+        return view('destajoSinNomina.index', ['obraId' => $obraId, 'partidas' => $partidas, 'obra' => $obra, 'totalPagos' => $totalPagos]);
     }
 
     /**
@@ -153,39 +168,24 @@ class DestajosSinNominaController extends Controller
             $detalle->pagos = json_decode($detalle->pagos, true);
         }
 
-        // Return the updated details as a JSON response
-        return response()->json($detalles);
+        // Redirect back to the index page
+        return redirect()->route('destajosSinNomina.index', ['obraId' => $obraId]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function generatePdf(Request $request, $obraId, $partidaId)
     {
-        //
-    }
+        $partida = \App\Models\Partida::where('id', $partidaId)->where('obra_id', $obraId)->firstOrFail();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+        $detalles = \App\Models\DestajoSinNominaDetalle::where('partida_id', $partida->id)->get();
+        foreach ($detalles as $detalle) {
+            $detalle->pagos = json_decode($detalle->pagos, true);
+        }
+        $partida->detalles = $detalles;
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        $obra = \App\Models\Obra::find($obraId);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $pdf = Pdf::loadView('destajoSinNomina.pdf', compact('obraId', 'partida', 'obra'))->setPaper('a4', 'landscape');
+
+        return $pdf->stream('destajos-sin-nomina.pdf');
     }
 }

@@ -125,7 +125,21 @@ class ObraController extends Controller
         // Calculate total cantidad from destajos
         $totalCantidadDestajos = \App\Models\Destajo::where('obra_id', $id)->sum('cantidad');
 
-        return view('obras.show', compact('obra', 'costosDirectos', 'costosIndirectos', 'totalPagosCliente', 'totalCantidadDestajos', 'pagosAdministrativos', 'ingresos', 'pagosAdministrativosOcultos', 'cliente', 'residente'));
+        // Calculate total pagos from destajos sin nomina
+        $totalPagosDestajosSinNomina = 0;
+        $partidas = \App\Models\Partida::where('obra_id', $id)->get();
+        foreach ($partidas as $partida) {
+            $detalles = \App\Models\DestajoSinNominaDetalle::where('partida_id', $partida->id)->get();
+            foreach ($detalles as $detalle) {
+                if (is_array(json_decode($detalle->pagos, true))) {
+                    foreach (json_decode($detalle->pagos, true) as $pago) {
+                        $totalPagosDestajosSinNomina += $pago['monto'];
+                    }
+                }
+            }
+        }
+
+        return view('obras.show', compact('obra', 'costosDirectos', 'costosIndirectos', 'totalPagosCliente', 'totalCantidadDestajos', 'pagosAdministrativos', 'ingresos', 'pagosAdministrativosOcultos', 'cliente', 'residente', 'totalPagosDestajosSinNomina'));
     }
 
     public function guardarCalendario(Request $request)

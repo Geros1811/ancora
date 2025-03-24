@@ -20,11 +20,13 @@
 
     @foreach ($partidas as $partida)
         <div class="partida-container">
+            <h3>{{ $partida->title }} <span class="toggle-button" onclick="toggleTable('partida-{{ $partida->id }}')">+</span>
+                <a href="{{ route('destajosSinNomina.pdf', ['obraId' => $obraId, 'partidaId' => $partida->id]) }}" class="btn btn-primary" target="_blank"><i class="fas fa-file-pdf"></i> Ver PDF</a>
+            </h3>
             <form id="partida-form-{{ $partida->id }}"
                 action="{{ route('destajosSinNomina.storeDetalles', ['obraId' => $obraId, 'partidaId' => $partida->id]) }}"
                 method="POST" enctype="multipart/form-data">
                 @csrf
-                <h3>{{ $partida->title }} <span class="toggle-button" onclick="toggleTable('partida-{{ $partida->id }}')">+</span></h3>
 
                 <div class="table-container hidden" style="margin-top: 20px;">
                     <div class="table-wrapper">
@@ -74,11 +76,11 @@
                                             </td>
                                             <td>
                                                 <input type="number" name="cantidad[]" class="form-control"
-                                                    value="{{ $detalle->cantidad }}" oninput="calcularSubtotal(this.closest('tr')); calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()">
+                                                    value="{{ $detalle->cantidad }}" oninput="calcularSubtotal(this.closest('tr')); calcularPendiente(this.closest('tr')); calcularTotalesGlobales()">
                                             </td>
                                             <td>
                                                 <input type="number" name="precio_unitario[]" class="form-control"
-                                                    value="{{ $detalle->precio_unitario }}" oninput="calcularSubtotal(this.closest('tr')); calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()">
+                                                    value="{{ $detalle->precio_unitario }}" oninput="calcularSubtotal(this.closest('tr')); calcularPendiente(this.closest('tr')); calcularTotalesGlobales()">
                                             </td>
                                             <td>
                                                 <input type="number" name="subtotal[]" class="form-control"
@@ -133,27 +135,6 @@
     </style>
 
     <script>
-        function calcularTotalMontoAprobado() {
-            let totalMontoAprobado = 0;
-            let totalCantidadPagada = 0;
-            document.querySelectorAll('input[name="subtotal[]"]').forEach(function(input) {
-                totalMontoAprobado += Number(input.value) || 0;
-            });
-
-            document.querySelectorAll('tbody tr').forEach(function(row) {
-                let totalPagos = 0;
-                let pagoInputs = row.querySelectorAll('input[name^="pago_numero"]');
-
-                for (let i = 0; i < pagoInputs.length; i++) {
-                    let pago = Number(pagoInputs[i].value) || 0;
-                    totalPagos += pago;
-                }
-                totalCantidadPagada += totalPagos;
-            });
-
-            document.getElementById('monto_aprobado_total').innerText = totalMontoAprobado.toFixed(2);
-            document.getElementById('cantidad_total_pagada').innerText = totalCantidadPagada.toFixed(2);
-        }
 
         function calcularSubtotal(row) {
             let cantidadInput = row.querySelector('input[name="cantidad[]"]');
@@ -214,8 +195,8 @@
             <td><input type="text" name="clave[]" class="form-control" value=""></td>
             <td><input type="text" name="concepto[]" class="form-control" value=""></td>
             <td><input type="text" name="unidad[]" class="form-control" value=""></td>
-            <td><input type="number" name="cantidad[]" class="form-control" value="" oninput="calcularSubtotal(this.closest('tr')); calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()"></td>
-            <td><input type="number" name="precio_unitario[]" class="form-control" value="" oninput="calcularSubtotal(this.closest('tr')); calcularPendiente(this.closest('tr')); calcularTotalMontoAprobado()"></td>
+            <td><input type="number" name="cantidad[]" class="form-control" value="" oninput="calcularSubtotal(this.closest('tr')); calcularPendiente(this.closest('tr')); calcularTotalesGlobales()"></td>
+            <td><input type="number" name="precio_unitario[]" class="form-control" value="" oninput="calcularSubtotal(this.closest('tr')); calcularPendiente(this.closest('tr')); calcularTotalesGlobales()"></td>
             <td><input type="number" name="subtotal[]" class="form-control subtotal" value="0" placeholder="$" readonly></td>
         `;
 
@@ -238,7 +219,7 @@
         }
 
         // Inicializar totales al cargar la página
-        calcularTotalMontoAprobado();
+        calcularTotalesGlobales();
 
         function toggleTable(tableId) {
             let toggleButton = document.querySelector(`.toggle-button[onclick="toggleTable('${tableId}')"]`);
@@ -273,9 +254,31 @@
         }
 
         function calcularTotalesGlobales() {
+            let totalMontoAprobado = 0;
+            let totalCantidadPagada = 0;
+
             document.querySelectorAll('.table-container').forEach(function(tableContainer) {
-                calcularTotalesPorTabla(tableContainer);
+
+                // Suma los subtotales de la tabla
+                tableContainer.querySelectorAll('input[name="subtotal[]"]').forEach(function(input) {
+                    totalMontoAprobado += Number(input.value) || 0;
+                });
+
+                // Suma los pagos realizados en la tabla
+                tableContainer.querySelectorAll('tbody tr').forEach(function(row) {
+                    let totalPagos = 0;
+                    let pagoInputs = row.querySelectorAll('input[name^="pago_numero"]');
+
+                    for (let i = 0; i < pagoInputs.length; i++) {
+                        let pago = Number(pagoInputs[i].value) || 0;
+                        totalPagos += pago;
+                    }
+                    totalCantidadPagada += totalPagos;
+                });
             });
+
+            document.getElementById('montoTotalAprobado').innerText = totalMontoAprobado.toFixed(2);
+            document.getElementById('pagosTotales').innerText = totalCantidadPagada.toFixed(2);
         }
 
         // Inicializar totales al cargar la página
@@ -291,8 +294,7 @@
         // Vincula eventos de entrada para actualizar los totales en tiempo real
         document.querySelectorAll('input[name="cantidad[]"], input[name="precio_unitario[]"], input[name^="pago_numero"]').forEach(function(input) {
             input.addEventListener('input', function() {
-                const tableContainer = input.closest('.table-container');
-                calcularTotalesPorTabla(tableContainer);
+                calcularTotalesGlobales();
             });
         });
 
@@ -310,15 +312,12 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
                 })
-                .then(response => response.json())
-                .then(data => {
-                    // Actualiza la tabla con los datos devueltos
-                    actualizarTabla(form.closest('.partida-container'), data);
-                    alert('Datos guardados correctamente.');
+                .then(() => {
+                    //alert('Datos guardados correctamente.');
                 })
                 .catch(error => {
                     console.error('Error al guardar los datos:', error);
-                    alert('Ocurrió un error al guardar los datos.');
+                    //alert('Ocurrió un error al guardar los datos.');
                 });
             });
         });
@@ -341,10 +340,10 @@
                         <input type="text" name="unidad[]" class="form-control" value="${detalle.unidad}">
                     </td>
                     <td>
-                        <input type="number" name="cantidad[]" class="form-control" value="${detalle.cantidad}" oninput="calcularSubtotal(this.closest('tr')); calcularPendiente(this.closest('tr')); calcularTotalesPorTabla(partidaContainer)">
+                        <input type="number" name="cantidad[]" class="form-control" value="${detalle.cantidad}" oninput="calcularSubtotal(this.closest('tr')); calcularPendiente(this.closest('tr')); calcularTotalesGlobales()">
                     </td>
                     <td>
-                        <input type="number" name="precio_unitario[]" class="form-control" value="${detalle.precio_unitario}" oninput="calcularSubtotal(this.closest('tr')); calcularPendiente(this.closest('tr')); calcularTotalesPorTabla(partidaContainer)">
+                        <input type="number" name="precio_unitario[]" class="form-control" value="${detalle.precio_unitario}" oninput="calcularSubtotal(this.closest('tr')); calcularPendiente(this.closest('tr')); calcularTotalesGlobales()">
                     </td>
                     <td>
                         <input type="number" name="subtotal[]" class="form-control" value="${detalle.subtotal}" placeholder="$" readonly>
@@ -357,7 +356,6 @@
                 tbody.appendChild(row);
             });
 
-            calcularTotalesPorTabla(partidaContainer);
         }
 
         function generarColumnasPagos(pagos) {

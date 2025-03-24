@@ -182,6 +182,8 @@ Route::get('/mano-obra/pdf/{nomina_id}', [ManoObraController::class, 'generarPDF
 
 Route::post('detalles/destajos/exportar/{obraId}/{destajoId}', [DestajosDetallesController::class, 'exportar'])->name('detalles.destajos.exportar');
 
+Route::get('/destajosSinNomina/{obraId}/{partidaId}/pdf', [DestajosSinNominaController::class, 'generatePdf'])->name('destajosSinNomina.pdf');
+
 // Rutas para materiales
 Route::get('/materiales/{obraId}', [MaterialesController::class, 'index'])->name('materiales.index');
 Route::post('/materiales/agregados/{obraId}', [MaterialesController::class, 'storeAgregados'])->name('materiales.storeAgregados');
