@@ -69,6 +69,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/destajosSinNomina/{obraId}', [DestajosSinNominaController::class, 'store'])->name('destajosSinNomina.store');
     Route::post('/destajosSinNomina/{obraId}/{partidaId}', [DestajosSinNominaController::class, 'storeDetalles'])->name('destajosSinNomina.storeDetalles');
     Route::post('/destajosSinNomina/{obraId}/{partidaId}/upload-image', [DestajosSinNominaController::class, 'uploadImage'])->name('destajosSinNomina.uploadImage');
+    Route::get('/destajosSinNomina/{partidaId}/imagenes', [DestajosSinNominaController::class, 'showImages'])->name('destajosSinNomina.imagenes');
 });
 
 // Rutas para gastos rápidos

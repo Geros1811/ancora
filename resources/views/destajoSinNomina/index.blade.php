@@ -6,10 +6,16 @@
     <h1>Destajos Sin Nomina</h1>
     <p>Si deseas usar este destajo Sin nomina</p>
 
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <div>
-        <h2>Monto Total Aprobado: $<span id="montoTotalAprobado">0.00</span></h2>
-        <h2>Pagos Totales: $<span id="pagosTotales">0.00</span></h2>
-    </div>
+        <h2>Monto Total Aprobado Destajo: $<span id="montoTotalAprobado">{{ number_format($totalMontoAprobado, 2) }}</span></h2>
+<h2>Pagos Totales Destajo: $<span id="pagosTotales">{{ number_format($totalPagos, 2) }}</span></h2>
+</div>
 
     <form action="{{ route('destajosSinNomina.store', ['obraId' => $obraId]) }}" method="POST">
         @csrf
@@ -123,6 +129,18 @@
                         Detalles</button>
                 </div>
             </form>
+
+            <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <form action="{{ route('destajosSinNomina.uploadImage', ['obraId' => $obraId, 'partidaId' => $partida->id]) }}" method="POST" enctype="multipart/form-data" style="margin-right: 10px;">
+                    @csrf
+                    <div class="form-group">
+                        <label for="image">Subir Imagen:</label>
+                        <input type="file" name="image" class="form-control" accept="image/*" required>
+                                            </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-upload"></i> Subir Imagen</button>
+                </form>
+                <a href="{{ route('destajosSinNomina.imagenes', $partida->id) }}" class="btn btn-primary"><i class="fas fa-images"></i> Ver Todas las Imágenes</a>
+            </div>
         </div>
     @endforeach
 
@@ -277,8 +295,8 @@
                 });
             });
 
-            document.getElementById('montoTotalAprobado').innerText = totalMontoAprobado.toFixed(2);
-            document.getElementById('pagosTotales').innerText = totalCantidadPagada.toFixed(2);
+            document.getElementById('montoTotalAprobado').innerText = Number(totalMontoAprobado).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('pagosTotales').innerText = Number(totalCantidadPagada).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
         // Inicializar totales al cargar la página
@@ -313,11 +331,11 @@
                     }
                 })
                 .then(() => {
-                    //alert('Datos guardados correctamente.');
+                    alert('Datos guardados correctamente.');
                 })
                 .catch(error => {
                     console.error('Error al guardar los datos:', error);
-                    //alert('Ocurrió un error al guardar los datos.');
+                    alert('Ocurrió un error al guardar los datos.');
                 });
             });
         });

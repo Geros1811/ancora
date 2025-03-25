@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Imagen;
+use Illuminate\Support\Facades\Storage;
 
 class DestajosSinNominaController extends Controller
 {
@@ -42,7 +44,9 @@ class DestajosSinNominaController extends Controller
             }
         }
 
-        return view('destajoSinNomina.index', ['obraId' => $obraId, 'partidas' => $partidas, 'obra' => $obra, 'totalPagos' => $totalPagos]);
+        $totalMontoAprobado = $partidas->sum('monto_total_aprobado');
+
+        return view('destajoSinNomina.index', ['obraId' => $obraId, 'partidas' => $partidas, 'obra' => $obra, 'totalPagos' => $totalPagos, 'totalMontoAprobado' => $totalMontoAprobado]);
     }
 
     /**
@@ -187,5 +191,32 @@ class DestajosSinNominaController extends Controller
         $pdf = Pdf::loadView('destajoSinNomina.pdf', compact('obraId', 'partida', 'obra'))->setPaper('a4', 'landscape');
 
         return $pdf->stream('destajos-sin-nomina.pdf');
+    }
+
+    public function uploadImage(Request $request, $obraId, $partidaId)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $image = $request->file('image');
+        $imageName = time() . '_' . $image->getClientOriginalName();
+        $image->move(base_path('destajossinnomina'), $imageName);
+        $imagePath = 'destajossinnomina/' . $imageName;
+
+        $imagen = new Imagen();
+        $imagen->path = $imagePath;
+        $imagen->obra_id = $obraId;
+        $imagen->partida_id = $partidaId;
+        $imagen->save();
+
+        return back()->with('success', 'Imagen subida correctamente.');
+    }
+
+    public function showImages($partidaId)
+    {
+        $imagenes = Imagen::where('partida_id', $partidaId)->get();
+        $obraId = \App\Models\Partida::find($partidaId)->obra_id;
+        return view('destajoSinNomina.imagenes', compact('imagenes', 'obraId'));
     }
 }

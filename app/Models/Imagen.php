@@ -13,6 +13,8 @@ class Imagen extends Model
 
     protected $fillable = [
         'path',
+      
+        'partida_id',
         'destajo_id',
     ];
 
