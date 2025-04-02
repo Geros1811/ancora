@@ -38,7 +38,7 @@
                 <tr style="background-color: #90EE90;">
                     <td style="background-color: #90EE90;">4</td>
                     <td style="background-color: #90EE90;">TOTAL GASTOS DE OBRA</td>
-                    <td style="background-color: #90EE90;">${{ number_format($costosDirectos->sum('costo') + $costosIndirectos->sum('costo') + $pagosAdministrativos->sum('costo') - $pagosAdministrativosOcultos, 2) }}</td>
+                    <td style="background-color: #90EE90;">${{ number_format($costosDirectos->sum('costo') + $costosIndirectos->sum('costo') + $pagosAdministrativos->sum('costo') - $pagosAdministrativosOcultos + ($totalPagosDestajosSinNomina ?? 0), 2) }}</td>
                 </tr>
                 <tr style="background-color: #90EE90;">
                     <td style="background-color: #90EE90;">5</td>
@@ -48,12 +48,12 @@
                 <tr style="background-color: #90EE90;">
                     <td style="background-color: #90EE90;">6</td>
                     <td style="background-color: #90EE90;">EFECTIVO EN CAJA</td>
-                    <td style="background-color: #90EE90;">$<span id="efectivo-en-caja">{{ number_format(($totalPagosCliente + $ingresos->sum('importe')) - ($costosDirectos->sum('costo') + $costosIndirectos->sum('costo') + $pagosAdministrativos->sum('costo') - $pagosAdministrativosOcultos), 2) }}</span></td>
+                    <td style="background-color: #90EE90;">$<span id="efectivo-en-caja">{{ number_format(($totalPagosCliente + $ingresos->sum('importe')) - ($costosDirectos->sum('costo') + $costosIndirectos->sum('costo') + $pagosAdministrativos->sum('costo') - $pagosAdministrativosOcultos + ($totalPagosDestajosSinNomina ?? 0)), 2) }}</span></td>
                 </tr>
                 <tr style="background-color: #90EE90;">
                     <td style="background-color: #90EE90;">7</td>
                     <td style="background-color: #90EE90;">PRECIO POR M2</td>
-                    <td style="background-color: #90EE90;">$<span id="precio-por-m2">{{ number_format(($costosDirectos->sum('costo') + $costosIndirectos->sum('costo') ) / $obra->metros_cuadrados, 2) }}</span></td>
+                    <td style="background-color: #90EE90;">$<span id="precio-por-m2">{{ number_format(($costosDirectos->sum('costo') + $costosIndirectos->sum('costo') + ($totalPagosDestajosSinNomina ?? 0) + $pagosAdministrativos->sum('costo') - $pagosAdministrativosOcultos) / $obra->metros_cuadrados, 2) }}</span></td>
                 </tr>
             @endif
         </tbody>
@@ -96,12 +96,12 @@
         let costosIndirectos = parseFloat("{{ $costosIndirectos->sum('costo') }}");
         let pagosAdministrativos = parseFloat("{{ $pagosAdministrativos->sum('costo') }}");
         let ingresos = parseFloat("{{ $ingresos->sum('importe') }}");
-        let efectivoEnCaja = (total + ingresos) - (costosDirectos + costosIndirectos + pagosAdministrativos);
+        let efectivoEnCaja = (total + ingresos) - (costosDirectos + costosIndirectos + pagosAdministrativos + parseFloat("{{ $totalPagosDestajosSinNomina ?? 0 }}"));
         document.getElementById("efectivo-en-caja").textContent = formatCurrencyValue(efectivoEnCaja);
 
         // Actualizar el valor de "Precio por M2" en la tabla de resumen
         let metrosCuadrados = parseFloat("{{ $obra->metros_cuadrados }}");
-        let precioPorM2 = (costosDirectos + costosIndirectos) / metrosCuadrados;
+        let precioPorM2 = (costosDirectos + costosIndirectos + parseFloat("{{ $totalPagosDestajosSinNomina ?? 0 }}")) / metrosCuadrados;
         document.getElementById("precio-por-m2").textContent = formatCurrencyValue(precioPorM2);
     }
 </script>

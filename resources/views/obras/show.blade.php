@@ -426,10 +426,13 @@
             '#DC143C', // Contador → Rojo carmesí
             '#1E90FF', // IVA → Azul neón
             '#9400D3', // Otros Pagos Administrativos → Púrpura intenso
-            '#008000'  // Utilidad Remanente → Verde puro ✅ (aquí está el cambio)
+            '#008000'
         ]
     }]
 };
+
+let utilidadRemanenteInicial = 0; // Inicialmente oculto
+data.datasets[0].data[data.labels.indexOf('Utilidad Remanente')] = utilidadRemanenteInicial;
 
     // Aquí seguiría el resto del código para crear la gráfica...
 
@@ -460,7 +463,17 @@
                 document.body.appendChild(graficaContainer);
         
                 let ctx = document.getElementById('grafica').getContext('2d');
-                new Chart(ctx, config);
+                let myChart = new Chart(ctx, config);
+
+                // Add click event listener to the chart
+                document.getElementById('grafica').onclick = function() {
+                    if (utilidadRemanenteInicial === 0) {
+                        // Reveal utilidadRemanente
+                        data.datasets[0].data[data.labels.indexOf('Utilidad Remanente')] = utilidadRemanente;
+                        myChart.update(); // Update the chart
+                        utilidadRemanenteInicial = utilidadRemanente; // Update the flag
+                    }
+                };
             }
 
             function openModal() {
@@ -578,7 +591,14 @@
     #notificationModal.show .modal-dialog {
         transform: translateX(0);
     }
-    
+
+    #notificationModal .modal-header .close {
+        font-size: 1.5rem; /* Increase the size of the close button */
+    }
+
+    #notificationModal .modal-dialog {
+        background-color: white; /* Ensure a solid background */
+    }
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

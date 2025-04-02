@@ -74,11 +74,11 @@
 
 <style>
     .unread {
-    background-color: #f8d7da; /* Rojo claro */
+    background-color: #f0b0b6; /* Rojo claro */
     cursor: pointer;
 }
 
 .read {
-    background-color: #d4edda; /* Verde claro */
+    background-color: #b0e0b6; /* Verde claro */
 }
 </style>
