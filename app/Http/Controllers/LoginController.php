@@ -55,14 +55,74 @@ class LoginController extends Controller
             'password' => 'required|string|min:6|confirmed',
             'role' => 'required|string|in:arquitecto,maestro_obra,cliente', // Validar el rol
         ]);
-        User::create([
+        $userData = [
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
-            'created_by' => Auth::id() ?? 1, // Si no hay usuario autenticado, usa 1
-        ]);
+            'created_by' => Auth::id() ?? 1,
+        ];
+
+        $request->session()->put('user_data', $userData);
+
+        if ($request->role === 'arquitecto') {
+            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+            $products = \Stripe\Product::all(['limit' => 10]); // Adjust limit as needed
+            $prices = [];
+            foreach ($products->data as $product) {
+                $prices[$product->id] = \Stripe\Price::all(['product' => $product->id, 'limit' => 1]);
+            }
+
+            return view('auth.payment', compact('products', 'prices'));
+        }
 
         return redirect()->route('obra.create')->with('success', 'User registered successfully.');
+    }
+
+    public function submitPayment(Request $request)
+    {
+        $request->validate([
+            'plan' => 'required',
+        ]);
+
+        $userData = session('user_data');
+
+        if (!$userData) {
+            return redirect()->route('register')->with('error', 'Session expired. Please register again.');
+        }
+
+        $user = User::create([
+            'name' => $userData['name'],
+            'email' => $userData['email'],
+            'password' => Hash::make($userData['password']),
+            'role' => $userData['role'],
+            'created_by' => $userData['created_by'],
+        ]);
+
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        $planId = $request->plan;
+
+        try {
+            $prices = \Stripe\Price::all(['product' => $planId, 'limit' => 1]);
+            $amount = $prices->data[0]->unit_amount;
+
+            // Charge the user using Stripe
+            \Stripe\Charge::create([
+                'amount' => $amount, // Amount in cents
+                'currency' => 'mxn',
+                'source' => $request->stripeToken, // Token obtained with Stripe.js
+                'description' => 'Payment for plan ' . $planId,
+            ]);
+
+            session()->forget('user_data');
+
+            return redirect()->route('login')->with('success', 'Registration successful! Please log in.');
+
+        } catch (\Exception $e) {
+            // Handle payment errors
+            return back()->with('error', $e->getMessage());
+        }
     }
 }

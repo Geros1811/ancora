@@ -4,10 +4,6 @@
     <link rel="stylesheet" href="{{ asset('css/auth_register.css') }}">
 @endsection
 
-@section('head')
-  
-@endsection
-
 @section('content')
     <div class="auth-container">
         <h2>Registrar Equipo</h2>
@@ -33,11 +29,16 @@
             <div>
                 <label for="role">Role:</label>
                 <select name="role" id="role" required>
-                    <option value="arquitecto">Arquitecto</option>
-                    <option value="maestro_obra">Residente</option>
-                    <option value="cliente">Cliente</option>
+                    @guest
+                        <option value="arquitecto">Arquitecto</option>
+                    @else
+                        <option value="cliente">Cliente</option>
+                        <option value="arquitecto">Arquitecto</option>
+                        <option value="maestro_obra">Residente</option>
+                    @endguest
                 </select><br>
             </div>
+
             <button type="submit">Registrar</button>
         </form>
 
@@ -49,4 +50,5 @@
             </div>
         @endif
     </div>
+
 @endsection

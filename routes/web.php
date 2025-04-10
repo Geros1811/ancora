@@ -37,6 +37,8 @@ use App\Http\Controllers\IngresoController;
 use App\Http\Controllers\ClienteFotoController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\DestajosSinNominaController;
+use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\RegisterController;
 
 Route::get('/costos/{id}', [CostosController::class, 'show'])->name('costos.show');
 
@@ -61,8 +63,9 @@ Route::get('/obra/crear', [ObraController::class, 'create'])->name('obra.create'
 Route::post('/obra', [ObraController::class, 'store'])->name('obra.store');
 
 // Rutas de registro
-Route::get('/register', [LoginController::class, 'showRegisterForm'])->name('register');
+Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [LoginController::class, 'register'])->name('register');
+Route::post('/payment/submit', [LoginController::class, 'submitPayment'])->name('payment.submit');
 
 Route::middleware('auth')->group(function () {
     Route::get('/destajosSinNomina/{obraId}', [DestajosSinNominaController::class, 'index'])->name('destajosSinNomina.index');
@@ -308,3 +311,5 @@ Route::post('/marcar-todas-notificaciones-leidas', function (Illuminate\Http\Req
         ->update(['read_at' => now()]);
     return response()->json(['success' => true]);
 });
+
+Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscribe');

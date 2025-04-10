@@ -66,3 +66,90 @@ form button {
 form button:hover {
     background-color: #52d6b7;
 }
+
+/* Payment View Styles */
+.product-list {
+    display: flex;
+    overflow-x: auto;
+    padding: 20px 0;
+}
+
+.product-item {
+    background-color: #1e3a8a;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    margin: 0 10px;
+    min-width: 200px;
+    text-align: center;
+    flex: 0 0 auto;
+    color: #f0f0f0;
+}
+
+.product-item img {
+    max-width: 100%;
+    max-height: 100px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.product-item label {
+    display: block;
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+.product-item p {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.product-item button {
+    padding: 8px 12px;
+    background-color: #64ffda;
+    color: #0a192f;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.product-item button:hover {
+    background-color: #52d6b7;
+}
+
+.product-item.selected {
+    border: 2px solid #64ffda;
+}
+
+.payment-options {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #112240;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    text-align: left;
+}
+
+.payment-options h3 {
+    color: #64ffda;
+    margin-bottom: 10px;
+}
+
+.payment-options button {
+    width: auto;
+    padding: 10px 15px;
+    background-color: #64ffda;
+    color: #0a192f;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    margin-top: 10px;
+}
+
+.payment-options button:hover {
+    background-color: #52d6b7;
+}

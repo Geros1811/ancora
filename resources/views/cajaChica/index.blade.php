@@ -86,9 +86,10 @@
                                               <select name="unidad[]" class="form-control gastos-rapidos-select" style="border: none; background: transparent; text-align: center;">
                                                   <option value="KG" {{ $detalle->unidad == 'KG' ? 'selected' : '' }}>KG</option>
                                                   <option value="LTS" {{ $detalle->unidad == 'LTS' ? 'selected' : '' }}>LTS</option>
-                                                  <option value="PZ" {{ $detalle->unidad == 'PZ' ? 'selected' : '' }}>PZ</option>
-                                                  <option value="LOTE" {{ $detalle->unidad == 'LOTE' ? 'selected' : '' }}>LOTE</option>
-                                              </select>
+                    <option value="PZ" {{ $detalle->unidad == 'PZ' ? 'selected' : '' }}>PZ</option>
+                    <option value="LOTE" {{ $detalle->unidad == 'LOTE' ? 'selected' : '' }}>LOTE</option>
+                    <option value="MTS">MTS</option>
+                </select>
                                           </td>
                                           <td class="gastos-rapidos-td"><input type="number" name="cantidad[]" class="form-control cantidad gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->cantidad }}" oninput="updateSubtotal(this)"></td>
                                           <td class="gastos-rapidos-td"><input type="number" name="precio_unitario[]" class="form-control precio-unitario gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->precio_unitario }}" oninput="updateSubtotal(this)"></td>
@@ -181,6 +182,7 @@
                     <option value="LTS">LTS</option>
                     <option value="PZ">PZ</option>
                     <option value="LOTE">LOTE</option>
+                    <option value="MTS">MTS</option>
                 </select>
             </td>
             <td class="gastos-rapidos-td"><input type="number" name="cantidad[]" class="form-control cantidad gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>

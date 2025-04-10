@@ -21,6 +21,8 @@
             <button type="submit">Login</button>
         </form>
 
+        <p style="color: white;">¿No tienes cuenta? <a href="{{ route('register') }}" style="color: #ADD8E6;">Crea una</a></p>
+
         @if ($errors->any())
             <div>
                 @foreach ($errors->all() as $error)
