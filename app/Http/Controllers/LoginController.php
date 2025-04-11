@@ -66,15 +66,10 @@ class LoginController extends Controller
         $request->session()->put('user_data', $userData);
 
         if ($request->role === 'arquitecto') {
-            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+            // Fetch the plans from the database
+            $plans = \App\Models\Plan::all();
 
-            $products = \Stripe\Product::all(['limit' => 10]); // Adjust limit as needed
-            $prices = [];
-            foreach ($products->data as $product) {
-                $prices[$product->id] = \Stripe\Price::all(['product' => $product->id, 'limit' => 1]);
-            }
-
-            return view('auth.payment', compact('products', 'prices'));
+            return view('auth.payment', compact('plans'));
         }
 
         return redirect()->route('obra.create')->with('success', 'User registered successfully.');
@@ -105,15 +100,25 @@ class LoginController extends Controller
         $planId = $request->plan;
 
         try {
-            $prices = \Stripe\Price::all(['product' => $planId, 'limit' => 1]);
-            $amount = $prices->data[0]->unit_amount;
+            // Fetch the plan from the database
+            $plan = \App\Models\Plan::find($planId);
+
+            if (!$plan) {
+                return back()->with('error', 'Plan not found.');
+            }
+
+            $stripePriceId = $plan->stripe_price_id;
+
+            // Retrieve the price from Stripe using the stripe_price_id
+            $price = \Stripe\Price::retrieve($stripePriceId);
+            $amount = $price->unit_amount;
 
             // Charge the user using Stripe
             \Stripe\Charge::create([
                 'amount' => $amount, // Amount in cents
                 'currency' => 'mxn',
                 'source' => $request->stripeToken, // Token obtained with Stripe.js
-                'description' => 'Payment for plan ' . $planId,
+                'description' => 'Payment for plan ' . $plan->name,
             ]);
 
             session()->forget('user_data');
