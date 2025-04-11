@@ -62,23 +62,19 @@ class LoginController extends Controller
             'role' => $request->role,
             'created_by' => Auth::id() ?? 1,
         ];
-
         $request->session()->put('user_data', $userData);
-
         if ($request->role === 'arquitecto') {
             // Fetch the plans from the database
-            $plans = \App\Models\Plan::all();
-
-            return view('auth.payment', compact('plans'));
+            $plans = \App\Models\Plan::all(['id', 'nombre', 'precio', 'stripe_price_id']); // Incluye stripe_price_id
+            return view('auth.payment', compact('plans')); // Pasa los planes a la vista
         }
-
         return redirect()->route('obra.create')->with('success', 'User registered successfully.');
     }
 
     public function submitPayment(Request $request)
     {
         $request->validate([
-            'plan' => 'required',
+            'plan' => 'required', // Solo el plan es obligatorio
         ]);
 
         $userData = session('user_data');
@@ -86,16 +82,6 @@ class LoginController extends Controller
         if (!$userData) {
             return redirect()->route('register')->with('error', 'Session expired. Please register again.');
         }
-
-        $user = User::create([
-            'name' => $userData['name'],
-            'email' => $userData['email'],
-            'password' => Hash::make($userData['password']),
-            'role' => $userData['role'],
-            'created_by' => $userData['created_by'],
-        ]);
-
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
         $planId = $request->plan;
 
@@ -107,26 +93,53 @@ class LoginController extends Controller
                 return back()->with('error', 'Plan not found.');
             }
 
-            $stripePriceId = $plan->stripe_price_id;
+            // Verifica que los datos de la sesión sean válidos
+            if (empty($userData['name']) || empty($userData['email']) || empty($userData['password']) || empty($userData['role'])) {
+                return back()->with('error', 'Invalid session data. Please try again.');
+            }
 
-            // Retrieve the price from Stripe using the stripe_price_id
-            $price = \Stripe\Price::retrieve($stripePriceId);
-            $amount = $price->unit_amount;
-
-            // Charge the user using Stripe
-            \Stripe\Charge::create([
-                'amount' => $amount, // Amount in cents
-                'currency' => 'mxn',
-                'source' => $request->stripeToken, // Token obtained with Stripe.js
-                'description' => 'Payment for plan ' . $plan->name,
+            // Crear el usuario con los datos básicos
+            $user = User::create([
+                'name' => $userData['name'],
+                'email' => $userData['email'],
+                'password' => $userData['password'], // Ya está encriptado en el registro
+                'role' => $userData['role'],
+                'created_by' => $userData['created_by'],
             ]);
+
+            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+            // Si se proporciona un payment_method_id, procesa el pago
+            if ($request->has('payment_method_id')) {
+                $paymentIntent = \Stripe\PaymentIntent::create([
+                    'amount' => $plan->precio * 100, // Convertir a centavos
+                    'currency' => 'mxn',
+                    'payment_method' => $request->payment_method_id, // ID del método de pago
+                    'confirmation_method' => 'manual',
+                    'confirm' => true,
+                ]);
+
+                if ($paymentIntent->status !== 'succeeded') {
+                    return back()->with('error', 'Payment failed. Please try again.');
+                }
+
+                $user->stripe_subscription_id = $paymentIntent->id; // ID del PaymentIntent como referencia
+            }
+
+            // Guardar los datos adicionales en el usuario
+            $user->plan_id = $planId; // Asigna el ID del plan
+            $user->subscription_ends_at = now()->addMonth(); // Fecha de expiración de la suscripción
+            $user->is_active = true; // Marca al usuario como activo
+            $user->save();
 
             session()->forget('user_data');
 
             return redirect()->route('login')->with('success', 'Registration successful! Please log in.');
 
+        } catch (\Stripe\Exception\CardException $e) {
+            // Manejar errores de pago
+            return back()->with('error', $e->getError()->message);
         } catch (\Exception $e) {
-            // Handle payment errors
             return back()->with('error', $e->getMessage());
         }
     }
