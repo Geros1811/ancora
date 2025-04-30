@@ -42,12 +42,7 @@
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="date" name="fecha_${type}[]" class="form-control" style="border: none; background: transparent; text-align: center;"></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="concepto_${type}[]" class="form-control" style="border: none; background: transparent; text-align: center;"></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
-                <select name="unidad_${type}[]" class="form-control" style="border: none; background: transparent; text-align: center;">
-                    <option value="M3">M3</option>
-                    <option value="KG">KG</option>
-                    <option value="PZ">PZ</option>
-                    <option value="LOTE">LOTE</option>
-                </select>
+                <input type="text" name="unidad[]" class="form-control" style="border: none; background: transparent; text-align: center;">
             </td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="cantidad_${type}[]" class="form-control cantidad" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this, type)"></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="precio_unitario_${type}[]" class="form-control precio-unitario" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this, type)"></td>

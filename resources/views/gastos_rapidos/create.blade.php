@@ -86,12 +86,7 @@
                     <td class="gastos-rapidos-td"><input type="date" name="fecha[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;"></td>
                     <td class="gastos-rapidos-td"><input type="text" name="concepto[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;"></td>
                     <td class="gastos-rapidos-td">
-                        <select name="unidad[]" class="form-control gastos-rapidos-select" style="border: none; background: transparent; text-align: center;">
-                            <option value="KG">KG</option>
-                            <option value="LTS">LTS</option>
-                            <option value="PZ">PZ</option>
-                            <option value="LOTE">LOTE</option>
-                        </select>
+                    <input type="text" name="unidad[]" class="form-control" style="border: none; background: transparent; text-align: center;">
                     </td>
                     <td class="gastos-rapidos-td"><input type="number" name="cantidad[]" class="form-control cantidad gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
                     <td class="gastos-rapidos-td"><input type="number" name="precio_unitario[]" class="form-control precio-unitario gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)">

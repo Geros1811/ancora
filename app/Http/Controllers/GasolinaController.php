@@ -93,6 +93,22 @@ class GasolinaController extends Controller
         return response()->json(['success' => 'Registro eliminado correctamente.']);
     }
 
+    public function destroyDetalle($obraId, $detalleId)
+    {
+        $detalle = DetalleGasolina::findOrFail($detalleId);
+        $detalle->delete();
+
+        // Actualizar el costo total en la tabla de costos indirectos
+        $detalles = DetalleGasolina::where('obra_id', $obraId)->get();
+        $costoTotal = $detalles->sum('subtotal');
+        CostoIndirecto::updateOrCreate(
+            ['obra_id' => $obraId, 'nombre' => 'Gasolina'],
+            ['costo' => $costoTotal]
+        );
+
+        return redirect()->route('gasolina.index', ['obraId' => $obraId]);
+    }
+
     public function generatePdf($obraId)
     {
         $obra = Obra::findOrFail($obraId);

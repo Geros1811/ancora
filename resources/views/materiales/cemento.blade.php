@@ -26,12 +26,7 @@
                                 <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="date" name="fecha_cemento[]" value="{{ $detalle->fecha }}" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}></td>
                                 <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="concepto_cemento[]" value="{{ $detalle->concepto }}" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}></td>
                                 <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
-                                    <select name="unidad_cemento[]" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
-                                        <option value="BOLSA" {{ $detalle->unidad == 'BOLSA' ? 'selected' : '' }}>BOLSA</option>
-                                        <option value="KG" {{ $detalle->unidad == 'KG' ? 'selected' : '' }}>KG</option>
-                                        <option value="PZ" {{ $detalle->unidad == 'PZ' ? 'selected' : '' }}>PZ</option>
-                                        <option value="LOTE" {{ $detalle->unidad == 'LOTE' ? 'selected' : '' }}>LOTE</option>
-                                    </select>
+                                    <input type="text" name="unidad_cemento[]" class="form-control" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->unidad ?? '' }}" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
                                 </td>
                                 <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="cantidad_cemento[]" value="{{ $detalle->cantidad }}" class="form-control cantidad" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this, 'cemento')" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}></td>
                                 <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="precio_unitario_cemento[]" value="{{ $detalle->precio_unitario }}" class="form-control precio-unitario" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this, 'cemento')" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}></td>
@@ -39,7 +34,7 @@
                                 <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
                                     <input type="file" name="fotos_cemento[]" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
                                     @if($detalle->foto)
-                                        <a href="{{ asset('storage/tickets/' . basename($detalle->foto)) }}" target="_blank">Ver foto</a>
+                                        <a href="{{ asset('tickets/' . basename($detalle->foto)) }}" target="_blank">Ver foto</a>
                                     @else
                                         <span>Imagen no Subida</span>
                                     @endif
@@ -61,5 +56,26 @@
                     <button type="submit" class="btn btn-primary" style="margin-top: 10px;" disabled>Guardar Cemento</button>
                 @endif
             </form>
+
+            <script>
+                function removeRow(button, detalleId, type) {
+                    if (confirm('¿Estás seguro de que quieres eliminar este registro?')) {
+                        fetch(`/${type}/${detalleId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        }).then(response => {
+                            if (response.ok) {
+                                const row = button.parentNode.parentNode;
+                                row.parentNode.removeChild(row);
+                                updateTotal();
+                            } else {
+                                alert('Error al eliminar el registro.');
+                            }
+                        });
+                    }
+                }
+            </script>
         </div>
     </div>

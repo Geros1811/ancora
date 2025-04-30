@@ -47,12 +47,7 @@
                                 <input type="text" name="concepto[]" value="{{ $detalle->concepto }}" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
                             </td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
-                                <select name="unidad[]" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
-                                    <option value="KG" {{ $detalle->unidad == 'KG' ? 'selected' : '' }}>KG</option>
-                                    <option value="LTS" {{ $detalle->unidad == 'LTS' ? 'selected' : '' }}>LTS</option>
-                                    <option value="PZ" {{ $detalle->unidad == 'PZ' ? 'selected' : '' }}>PZ</option>
-                                    <option value="LOTE" {{ $detalle->unidad == 'LOTE' ? 'selected' : '' }}>LOTE</option>
-                                </select>
+                                <input type="text" name="unidad[]" class="form-control" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->unidad ?? '' }}" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
                             </td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
                                 <input type="number" name="cantidad[]" value="{{ $detalle->cantidad }}" class="form-control cantidad" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
@@ -66,7 +61,7 @@
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
                                  <input type="file" name="fotos[]" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
                                 @if($detalle->foto)
-                                    <a href="{{ asset('storage/tickets/' . basename($detalle->foto)) }}" target="_blank">Ver foto</a>
+                                    <a href="{{ asset('tickets/' . basename($detalle->foto)) }}" target="_blank">Ver foto</a>
                                 @else
                                     <span>Imagen no Subida</span>
                                 @endif
@@ -103,12 +98,7 @@
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="date" name="fecha[]" class="form-control" style="border: none; background: transparent; text-align: center;"></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="concepto[]" class="form-control" style="border: none; background: transparent; text-align: center;"></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
-                <select name="unidad[]" class="form-control" style="border: none; background: transparent; text-align: center;">
-                    <option value="KG">KG</option>
-                    <option value="LTS">LTS</option>
-                    <option value="PZ">PZ</option>
-                    <option value="LOTE">LOTE</option>
-                </select>
+                <input type="text" name="unidad[]" class="form-control" style="border: none; background: transparent; text-align: center;">
             </td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="cantidad[]" class="form-control cantidad" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="precio_unitario[]" class="form-control precio-unitario" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
@@ -121,23 +111,25 @@
         tableBody.appendChild(newRow);
     }
 
-    function removeRow(button, detalleId) {
-        if (confirm('¿Estás seguro de que quieres eliminar este registro?')) {
-            fetch(`/comidas/${detalleId}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            }).then(response => {
-                if (response.ok) {
-                    const row = button.parentNode.parentNode;
-                    row.parentNode.removeChild(row);
-                    updateTotal();
-                } else {
-                    alert('Error al eliminar el registro.');
-                }
-            });
-        }
+    function removeRow(button) {
+        const row = button.parentNode.parentNode;
+        const detalleId = row.querySelector('input[name="id[]"]').value;
+
+        fetch(`/comidas/{{ $obraId }}/detalles/${detalleId}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: '_method=DELETE'
+        }).then(response => {
+            if (response.ok) {
+                row.parentNode.removeChild(row);
+                updateTotal();
+            } else {
+                alert('Error al eliminar el registro.');
+            }
+        });
     }
 
 function updateSubtotal(input) {

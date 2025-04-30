@@ -107,6 +107,7 @@ Route::get('/gasolina/{obraId}', [GasolinaController::class, 'index'])->name('ga
 Route::post('/gasolina/{obraId}', [GasolinaController::class, 'store'])->name('gasolina.store');
 Route::delete('/gasolina/{id}', [GasolinaController::class, 'destroy'])->name('gasolina.destroy');
 
+
 // Rutas para rentas y utilidades
 Route::get('/rentas/{obraId}', [RentasController::class, 'index'])->name('rentas.index');
 Route::post('/rentas/{obraId}', [RentasController::class, 'store'])->name('rentas.store');
@@ -217,6 +218,9 @@ Route::delete('/papeleria/{obraId}/detalles/{detalleId}', [PapeleriaController::
 
 Route::delete('/rentas/{id}', [RentasController::class, 'destroy'])->name('rentas.destroy');
 Route::delete('/utilidades/{id}', [UtilidadesController::class, 'destroy'])->name('utilidades.destroy');
+Route::delete('/rentas/{obraId}/detalles/{detalleId}', [RentasController::class, 'destroyDetalle'])->name('rentas.destroyDetalle');
+Route::delete('/gasolina/{obraId}/detalles/{detalleId}', [GasolinaController::class, 'destroyDetalle'])->name('gasolina.destroyDetalle');
+Route::delete('/utilidades/{obraId}/detalles/{detalleId}', [UtilidadesController::class, 'destroyDetalle'])->name('utilidades.destroyDetalle');
 Route::delete('/acarreos/{id}', [AcarreosController::class, 'destroy'])->name('acarreos.destroy');
 Route::delete('/comidas/{id}', [ComidasController::class, 'destroy'])->name('comidas.destroy');
 Route::delete('/tramites/{id}', [TramitesController::class, 'destroy'])->name('tramites.destroy');

@@ -83,13 +83,7 @@
                                           </td>
                                           <td class="gastos-rapidos-td"><input type="text" name="concepto[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->concepto }}"></td>
                                           <td class="gastos-rapidos-td">
-                                              <select name="unidad[]" class="form-control gastos-rapidos-select" style="border: none; background: transparent; text-align: center;">
-                                                  <option value="KG" {{ $detalle->unidad == 'KG' ? 'selected' : '' }}>KG</option>
-                                                  <option value="LTS" {{ $detalle->unidad == 'LTS' ? 'selected' : '' }}>LTS</option>
-                    <option value="PZ" {{ $detalle->unidad == 'PZ' ? 'selected' : '' }}>PZ</option>
-                    <option value="LOTE" {{ $detalle->unidad == 'LOTE' ? 'selected' : '' }}>LOTE</option>
-                    <option value="MTS">MTS</option>
-                </select>
+                                              <input type="text" name="unidad[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->unidad }}">
                                           </td>
                                           <td class="gastos-rapidos-td"><input type="number" name="cantidad[]" class="form-control cantidad gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->cantidad }}" oninput="updateSubtotal(this)"></td>
                                           <td class="gastos-rapidos-td"><input type="number" name="precio_unitario[]" class="form-control precio-unitario gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->precio_unitario }}" oninput="updateSubtotal(this)"></td>
@@ -125,7 +119,7 @@
                                           <td class="gastos-rapidos-td">
                                               <input type="file" name="foto[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;">
                                               @if($detalle->foto != null && $detalle->foto != '')
-                                                  <a href="{{ asset('storage/tickets/' . basename($detalle->foto)) }}" target="_blank">Ver Foto</a>
+                                                  <a href="{{ asset('tickets/' . basename($detalle->foto)) }}" target="_blank">Ver Foto</a>
                                               @endif
                                           </td>
                                           @if(Auth::user()->role == 'arquitecto')
@@ -177,13 +171,7 @@
             <td class="gastos-rapidos-td"><input type="date" name="fecha[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="${tableDate}"></td>
             <td class="gastos-rapidos-td"><input type="text" name="concepto[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;"></td>
             <td class="gastos-rapidos-td">
-                <select name="unidad[]" class="form-control gastos-rapidos-select" style="border: none; background: transparent; text-align: center;">
-                    <option value="KG">KG</option>
-                    <option value="LTS">LTS</option>
-                    <option value="PZ">PZ</option>
-                    <option value="LOTE">LOTE</option>
-                    <option value="MTS">MTS</option>
-                </select>
+                <input type="text" name="unidad[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;">
             </td>
             <td class="gastos-rapidos-td"><input type="number" name="cantidad[]" class="form-control cantidad gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
             <td class="gastos-rapidos-td"><input type="number" name="precio_unitario[]" class="form-control precio-unitario gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
@@ -277,7 +265,7 @@
         formData.append('obra_id', obraId);
         formData.append('fecha[]', row.querySelector('input[name="fecha[]"]').value);
         formData.append('concepto[]', row.querySelector('input[name="concepto[]"]').value);
-        formData.append('unidad[]', row.querySelector('select[name="unidad[]"]').value);
+        formData.append('unidad[]', row.querySelector('input[name="unidad[]"]').value);
         formData.append('cantidad[]', row.querySelector('input[name="cantidad[]"]').value);
         formData.append('precio_unitario[]', row.querySelector('input[name="precio_unitario[]"]').value);
         formData.append('subtotal[]', row.querySelector('input[name="subtotal[]"]').value);

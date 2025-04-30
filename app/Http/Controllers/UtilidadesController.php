@@ -93,6 +93,22 @@ class UtilidadesController extends Controller
         return response()->json(['success' => 'Registro eliminado correctamente.']);
     }
 
+    public function destroyDetalle($obraId, $detalleId)
+    {
+        $detalle = DetalleUtilidades::findOrFail($detalleId);
+        $detalle->delete();
+
+        // Actualizar el costo total en la tabla de costos indirectos
+        $detalles = DetalleUtilidades::where('obra_id', $obraId)->get();
+        $costoTotal = $detalles->sum('subtotal');
+        CostoIndirecto::updateOrCreate(
+            ['obra_id' => $obraId, 'nombre' => 'Utilidades'],
+            ['costo' => $costoTotal]
+        );
+
+        return redirect()->route('utilidades.index', ['obraId' => $obraId]);
+    }
+
     public function generatePdf($obraId)
     {
         $detalles = DetalleUtilidades::where('obra_id', $obraId)->get();
