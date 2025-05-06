@@ -44,8 +44,8 @@
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
                 <input type="text" name="unidad[]" class="form-control" style="border: none; background: transparent; text-align: center;">
             </td>
-            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="cantidad_${type}[]" class="form-control cantidad" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this, type)"></td>
-            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="precio_unitario_${type}[]" class="form-control precio-unitario" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this, type)"></td>
+            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="cantidad_${type}[]" class="form-control cantidad" style="border: none; background: transparent; text-align: center;" step="any" oninput="updateSubtotal(this, type)"></td>
+            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="precio_unitario_${type}[]" class="form-control precio-unitario" style="border: none; background: transparent; text-align: center;" step="any" oninput="updateSubtotal(this, type)"></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="subtotal_${type}[]" class="form-control subtotal" style="border: none; background: transparent; text-align: center;" readonly></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
                 <input type="file" name="fotos_${type}[]" class="form-control" style="border: none; background: transparent; text-align: center;">

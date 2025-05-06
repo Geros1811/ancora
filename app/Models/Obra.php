@@ -33,6 +33,15 @@ class Obra extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function arquitecto()
+    {
+        return $this->belongsTo(User::class, 'arquitecto_id');
+    }
+
+    public function residenteUser()
+    {
+        return $this->belongsTo(User::class, 'residente');
+    }
     public function architects()
     {
         return $this->belongsToMany(User::class, 'obra_user', 'obra_id', 'user_id')

@@ -22,16 +22,22 @@
 
             <div class="form-group">
                 <label for="cantidad">Cantidad:</label>
-                <input type="number" class="form-control" id="cantidad" name="cantidad" required>
+                <input type="number" class="form-control" id="cantidad" name="cantidad" step="any" required>
             </div>
 
             <div class="form-group">
                 <label for="maestro_obra">Residente:</label>
                 <select class="form-control" id="maestro_obra" name="maestro_obra_id" required>
                     <option value="">Seleccione un Residente</option>
-                    @foreach ($users as $user)
-                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                    @endforeach
+                    @if($obra->arquitecto)
+                        <option value="{{ $obra->arquitecto->id }}">{{ $obra->arquitecto->name }} (Arquitecto)</option>
+                    @endif
+                     @if($obra->residenteUser)
+                        <option value="{{ $obra->residenteUser->id }}">{{ $obra->residenteUser->name }} (Residente)</option>
+                    @endif
+                    @if($creator)
+                        <option value="{{ $creator->id }}">{{ $creator->name }} (Creador)</option>
+                    @endif
                 </select>
             </div>
 
@@ -85,8 +91,8 @@
                                           <td class="gastos-rapidos-td">
                                               <input type="text" name="unidad[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->unidad }}">
                                           </td>
-                                          <td class="gastos-rapidos-td"><input type="number" name="cantidad[]" class="form-control cantidad gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->cantidad }}" oninput="updateSubtotal(this)"></td>
-                                          <td class="gastos-rapidos-td"><input type="number" name="precio_unitario[]" class="form-control precio-unitario gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->precio_unitario }}" oninput="updateSubtotal(this)"></td>
+                                          <td class="gastos-rapidos-td"><input type="number" name="cantidad[]" step="any" class="form-control cantidad gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->cantidad }}" oninput="updateSubtotal(this)"></td>
+                                          <td class="gastos-rapidos-td"><input type="number" name="precio_unitario[]" step="any" class="form-control precio-unitario gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->precio_unitario }}" oninput="updateSubtotal(this)"></td>
                                           <td class="gastos-rapidos-td">
                                               <input type="text" class="form-control subtotal display-subtotal gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" readonly value="{{ $detalle->subtotal }}">
                                               <input type="hidden" name="subtotal[]" class="subtotal-hidden" value="{{ $detalle->subtotal }}">
@@ -173,8 +179,8 @@
             <td class="gastos-rapidos-td">
                 <input type="text" name="unidad[]" class="form-control gastos-rapidos-input" style="border: none; background: transparent; text-align: center;">
             </td>
-            <td class="gastos-rapidos-td"><input type="number" name="cantidad[]" class="form-control cantidad gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
-            <td class="gastos-rapidos-td"><input type="number" name="precio_unitario[]" class="form-control precio-unitario gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
+            <td class="gastos-rapidos-td"><input type="number" name="cantidad[]" step="any" class="form-control cantidad gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
+            <td class="gastos-rapidos-td"><input type="number" name="precio_unitario[]" step="any" class="form-control precio-unitario gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
             <td class="gastos-rapidos-td">
                 <input type="text" class="form-control subtotal display-subtotal gastos-rapidos-input" style="border: none; background: transparent; text-align: center;" readonly>
                 <input type="hidden" name="subtotal[]" class="subtotal-hidden">

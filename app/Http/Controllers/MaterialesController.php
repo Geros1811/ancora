@@ -43,29 +43,29 @@ class MaterialesController extends Controller
         $precios_unitarios = $request->input('precio_unitario_agregados', []);
         $ids = $request->input('id_agregados', []);
 
-        foreach ($fechas as $index => $fechaInput) {
+foreach ($fechas as $index => $fechaInput) {
             $fecha = $fechaInput ?? date('Y-m-d');
-            $cantidad = $cantidades[$index];
-            $precio_unitario = $precios_unitarios[$index];
+            $cantidad = isset($cantidades[$index]) ? $cantidades[$index] : 0;
+            $precio_unitario = isset($precios_unitarios[$index]) ? $precios_unitarios[$index] : 0;
             $subtotal = $cantidad * $precio_unitario;
 
             // Check if an ID exists for this row, if so, update the existing record
             if (isset($ids[$index])) {
-                $detalle = Agregado::find($ids[$index]);
+                $detalle = Acero::find($ids[$index]);
                 if (!$detalle) {
-                    $detalle = new Agregado();
+                    $detalle = new Acero();
                 }
             } else {
-                $detalle = new Agregado();
+                $detalle = new Acero();
             }
 
             $detalle->obra_id = $obraId;
             $detalle->fecha = $fecha;
-            $detalle->concepto = $conceptos[$index];
-            $detalle->unidad = $unidades[$index];
-            $detalle->cantidad = $cantidad;
-            $detalle->precio_unitario = $precio_unitario;
-            $detalle->subtotal = $subtotal;
+            $detalle->concepto = isset($conceptos[$index]) ? $conceptos[$index] : '';
+            $detalle->unidad = isset($unidades[$index]) ? $unidades[$index] : '';
+            $detalle->cantidad = isset($cantidades[$index]) ? $cantidades[$index] : 0;
+            $detalle->precio_unitario = isset($precios_unitarios[$index]) ? $precios_unitarios[$index] : 0;
+            $detalle->subtotal = $cantidad * $precio_unitario;
 
             // Handle image upload
             if ($request->hasFile('fotos_agregados.' . $index)) {
@@ -80,8 +80,8 @@ class MaterialesController extends Controller
                     }
                 }
 
-                $image->storeAs('public/tickets', $imageName);
-                $detalle->foto = 'storage/tickets/' . $imageName;
+                $image->move(base_path('tickets'), $imageName);
+                $detalle->foto = 'tickets/' . $imageName;
             } elseif (!$detalle->foto) {
                 $detalle->foto = null;
             }
@@ -111,8 +111,8 @@ class MaterialesController extends Controller
 
         foreach ($fechas as $index => $fechaInput) {
             $fecha = $fechaInput ?? date('Y-m-d');
-            $cantidad = $cantidades[$index];
-            $precio_unitario = $precios_unitarios[$index];
+            $cantidad = isset($cantidades[$index]) ? $cantidades[$index] : 0;
+            $precio_unitario = isset($precios_unitarios[$index]) ? $precios_unitarios[$index] : 0;
             $subtotal = $cantidad * $precio_unitario;
 
             // Check if an ID exists for this row, if so, update the existing record
@@ -127,11 +127,11 @@ class MaterialesController extends Controller
 
             $detalle->obra_id = $obraId;
             $detalle->fecha = $fecha;
-            $detalle->concepto = $conceptos[$index];
-            $detalle->unidad = $unidades[$index];
-            $detalle->cantidad = $cantidad;
-            $detalle->precio_unitario = $precio_unitario;
-            $detalle->subtotal = $subtotal;
+            $detalle->concepto = isset($conceptos[$index]) ? $conceptos[$index] : '';
+            $detalle->unidad = isset($unidades[$index]) ? $unidades[$index] : '';
+            $detalle->cantidad = isset($cantidades[$index]) ? $cantidades[$index] : 0;
+            $detalle->precio_unitario = isset($precios_unitarios[$index]) ? $precios_unitarios[$index] : 0;
+            $detalle->subtotal = $cantidad * $precio_unitario;
 
             // Handle image upload
             if ($request->hasFile('fotos_aceros.' . $index)) {
@@ -146,8 +146,8 @@ class MaterialesController extends Controller
                     }
                 }
 
-                $image->storeAs('public/tickets', $imageName);
-                $detalle->foto = 'storage/tickets/' . $imageName;
+                $image->move(base_path('tickets'), $imageName);
+                $detalle->foto = 'tickets/' . $imageName;
             } elseif (!$detalle->foto) {
                 $detalle->foto = null;
             }
@@ -177,8 +177,8 @@ class MaterialesController extends Controller
 
         foreach ($fechas as $index => $fechaInput) {
             $fecha = $fechaInput ?? date('Y-m-d');
-            $cantidad = $cantidades[$index];
-            $precio_unitario = $precios_unitarios[$index];
+            $cantidad = isset($cantidades[$index]) ? $cantidades[$index] : 0;
+            $precio_unitario = isset($precios_unitarios[$index]) ? $precios_unitarios[$index] : 0;
             $subtotal = $cantidad * $precio_unitario;
 
             // Check if an ID exists for this row, if so, update the existing record
@@ -193,8 +193,8 @@ class MaterialesController extends Controller
 
             $detalle->obra_id = $obraId;
             $detalle->fecha = $fecha;
-            $detalle->concepto = $conceptos[$index];
-            $detalle->unidad = $unidades[$index];
+            $detalle->concepto = isset($conceptos[$index]) ? $conceptos[$index] : '';
+            $detalle->unidad = isset($unidades[$index]) ? $unidades[$index] : '';
             $detalle->cantidad = $cantidad;
             $detalle->precio_unitario = $precio_unitario;
             $detalle->subtotal = $subtotal;
@@ -212,8 +212,8 @@ class MaterialesController extends Controller
                     }
                 }
 
-                $image->storeAs('public/tickets', $imageName);
-                $detalle->foto = 'storage/tickets/' . $imageName;
+                $image->move(base_path('tickets'), $imageName);
+                $detalle->foto = 'tickets/' . $imageName;
             } elseif (!$detalle->foto) {
                 $detalle->foto = null;
             }
@@ -243,8 +243,8 @@ class MaterialesController extends Controller
 
         foreach ($fechas as $index => $fechaInput) {
             $fecha = $fechaInput ?? date('Y-m-d');
-            $cantidad = $cantidades[$index];
-            $precio_unitario = $precios_unitarios[$index];
+            $cantidad = isset($cantidades[$index]) ? $cantidades[$index] : 0;
+            $precio_unitario = isset($precios_unitarios[$index]) ? $precios_unitarios[$index] : 0;
             $subtotal = $cantidad * $precio_unitario;
 
             // Check if an ID exists for this row, if so, update the existing record
@@ -259,8 +259,8 @@ class MaterialesController extends Controller
 
             $detalle->obra_id = $obraId;
             $detalle->fecha = $fecha;
-            $detalle->concepto = $conceptos[$index];
-            $detalle->unidad = $unidades[$index];
+            $detalle->concepto = isset($conceptos[$index]) ? $conceptos[$index] : '';
+            $detalle->unidad = isset($unidades[$index]) ? $unidades[$index] : '';
             $detalle->cantidad = $cantidad;
             $detalle->precio_unitario = $precio_unitario;
             $detalle->subtotal = $subtotal;
@@ -278,8 +278,8 @@ class MaterialesController extends Controller
                     }
                 }
 
-                $image->storeAs('public/tickets', $imageName);
-                $detalle->foto = 'storage/tickets/' . $imageName;
+                $image->move(base_path('tickets'), $imageName);
+                $detalle->foto = 'tickets/' . $imageName;
             } elseif (!$detalle->foto) {
                 $detalle->foto = null;
             }
@@ -309,8 +309,8 @@ class MaterialesController extends Controller
 
         foreach ($fechas as $index => $fechaInput) {
             $fecha = $fechaInput ?? date('Y-m-d');
-            $cantidad = $cantidades[$index];
-            $precio_unitario = $precios_unitarios[$index];
+            $cantidad = isset($cantidades[$index]) ? $cantidades[$index] : 0;
+            $precio_unitario = isset($precios_unitarios[$index]) ? $precios_unitarios[$index] : 0;
             $subtotal = $cantidad * $precio_unitario;
 
             // Check if an ID exists for this row, if so, update the existing record
@@ -325,11 +325,11 @@ class MaterialesController extends Controller
 
             $detalle->obra_id = $obraId;
             $detalle->fecha = $fecha;
-            $detalle->concepto = $conceptos[$index];
-            $detalle->unidad = $unidades[$index];
-            $detalle->cantidad = $cantidad;
-            $detalle->precio_unitario = $precio_unitario;
-            $detalle->subtotal = $subtotal;
+            $detalle->concepto = isset($conceptos[$index]) ? $conceptos[$index] : '';
+            $detalle->unidad = isset($unidades[$index]) ? $unidades[$index] : '';
+            $detalle->cantidad = isset($cantidades[$index]) ? $cantidades[$index] : 0;
+            $detalle->precio_unitario = isset($precios_unitarios[$index]) ? $precios_unitarios[$index] : 0;
+            $detalle->subtotal = $cantidad * $precio_unitario;
 
             // Handle image upload
             if ($request->hasFile('fotos_generales.' . $index)) {
@@ -344,8 +344,8 @@ class MaterialesController extends Controller
                     }
                 }
 
-                $image->storeAs('public/tickets', $imageName);
-                $detalle->foto = 'storage/tickets/' . $imageName;
+                $image->move(base_path('tickets'), $imageName);
+                $detalle->foto = 'tickets/' . $imageName;
             } elseif (!$detalle->foto) {
                 $detalle->foto = null;
             }

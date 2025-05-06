@@ -26,9 +26,12 @@ class CajaChicaController extends Controller
 
         $cajaChica = null;
         $obra = \App\Models\Obra::find($obraId);
+        $arquitecto = $obra->arquitecto;
+        $residente = $obra->residenteUser;
+        $creator = User::find($obra->user_id);
 
-        // Format the date for each CajaChica
-        foreach ($cajaChicas as $cajaChica) {
+         // Format the date for each CajaChica
+         foreach ($cajaChicas as $cajaChica) {
             $cajaChica->formatted_created_at = $cajaChica->created_at->format('Y-m-d');
         }
 
@@ -36,7 +39,7 @@ class CajaChicaController extends Controller
             $cajaChica = CajaChica::find($request->cajaChica);
         }
 
-        return view('cajaChica.index', compact('obraId', 'users', 'cajaChicas', 'cajaChica', 'obra'));
+        return view('cajaChica.index', compact('obraId', 'users', 'cajaChicas', 'cajaChica', 'obra', 'creator'));
     }
 
     public function store(Request $request)

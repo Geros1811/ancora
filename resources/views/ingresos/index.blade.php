@@ -39,7 +39,7 @@
                             <input type="hidden" name="id[]" value="{{ $ingreso->id }}">
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="date" name="fecha[]" value="{{ $ingreso->fecha }}" class="form-control" style="border: none; background: transparent; text-align: center;"></td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="concepto[]" value="{{ $ingreso->concepto }}" class="form-control" style="border: none; background: transparent; text-align: center;"></td>
-                            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="importe[]" value="{{ $ingreso->importe }}" class="form-control importe" style="border: none; background: transparent; text-align: center;"></td>
+<td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="importe[]" value="{{ $ingreso->importe }}" step="0.01" class="form-control importe" style="border: none; background: transparent; text-align: center;"></td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="observaciones[]" value="{{ $ingreso->observaciones }}" class="form-control observaciones" style="border: none; background: transparent; text-align: center;"></td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
                                 @if(Auth::check() && Auth::user()->role != 'maestro_obra' && Auth::user()->role != 'residente')
@@ -74,7 +74,7 @@
         newRow.innerHTML = `
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="date" name="fecha[]" class="form-control" style="border: none; background: transparent; text-align: center;"></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="concepto[]" class="form-control" style="border: none; background: transparent; text-align: center;"></td>
-            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="importe[]" class="form-control importe" style="border: none; background: transparent; text-align: center;"></td>
+<td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="importe[]" step="0.01" class="form-control importe" style="border: none; background: transparent; text-align: center;"></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="observaciones[]" class="form-control observaciones" style="border: none; background: transparent; text-align: center;"></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><button type="button" class="btn btn-danger" onclick="removeRow(this, 0)">Eliminar</button></td>
         `;

@@ -50,18 +50,20 @@
                                 <input type="text" name="unidad[]" class="form-control" style="border: none; background: transparent; text-align: center;" value="{{ $detalle->unidad ?? '' }}" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
                             </td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
-                                <input type="number" name="cantidad[]" value="{{ $detalle->cantidad }}" class="form-control cantidad" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
+                                <input type="number" name="cantidad[]" value="{{ $detalle->cantidad }}" step="any" class="form-control cantidad" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
                             </td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
-                                <input type="number" name="precio_unitario[]" value="{{ $detalle->precio_unitario }}" class="form-control precio-unitario" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
+                                <input type="number" name="precio_unitario[]" value="{{ $detalle->precio_unitario }}" step="any" class="form-control precio-unitario" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
                             </td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
                                 <input type="text" name="subtotal[]" value="{{ $detalle->subtotal }}" class="form-control subtotal" style="border: none; background: transparent; text-align: center;" readonly>
                             </td>
                             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
-                                 <input type="file" name="fotos[]" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
+                                <input type="file" name="fotos[]" class="form-control" style="border: none; background: transparent; text-align: center;" {{ Auth::check() && (Auth::user()->role == 'maestro_obra' || Auth::user()->role == 'residente') ? 'disabled' : '' }}>
                                 @if($detalle->foto)
                                 <a href="{{ asset('tickets/' . basename($detalle->foto)) }}" target="_blank">Ver foto</a>
+                                    <br>
+                                    
                                 @else
                                     <span>Imagen no Subida</span>
                                 @endif
@@ -102,8 +104,8 @@
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
                 <input type="text" name="unidad[]" class="form-control" style="border: none; background: transparent; text-align: center;">
             </td>
-            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="cantidad[]" class="form-control cantidad" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
-            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="precio_unitario[]" class="form-control precio-unitario" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
+            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="cantidad[]" step="any" class="form-control cantidad" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
+            <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="number" name="precio_unitario[]" step="any" class="form-control precio-unitario" style="border: none; background: transparent; text-align: center;" oninput="updateSubtotal(this)"></td>
             <td style="border: 1px solid #ddd; text-align: center; padding: 10px;"><input type="text" name="subtotal[]" class="form-control subtotal" style="border: none; background: transparent; text-align: center;" readonly></td>
              <td style="border: 1px solid #ddd; text-align: center; padding: 10px;">
                 <input type="file" name="fotos[]" class="form-control" style="border: none; background: transparent; text-align: center;">

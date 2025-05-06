@@ -55,21 +55,12 @@ class GasolinaController extends Controller
             // Handle image upload
             if ($request->hasFile('fotos.' . $index)) {
                 $image = $request->file('fotos.' . $index);
-                $imageName = time() . '_' . $image->getClientOriginalName();
-
-                // Delete old image if it exists
-                if ($detalle->foto) {
-                    $oldImagePath = public_path($detalle->foto);
-                    if (file_exists($oldImagePath)) {
-                        unlink($oldImagePath);
-                    }
-                }
-
-                $image->storeAs('public/tickets', $imageName);
-                $detalle->foto = 'storage/tickets/' . $imageName;
-            } elseif (!$detalle->foto) {
-                $detalle->foto = null;
-            }
+                $imageName = time().'_'.$image->getClientOriginalName();
+                $image->move(base_path('tickets'), $imageName);
+                $detalle->foto = 'tickets/' . $imageName;
+            }  else {
+		    $detalle->foto = null;
+	    }
 
             $detalle->save();
 
@@ -91,22 +82,6 @@ class GasolinaController extends Controller
         $detalle->delete();
 
         return response()->json(['success' => 'Registro eliminado correctamente.']);
-    }
-
-    public function destroyDetalle($obraId, $detalleId)
-    {
-        $detalle = DetalleGasolina::findOrFail($detalleId);
-        $detalle->delete();
-
-        // Actualizar el costo total en la tabla de costos indirectos
-        $detalles = DetalleGasolina::where('obra_id', $obraId)->get();
-        $costoTotal = $detalles->sum('subtotal');
-        CostoIndirecto::updateOrCreate(
-            ['obra_id' => $obraId, 'nombre' => 'Gasolina'],
-            ['costo' => $costoTotal]
-        );
-
-        return redirect()->route('gasolina.index', ['obraId' => $obraId]);
     }
 
     public function generatePdf($obraId)
