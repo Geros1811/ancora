@@ -145,68 +145,131 @@ class ObraController extends Controller
     public function guardarCalendario(Request $request)
     {
         try {
-            $pagos = $request->input('pagos'); // Array de pagos
-
-            // Verificar que el array no esté vacío
+            $pagos = $request->input('pagos');
+            $obraId = $request->input('obra_id');
+    
+            // Validación básica
             if (empty($pagos)) {
-                \Log::error('No se han recibido pagos.');
-                return response()->json(['success' => false, 'message' => 'No se han recibido pagos.']);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se han recibido pagos.'
+                ], 400);
             }
-
-            // Asegúrate de que el ID de la obra se pase correctamente
-            $obraId = $request->input('obra_id'); // Asegúrate de enviar el id de la obra desde el formulario si es necesario
-
-            // Check if the user is a client and is linked to the obra
+    
+            // Verificación de permisos para clientes
             if (Auth::check() && Auth::user()->role == 'cliente') {
-                $obra = Obra::where('id', $obraId)->where('cliente', Auth::id())->firstOrFail();
+                $obra = Obra::where('id', $obraId)
+                          ->where('cliente', Auth::id())
+                          ->firstOrFail();
             }
-
-            // Eliminar los registros existentes para la obra
-            DB::table('calendario_pagos')->where('obra_id', $obraId)->delete();
-
+    
+            $idsProcesados = [];
+    
             foreach ($pagos as $pago) {
-                // Verificar que todas las claves necesarias estén presentes
-                if (!isset($pago['concepto'], $pago['fecha_pago'], $pago['pago'], $pago['acumulado'], $pago['bloqueado'])) {
-                    \Log::error('Faltan datos en el pago:', $pago);
-                    return response()->json(['success' => false, 'message' => 'Faltan datos en uno de los pagos.']);
+                // Validación de campos requeridos
+                $requiredFields = ['concepto', 'fecha_pago', 'pago', 'bloqueado'];
+                foreach ($requiredFields as $field) {
+                    if (!isset($pago[$field])) {
+                        \Log::error("Campo requerido faltante: $field", $pago);
+                        continue; // O puedes retornar un error inmediato
+                    }
                 }
-
-                // Registrar los datos recibidos para depuración
-                \Log::info('Datos recibidos para guardar:', [
-                    'obra_id' => $obraId,
-                    'concepto' => $pago['concepto'],
-                    'fecha_pago' => $pago['fecha_pago'],
-                    'pago' => $pago['pago'],
-                    'acumulado' => $pago['acumulado'],
-                    'bloqueado' => $pago['bloqueado'],
-                    'ticket' => $pago['ticket'] ?? null,
-                ]);
-
-                // Guardar cada pago en la base de datos
-                DB::table('calendario_pagos')->insert([
-                    'obra_id' => $obraId, // id de la obra correspondiente
-                    'concepto' => $pago['concepto'],
-                    'fecha_pago' => $pago['fecha_pago'],
-                    'pago' => $pago['pago'],
-                    'acumulado' => $pago['acumulado'], // Asegúrate de enviar este valor si es necesario
-                    'bloqueado' => $pago['bloqueado'],
-                    'ticket' => $pago['ticket'] ?? null, // El campo ticket es opcional, se puede omitir si no se envía
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+    
+                // Buscar por ID primero (si existe)
+                if (!empty($pago['id'])) {
+                    $existingPago = DB::table('calendario_pagos')
+                        ->where('id', $pago['id'])
+                        ->where('obra_id', $obraId)
+                        ->first();
+    
+                    if ($existingPago) {
+                        DB::table('calendario_pagos')
+                            ->where('id', $pago['id'])
+                            ->update([
+                                'concepto' => $pago['concepto'],
+                                'fecha_pago' => $pago['fecha_pago'],
+                                'pago' => $pago['pago'],
+                                'bloqueado' => $pago['bloqueado'],
+                                'ticket' => $pago['ticket'] ?? null,
+                                'updated_at' => now()
+                            ]);
+                        $idsProcesados[] = $pago['id'];
+                        continue;
+                    }
+                }
+    
+                // Si no tiene ID o no existe, buscar por concepto
+                $existingByConcept = DB::table('calendario_pagos')
+                    ->where('obra_id', $obraId)
+                    ->where('concepto', trim($pago['concepto']))
+                    ->first();
+    
+                if ($existingByConcept) {
+                    // Actualizar existente por concepto
+                    DB::table('calendario_pagos')
+                        ->where('id', $existingByConcept->id)
+                        ->update([
+                            'fecha_pago' => $pago['fecha_pago'],
+                            'pago' => $pago['pago'],
+                            'bloqueado' => $pago['bloqueado'],
+                            'ticket' => $pago['ticket'] ?? null,
+                            'updated_at' => now()
+                        ]);
+                    $idsProcesados[] = $existingByConcept->id;
+                } else {
+                    // Crear nuevo registro
+                    $newId = DB::table('calendario_pagos')->insertGetId([
+                        'obra_id' => $obraId,
+                        'concepto' => $pago['concepto'],
+                        'fecha_pago' => $pago['fecha_pago'],
+                        'pago' => $pago['pago'],
+                        'acumulado' => $pago['acumulado'] ?? 0,
+                        'bloqueado' => $pago['bloqueado'],
+                        'ticket' => $pago['ticket'] ?? null,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                    $idsProcesados[] = $newId;
+                }
             }
-
-            return response()->json(['success' => true, 'message' => 'Calendario de pagos guardado correctamente.']);
+    
+            // Opcional: Eliminar pagos que no están en la lista actual
+            // DB::table('calendario_pagos')
+            //     ->where('obra_id', $obraId)
+            //     ->whereNotIn('id', $idsProcesados)
+            //     ->delete();
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Calendario actualizado correctamente',
+                'ids' => $idsProcesados // Devuelve los IDs en el orden procesado
+            ]);
+    
         } catch (\Exception $e) {
-            // Registrar el error
-            \Log::error('Error al guardar el calendario de pagos: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Hubo un problema al guardar el calendario de pagos.']);
+            \Log::error('Error en guardarCalendario: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error del servidor al guardar los pagos'
+            ], 500);
         }
     }
-
+    
     public function obtenerCalendarioPagos($id)
     {
-        $calendarioPagos = DB::table('calendario_pagos')->where('obra_id', $id)->get();
-        return response()->json($calendarioPagos);
+        try {
+            $pagos = DB::table('calendario_pagos')
+                ->where('obra_id', $id)
+                ->orderBy('fecha_pago')
+                ->get();
+    
+            return response()->json($pagos);
+    
+        } catch (\Exception $e) {
+            \Log::error('Error al obtener calendario: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al cargar los pagos'
+            ], 500);
+        }
     }
 }

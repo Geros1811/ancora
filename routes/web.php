@@ -39,6 +39,9 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\DestajosSinNominaController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\ObraImagenController;
+
+
 
 Route::get('/costos/{id}', [CostosController::class, 'show'])->name('costos.show');
 
@@ -317,3 +320,7 @@ Route::post('/marcar-todas-notificaciones-leidas', function (Illuminate\Http\Req
 });
 
 Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscribe');
+
+// Ruta para subir imágenes de la obra
+Route::get('/obras/{obraId}/imagenes', [ObraImagenController::class, 'index'])->name('obras.imagenes');
+Route::post('/obras/{obraId}/imagenes', [ObraImagenController::class, 'store'])->name('obra_imagenes.store');
